@@ -3,6 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { StyledEngineProvider } from '@mui/material/styles';
+import ClientOnly from '@/components/ClientOnly';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
 
 // Create a theme instance with enhanced accessibility
 const theme = createTheme({
@@ -181,26 +185,47 @@ const theme = createTheme({
 });
 
 // Client-side only skip link component to avoid hydration errors
-const SkipLink = () => {
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  if (!mounted) {
-    return null;
-  }
-  
+const SkipLinkContent = () => {
   return <a href="#main-content" className="skip-link">Skip to main content</a>;
 };
 
+// Create a custom cache for Emotion to prevent hydration mismatches
+const createEmotionCache = () => {
+  return createCache({ key: 'css', prepend: true });
+};
+
 export default function ThemeRegistry({ children }: { children: React.ReactNode }) {
+  // Create client-side cache after mount
+  const [emotionCache, setEmotionCache] = useState<ReturnType<typeof createEmotionCache> | null>(null);
+  
+  useEffect(() => {
+    // Only create the cache on the client side
+    setEmotionCache(createEmotionCache());
+  }, []);
+  
+  // Render a simple loading state or null during SSR
+  if (!emotionCache) {
+    // During SSR, return a simplified version without Emotion styles
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    );
+  }
+
+  // On the client, use the full version with Emotion cache
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <SkipLink />
-      {children}
-    </ThemeProvider>
+    <CacheProvider value={emotionCache}>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <ClientOnly>
+            <SkipLinkContent />
+          </ClientOnly>
+          {children}
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </CacheProvider>
   );
 } 

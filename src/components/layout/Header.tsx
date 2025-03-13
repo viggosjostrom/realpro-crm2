@@ -24,6 +24,7 @@ import {
 } from '@mui/icons-material';
 import { alpha } from '@mui/material/styles';
 import { useState } from 'react';
+import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
 
 interface HeaderProps {
   handleDrawerToggle: () => void;
@@ -53,6 +54,9 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
+
+  // Get accessible avatar styles
+  const avatarStyles = getAccessibleAvatarStyle(theme.palette.primary.main);
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -119,7 +123,17 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
           aria-haspopup="true"
           color="inherit"
         >
-          <Avatar alt="Johan Andersson">JA</Avatar>
+          <Avatar 
+            sx={{ 
+              width: 32, 
+              height: 32,
+              bgcolor: avatarStyles.bgcolor,
+              color: avatarStyles.color
+            }} 
+            alt="Johan Andersson"
+          >
+            JA
+          </Avatar>
         </IconButton>
         <p>Profile</p>
       </MenuItem>
@@ -151,7 +165,8 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar 
               sx={{ 
-                bgcolor: theme => theme.palette.primary.main, 
+                bgcolor: avatarStyles.bgcolor,
+                color: avatarStyles.color,
                 width: 40, 
                 height: 40, 
                 mr: 1.5,
@@ -244,7 +259,17 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
                 onClick={handleProfileMenuOpen}
                 color="inherit"
               >
-                <Avatar sx={{ width: 32, height: 32 }} alt="Johan Andersson">JA</Avatar>
+                <Avatar 
+                  sx={{ 
+                    width: 32, 
+                    height: 32,
+                    bgcolor: avatarStyles.bgcolor,
+                    color: avatarStyles.color
+                  }} 
+                  alt="Johan Andersson"
+                >
+                  JA
+                </Avatar>
               </IconButton>
             </Tooltip>
           </Box>

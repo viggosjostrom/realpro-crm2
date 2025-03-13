@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { 
   Box, 
   Button, 
@@ -21,6 +21,7 @@ import {
 } from '@mui/icons-material';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import ClientOnly from '@/components/ClientOnly';
 
 // Static feature data
 const featureData = [
@@ -41,6 +42,35 @@ const featureData = [
     description: 'Connect with your favorite tools and services for a complete real estate management solution.'
   }
 ];
+
+// Create a separate component for the loading state
+const LoadingComponent = () => (
+  <Box sx={{ 
+    minHeight: '100vh', 
+    bgcolor: 'background.default',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }}>
+    <CircularProgress />
+  </Box>
+);
+
+// Use dynamic import for the loading component to avoid hydration issues
+const DynamicLoadingComponent = dynamic(() => Promise.resolve(LoadingComponent), { ssr: false });
+
+// Create a component for the copyright year to avoid hydration issues
+const CopyrightYear = () => {
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
+  // Only render the current year on the client side
+  // Use suppressHydrationWarning to prevent React from complaining about the mismatch
+  return <span suppressHydrationWarning>{isClient ? new Date().getFullYear() : '2024'}</span>;
+};
 
 // Use dynamic import with no SSR to prevent hydration issues
 const HomeContent = dynamic(() => Promise.resolve(({ 
@@ -399,7 +429,7 @@ const HomeContent = dynamic(() => Promise.resolve(({
           </Grid>
           <Box sx={{ mt: 6, pt: 3, borderTop: `1px solid ${dividerColor}`, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              © {new Date().getFullYear()} RealPro CRM. All rights reserved.
+              © <CopyrightYear /> RealPro CRM. All rights reserved.
             </Typography>
           </Box>
         </Container>
@@ -410,33 +440,30 @@ const HomeContent = dynamic(() => Promise.resolve(({
 
 export default function Home() {
   // Use a more robust approach for client detection
-  const [mounted, setMounted] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   
   // Always call hooks unconditionally
   const theme = useTheme();
 
   useEffect(() => {
-    setMounted(true);
+    setIsClient(true);
   }, []);
 
   // Safe access to theme properties only after mounting
-  const textSecondaryColor = theme.palette.text.secondary;
-  const dividerColor = theme.palette.divider;
+  const textSecondaryColor = isClient ? theme.palette.text.secondary : '';
+  const dividerColor = isClient ? theme.palette.divider : '';
 
   // Simple skeleton loader for server-side rendering
-  if (!mounted) {
-    return (
-      <Box sx={{ 
-        minHeight: '100vh', 
-        bgcolor: 'background.default',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <CircularProgress />
-      </Box>
-    );
+  if (!isClient) {
+    return <DynamicLoadingComponent />;
   }
 
-  return <HomeContent textSecondaryColor={textSecondaryColor} dividerColor={dividerColor} />;
+  // Use ClientOnly to ensure the component only renders on the client
+  return (
+    <ClientOnly>
+      <Suspense fallback={<DynamicLoadingComponent />}>
+        <HomeContent textSecondaryColor={textSecondaryColor} dividerColor={dividerColor} />
+      </Suspense>
+    </ClientOnly>
+  );
 }

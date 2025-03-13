@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Grid, 
@@ -16,9 +16,9 @@ import {
   Divider,
   Chip,
   Button,
-  LinearProgress,
   Tooltip,
-  ButtonProps
+  ButtonProps,
+  CircularProgress
 } from '@mui/material';
 import {
   People as PeopleIcon,
@@ -37,6 +37,26 @@ import {
 import { mockDashboardStats, mockActivities, mockProperties, mockLeads } from '@/lib/utils/mockData';
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils/formatters';
 import { Activity, Property, Lead } from '@/lib/types';
+import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
+
+// Client-only wrapper component
+const ClientOnly = ({ children }: { children: React.ReactNode }) => {
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
+  if (!isClient) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+  
+  return <>{children}</>;
+};
 
 // Enhanced Stat card component with more visual impact
 const StatCard = ({ title, value, icon, color, trend }: { 
@@ -51,85 +71,58 @@ const StatCard = ({ title, value, icon, color, trend }: {
     sx={{ 
       height: '100%', 
       borderRadius: 2,
-      position: 'relative',
-      overflow: 'hidden',
-      transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
       border: '1px solid',
       borderColor: 'divider',
+      overflow: 'visible',
+      transition: 'transform 0.2s, box-shadow 0.2s',
       '&:hover': {
         transform: 'translateY(-4px)',
-        boxShadow: '0 12px 20px -10px rgba(0,0,0,0.1)'
+        boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
       }
     }}
   >
-    {/* Decorative top border */}
-    <Box 
-      sx={{ 
-        position: 'absolute', 
-        top: 0, 
-        left: 0, 
-        right: 0, 
-        height: 6, 
-        bgcolor: color 
-      }} 
-    />
-    
     <CardContent sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <Box sx={{ width: '100%' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, fontSize: '0.875rem' }}>
-              {title}
-            </Typography>
-            {trend !== undefined && (
-              <Chip 
-                size="small" 
-                icon={<TrendingUpIcon fontSize="small" />} 
-                label={`${trend > 0 ? '+' : ''}${trend}%`} 
-                color={trend >= 0 ? "success" : "error"}
-                sx={{ 
-                  ml: 1, 
-                  height: 24, 
-                  fontWeight: 'bold',
-                  '& .MuiChip-label': { px: 1, py: 0.5 } 
-                }}
-              />
-            )}
-          </Box>
-          
-          <Typography variant="h3" component="div" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+            {title}
+          </Typography>
+          <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', mb: 1 }}>
             {value}
           </Typography>
           
-          <Box sx={{ mt: 1 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-              <Typography variant="caption" color="text.secondary">Progress</Typography>
-              <Typography variant="caption" color="text.secondary" fontWeight="medium">75%</Typography>
-            </Box>
-            <LinearProgress 
-              variant="determinate" 
-              value={75} 
+          {trend !== undefined && (
+            <Box 
               sx={{ 
-                height: 6, 
-                borderRadius: 3, 
-                bgcolor: color + '20',
-                '& .MuiLinearProgress-bar': {
-                  bgcolor: color
-                }
-              }} 
-            />
-          </Box>
+                display: 'flex', 
+                alignItems: 'center',
+                typography: 'body2',
+                fontWeight: 'medium',
+                bgcolor: trend >= 0 ? 'success.main' : 'error.main',
+                color: '#fff',
+                px: 1,
+                py: 0.5,
+                borderRadius: 1,
+                width: 'fit-content'
+              }}
+            >
+              {trend >= 0 ? (
+                <TrendingUpIcon fontSize="small" sx={{ mr: 0.5 }} />
+              ) : (
+                <TrendingUpIcon fontSize="small" sx={{ mr: 0.5, transform: 'rotate(180deg)' }} />
+              )}
+              {Math.abs(trend)}% from last month
+            </Box>
+          )}
         </Box>
         
         <Avatar 
           sx={{ 
-            bgcolor: color + '15', 
-            color: color, 
+            ...getAccessibleAvatarStyle(color),
             width: 64, 
             height: 64,
             ml: 2,
-            boxShadow: `0 4px 14px -4px ${color}90`
+            boxShadow: `0 8px 16px -4px ${color}90`
           }}
         >
           {icon}
@@ -169,9 +162,25 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
   };
 
   return (
-    <ListItem alignItems="flex-start" sx={{ px: 0 }}>
+    <ListItem 
+      alignItems="flex-start" 
+      sx={{ 
+        px: 2, 
+        py: 1.5, 
+        borderRadius: 2,
+        transition: 'background-color 0.2s',
+        '&:hover': {
+          bgcolor: 'action.hover',
+        }
+      }}
+    >
       <ListItemAvatar>
-        <Avatar sx={{ bgcolor: getStatusColor() + '20', color: getStatusColor() }}>
+        <Avatar 
+          sx={{ 
+            ...getAccessibleAvatarStyle(getStatusColor()),
+            boxShadow: `0 4px 8px -2px ${getStatusColor()}50`
+          }}
+        >
           {getIcon()}
         </Avatar>
       </ListItemAvatar>
@@ -201,9 +210,10 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
             label={activity.completed ? 'Completed' : 'Upcoming'} 
             size="small" 
             sx={{ 
-              bgcolor: getStatusColor() + '10', 
+              bgcolor: getStatusColor() + '20', 
               color: getStatusColor(),
-              fontWeight: 'medium'
+              fontWeight: 'medium',
+              borderRadius: 1
             }} 
           />
           <Typography variant="caption" color="text.secondary" component="span">
@@ -215,8 +225,15 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
   );
 };
 
-// Enhanced Property card component
+// Property card component
 const PropertyCard = ({ property }: { property: Property }) => {
+  const [isClient, setIsClient] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const getStatusColor = () => {
     switch (property.status) {
       case 'available':
@@ -224,11 +241,15 @@ const PropertyCard = ({ property }: { property: Property }) => {
       case 'pending':
         return 'warning.main';
       case 'sold':
-        return 'error.main';
+        return 'primary.main';
       default:
         return 'text.secondary';
     }
   };
+
+  // Simplified image handling
+  const hasValidImage = property.images && property.images.length > 0 && !imageError;
+  const imagePath = hasValidImage ? property.images[0] : '';
 
   return (
     <Card 
@@ -236,54 +257,69 @@ const PropertyCard = ({ property }: { property: Property }) => {
       sx={{ 
         height: '100%',
         borderRadius: 2,
+        border: '1px solid',
+        borderColor: 'divider',
         overflow: 'hidden',
-        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+        transition: 'transform 0.2s, box-shadow 0.2s',
         '&:hover': {
           transform: 'translateY(-4px)',
-          boxShadow: '0 12px 20px -10px rgba(0,0,0,0.1)'
+          boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
         }
       }}
     >
-      <Box sx={{ position: 'relative', height: 140, overflow: 'hidden' }}>
-        <Box
-          component="img"
-          src={property.images[0] || '/properties/placeholder.jpg'}
-          alt={property.address}
-          sx={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transition: 'transform 0.3s ease',
-            '&:hover': {
-              transform: 'scale(1.05)'
-            }
-          }}
-        />
-        <Chip
-          label={property.status.charAt(0).toUpperCase() + property.status.slice(1)}
-          size="small"
-          sx={{
+      <Box 
+        sx={{ 
+          position: 'relative',
+          height: 140,
+          bgcolor: getStatusColor() + '20',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundImage: hasValidImage ? `url(${imagePath})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        {(!hasValidImage) && <HomeIcon sx={{ fontSize: 48, color: getStatusColor() }} />}
+        {hasValidImage && isClient && (
+          <Box 
+            component="img"
+            src={imagePath}
+            alt={property.address}
+            sx={{ 
+              display: 'none', // Hidden image just for error handling
+              width: 0,
+              height: 0,
+            }}
+            onError={() => setImageError(true)}
+          />
+        )}
+        <Chip 
+          label={property.status.charAt(0).toUpperCase() + property.status.slice(1)} 
+          size="small" 
+          sx={{ 
             position: 'absolute',
             top: 8,
             right: 8,
-            bgcolor: getStatusColor() + '90',
-            color: 'white',
-            fontWeight: 'bold',
+            bgcolor: 'rgba(255,255,255,0.9)',
+            color: getStatusColor(),
+            fontWeight: 'medium',
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-          }}
+          }} 
         />
       </Box>
       <CardContent sx={{ p: 2 }}>
-        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 0.5 }}>
-          {formatCurrency(property.price)}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
+        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
           {property.address}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
           {property.rooms} rum • {property.size} m²
         </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="caption" color="text.secondary">
+            {isClient ? formatDate(property.updatedAt) : ''}
+          </Typography>
+        </Box>
       </CardContent>
     </Card>
   );
@@ -291,9 +327,9 @@ const PropertyCard = ({ property }: { property: Property }) => {
 
 // Lead card component
 const LeadCard = ({ lead }: { lead: Lead }) => {
-  const [isClient, setIsClient] = React.useState(false);
+  const [isClient, setIsClient] = useState(false);
   
-  React.useEffect(() => {
+  useEffect(() => {
     setIsClient(true);
   }, []);
 
@@ -315,49 +351,61 @@ const LeadCard = ({ lead }: { lead: Lead }) => {
   };
 
   return (
-    <ListItem alignItems="flex-start" sx={{ px: 0 }}>
-      <ListItemAvatar>
-        <Avatar>{`${lead.firstName.charAt(0)}${lead.lastName.charAt(0)}`}</Avatar>
-      </ListItemAvatar>
-      
-      {/* Custom ListItemText implementation to avoid nesting issues */}
-      <Box sx={{ flex: '1 1 auto', minWidth: 0 }}>
-        {/* Primary text */}
-        <Typography variant="subtitle2" sx={{ fontWeight: 'medium', display: 'block' }}>
-          {`${lead.firstName} ${lead.lastName}`}
-        </Typography>
+    <Card 
+      elevation={0} 
+      sx={{ 
+        height: '100%',
+        borderRadius: 2,
+        border: '1px solid',
+        borderColor: 'divider',
+        overflow: 'hidden',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+        }
+      }}
+    >
+      <CardContent sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Avatar 
+            sx={{ 
+              ...getAccessibleAvatarStyle(getStatusColor()),
+              mr: 1.5,
+              width: 48,
+              height: 48,
+              boxShadow: `0 4px 8px -2px ${getStatusColor()}50`
+            }}
+          >
+            {`${lead.firstName.charAt(0)}${lead.lastName.charAt(0)}`}
+          </Avatar>
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+              {`${lead.firstName} ${lead.lastName}`}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {lead.email}
+            </Typography>
+          </Box>
+        </Box>
         
-        {/* Secondary text */}
-        <Typography variant="body2" color="text.secondary" component="span" sx={{ display: 'block' }}>
-          {lead.email}
-        </Typography>
-        
-        {/* Lead details */}
-        <Box 
-          sx={{ 
-            mt: 1, 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center' 
-          }}
-        >
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Chip 
             label={lead.status.charAt(0).toUpperCase() + lead.status.slice(1)} 
             size="small" 
             sx={{ 
-              bgcolor: getStatusColor() + '10', 
+              bgcolor: getStatusColor() + '20', 
               color: getStatusColor(),
-              fontWeight: 'medium'
+              fontWeight: 'medium',
+              borderRadius: 1
             }} 
           />
-          <Typography variant="caption" color="text.secondary" component="span">
-            {lead.lastContactedAt && isClient 
-              ? `Last contact: ${formatRelativeTime(lead.lastContactedAt)}` 
-              : lead.lastContactedAt ? 'Last contact: Recently' : 'New lead'}
+          <Typography variant="caption" color="text.secondary">
+            {isClient && lead.lastContactedAt ? formatRelativeTime(lead.lastContactedAt) : ''}
           </Typography>
         </Box>
-      </Box>
-    </ListItem>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -380,10 +428,21 @@ const ButtonWithIcon = ({ children, icon, ...props }: {
   </Button>
 );
 
-export default function Dashboard() {
+// Main Dashboard Content
+const DashboardContent = () => {
   return (
     <>
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box 
+        sx={{ 
+          mb: 4, 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          pb: 2,
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
+      >
         <Box>
           <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
             Dashboard
@@ -404,10 +463,28 @@ export default function Dashboard() {
                 fontWeight: 500,
                 boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
                 px: 3,
-                py: 1
+                py: 1,
+                mr: 2
               }}
             >
               Add Property
+            </Button>
+          </Tooltip>
+          <Tooltip title="Logout">
+            <Button
+              variant="outlined"
+              color="primary"
+              component="a"
+              href="/"
+              sx={{ 
+                borderRadius: 8,
+                textTransform: 'none',
+                fontWeight: 500,
+                px: 3,
+                py: 1
+              }}
+            >
+              Logout
             </Button>
           </Tooltip>
         </Box>
@@ -465,8 +542,12 @@ export default function Dashboard() {
               overflow: 'hidden',
               border: '1px solid',
               borderColor: 'divider',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              bgcolor: 'background.paper'
+              boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+              bgcolor: 'background.paper',
+              transition: 'box-shadow 0.2s',
+              '&:hover': {
+                boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
+              }
             }}
           >
             <CardHeader 
@@ -480,17 +561,20 @@ export default function Dashboard() {
                   View All
                 </ButtonWithIcon>
               }
-              sx={{ px: 3, py: 2, bgcolor: 'background.paper' }}
+              sx={{ 
+                px: 3, 
+                py: 2, 
+                bgcolor: 'background.paper',
+                borderBottom: '2px solid',
+                borderColor: 'primary.main'
+              }}
             />
-            <Divider />
             <CardContent sx={{ p: 0 }}>
               <List sx={{ py: 0 }}>
                 {mockActivities.slice(0, 5).map((activity, index) => (
                   <React.Fragment key={activity.id}>
-                    <Box sx={{ px: 3 }}>
-                      <ActivityItem activity={activity} />
-                    </Box>
-                    {index < mockActivities.slice(0, 5).length - 1 && <Divider variant="inset" component="li" />}
+                    <ActivityItem activity={activity} />
+                    {index < mockActivities.slice(0, 5).length - 1 && <Divider component="li" />}
                   </React.Fragment>
                 ))}
               </List>
@@ -508,8 +592,12 @@ export default function Dashboard() {
               overflow: 'hidden',
               border: '1px solid',
               borderColor: 'divider',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              bgcolor: 'background.paper'
+              boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+              bgcolor: 'background.paper',
+              transition: 'box-shadow 0.2s',
+              '&:hover': {
+                boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
+              }
             }}
           >
             <CardHeader 
@@ -523,13 +611,18 @@ export default function Dashboard() {
                   View All
                 </ButtonWithIcon>
               }
-              sx={{ px: 3, py: 2, bgcolor: 'background.paper' }}
+              sx={{ 
+                px: 3, 
+                py: 2, 
+                bgcolor: 'background.paper',
+                borderBottom: '2px solid',
+                borderColor: 'primary.main'
+              }}
             />
-            <Divider />
             <CardContent sx={{ p: 2 }}>
               <Grid container spacing={2}>
-                {mockProperties.slice(0, 3).map((property) => (
-                  <Grid item xs={12} sm={4} key={property.id}>
+                {mockProperties.slice(0, 6).map((property) => (
+                  <Grid item xs={12} sm={6} md={4} key={property.id}>
                     <PropertyCard property={property} />
                   </Grid>
                 ))}
@@ -547,8 +640,12 @@ export default function Dashboard() {
               overflow: 'hidden',
               border: '1px solid',
               borderColor: 'divider',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              bgcolor: 'background.paper'
+              boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+              bgcolor: 'background.paper',
+              transition: 'box-shadow 0.2s',
+              '&:hover': {
+                boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
+              }
             }}
           >
             <CardHeader 
@@ -562,9 +659,14 @@ export default function Dashboard() {
                   View All
                 </ButtonWithIcon>
               }
-              sx={{ px: 3, py: 2, bgcolor: 'background.paper' }}
+              sx={{ 
+                px: 3, 
+                py: 2, 
+                bgcolor: 'background.paper',
+                borderBottom: '2px solid',
+                borderColor: 'primary.main'
+              }}
             />
-            <Divider />
             <CardContent sx={{ p: 2 }}>
               <Grid container spacing={2}>
                 {mockLeads.slice(0, 4).map((lead) => (
@@ -578,5 +680,14 @@ export default function Dashboard() {
         </Grid>
       </Grid>
     </>
+  );
+};
+
+// Main Dashboard component with client-side only rendering
+export default function Dashboard() {
+  return (
+    <ClientOnly>
+      <DashboardContent />
+    </ClientOnly>
   );
 } 

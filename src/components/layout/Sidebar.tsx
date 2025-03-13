@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
 
 const drawerWidth = 240;
 
@@ -38,6 +39,9 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle }) => 
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const pathname = usePathname();
+
+  // Get accessible avatar styles
+  const avatarStyles = getAccessibleAvatarStyle(theme.palette.primary.main);
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
@@ -58,7 +62,13 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle }) => 
           <Avatar 
             src="/logo.png" 
             alt="RealPro CRM" 
-            sx={{ width: 40, height: 40, mr: 1, bgcolor: theme.palette.primary.main }}
+            sx={{ 
+              width: 40, 
+              height: 40, 
+              mr: 1, 
+              bgcolor: avatarStyles.bgcolor,
+              color: avatarStyles.color
+            }}
           >
             R
           </Avatar>
@@ -78,64 +88,63 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle }) => 
         )}
       </Box>
       <Divider />
-      <List 
-        sx={{ flexGrow: 1 }}
-        aria-label="Main menu"
-      >
+      <List sx={{ flexGrow: 1, py: 1 }}>
         {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <Link 
-              href={item.path} 
-              style={{ textDecoration: 'none', width: '100%', color: 'inherit' }}
-              aria-current={pathname === item.path ? 'page' : undefined}
-            >
+          <Link href={item.path} key={item.text} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <ListItem disablePadding>
               <ListItemButton 
                 selected={pathname === item.path}
-                sx={{
+                sx={{ 
+                  borderRadius: '0 24px 24px 0', 
+                  mr: 1,
                   '&.Mui-selected': {
-                    backgroundColor: theme.palette.primary.main + '20',
-                    borderRight: `3px solid ${theme.palette.primary.main}`,
+                    bgcolor: theme => `${theme.palette.primary.main}15`,
+                    color: 'primary.main',
                     '&:hover': {
-                      backgroundColor: theme.palette.primary.main + '30',
+                      bgcolor: theme => `${theme.palette.primary.main}25`,
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: 'primary.main',
                     }
                   }
                 }}
               >
-                <ListItemIcon sx={{ 
-                  color: pathname === item.path ? theme.palette.primary.main : 'inherit'
-                }}
-                aria-hidden="true"
-                >
+                <ListItemIcon sx={{ minWidth: 40 }}>
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText primary={item.text} />
               </ListItemButton>
-            </Link>
-          </ListItem>
+            </ListItem>
+          </Link>
         ))}
       </List>
       <Divider />
-      <List aria-label="Settings">
+      <List>
         <ListItem disablePadding>
-          <Link 
-            href="/dashboard/settings" 
-            style={{ textDecoration: 'none', width: '100%', color: 'inherit' }}
-            aria-current={pathname === '/dashboard/settings' ? 'page' : undefined}
-          >
-            <ListItemButton selected={pathname === '/dashboard/settings'}>
-              <ListItemIcon aria-hidden="true">
-                <SettingsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Settings" />
-            </ListItemButton>
-          </Link>
+          <ListItemButton>
+            <ListItemIcon sx={{ minWidth: 40 }}>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Settings" />
+          </ListItemButton>
         </ListItem>
       </List>
       <Box 
         sx={{ p: 2, display: 'flex', alignItems: 'center' }}
         aria-label="User information"
       >
-        <Avatar sx={{ width: 32, height: 32, mr: 1 }} alt="Johan Andersson">JA</Avatar>
+        <Avatar 
+          sx={{ 
+            width: 32, 
+            height: 32, 
+            mr: 1,
+            bgcolor: avatarStyles.bgcolor,
+            color: avatarStyles.color
+          }} 
+          alt="Johan Andersson"
+        >
+          JA
+        </Avatar>
         <Box>
           <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
             Johan Andersson
