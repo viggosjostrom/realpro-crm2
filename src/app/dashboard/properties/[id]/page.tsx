@@ -24,6 +24,7 @@ import { mockProperties, mockUsers } from '@/lib/utils/mockData';
 import { Property, User } from '@/lib/types';
 import PropertyDetails from '@/components/property/PropertyDetails';
 import SellersAndBuyers from '@/components/property/SellersAndBuyers';
+import ViewingsAndFollowups from '@/components/property/ViewingsAndFollowups';
 
 // Helper function to format price in SEK
 const formatPrice = (price: number): string => {
@@ -235,9 +236,7 @@ export default function PropertyDetailsPage() {
                 <SellersAndBuyers property={property} />
               )}
               {tabValue === 3 && (
-                <Typography>
-                  Viewings & Follow-ups tab content will be implemented in the next step.
-                </Typography>
+                <ViewingsAndFollowups property={property} />
               )}
               {tabValue === 4 && (
                 <Typography>
