@@ -22,6 +22,7 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { mockProperties, mockUsers } from '@/lib/utils/mockData';
 import { Property, User } from '@/lib/types';
+import PropertyDetails from '@/components/property/PropertyDetails';
 
 // Helper function to format price in SEK
 const formatPrice = (price: number): string => {
@@ -227,9 +228,7 @@ export default function PropertyDetailsPage() {
                 </Typography>
               )}
               {tabValue === 1 && (
-                <Typography>
-                  Property Details tab content will be implemented in the next step.
-                </Typography>
+                <PropertyDetails property={property} />
               )}
               {tabValue === 2 && (
                 <Typography>
