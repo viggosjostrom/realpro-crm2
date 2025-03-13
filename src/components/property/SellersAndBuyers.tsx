@@ -102,6 +102,9 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
     (property.ownerId === client.id)
   );
   
+  // Get the actual buyer if exists
+  const buyer = property.buyerId ? mockClients.find(client => client.id === property.buyerId) : null;
+  
   // Mock interested buyers (in a real app, this would come from a database)
   const interestedBuyers = mockClients.filter(client => 
     client.type === 'buyer' || client.type === 'both'
@@ -192,6 +195,7 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
           }}
         >
           <Tab label="Sellers" />
+          <Tab label="Buyers" />
           <Tab label="Interested Buyers" />
         </Tabs>
         
@@ -372,8 +376,161 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
             </>
           )}
           
-          {/* Interested Buyers Tab */}
+          {/* Buyers Tab */}
           {tabValue === 1 && (
+            <>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <PersonIcon color="primary" sx={{ mr: 1 }} />
+                  <Typography variant="h6" component="h2">
+                    Property Buyer{buyer && property.status === 'sold' ? '' : 's'}
+                  </Typography>
+                  {property.status === 'sold' && (
+                    <Chip 
+                      label="SOLD" 
+                      color="success"
+                      size="small"
+                      sx={{ ml: 2, fontWeight: 'bold' }}
+                    />
+                  )}
+                </Box>
+                {property.status !== 'sold' && (
+                  <Button 
+                    variant="contained" 
+                    startIcon={<AddIcon />}
+                    onClick={handleOpenAddDialog}
+                  >
+                    Add Buyer
+                  </Button>
+                )}
+              </Box>
+              
+              {property.status === 'sold' && buyer ? (
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Card>
+                      <CardContent>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Avatar sx={{ bgcolor: getClientTypeColor(buyer.type), mr: 2 }}>
+                              {buyer.firstName.charAt(0)}{buyer.lastName.charAt(0)}
+                            </Avatar>
+                            <Box>
+                              <Typography variant="h6">
+                                {buyer.firstName} {buyer.lastName}
+                              </Typography>
+                              <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                <Chip 
+                                  label={getClientTypeLabel(buyer.type)} 
+                                  size="small" 
+                                  sx={{ 
+                                    bgcolor: getClientTypeColor(buyer.type), 
+                                    color: 'white',
+                                    mr: 1
+                                  }} 
+                                />
+                                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                                  <CalendarIcon fontSize="small" sx={{ mr: 0.5 }} />
+                                  Purchased: {formatDate(property.soldAt)}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </Box>
+                          <Box>
+                            <Tooltip title="View Profile">
+                              <IconButton size="small" sx={{ mr: 1 }}>
+                                <LinkIcon />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Edit">
+                              <IconButton size="small" sx={{ mr: 1 }}>
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        </Box>
+                        
+                        <Divider sx={{ my: 2 }} />
+                        
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={6}>
+                            <Typography variant="subtitle2" gutterBottom>
+                              Contact Information
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                              <EmailIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                              <Typography variant="body2">{buyer.email}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                              <PhoneIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                              <Typography variant="body2">{buyer.phone || 'No phone number'}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
+                              <LocationIcon fontSize="small" sx={{ mr: 1, mt: 0.5, color: 'text.secondary' }} />
+                              <Typography variant="body2">
+                                {buyer.address || 'No address'}<br />
+                                {buyer.postalCode} {buyer.city}
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          
+                          <Grid item xs={12} md={6}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                              <Typography variant="subtitle2">
+                                Notes & Communication
+                              </Typography>
+                              <Button 
+                                size="small" 
+                                startIcon={<AddIcon />}
+                                onClick={() => handleOpenNoteDialog(buyer)}
+                              >
+                                Add Note
+                              </Button>
+                            </Box>
+                            
+                            {getClientNotes(buyer.id).length > 0 ? (
+                              <Box>
+                                {getClientNotes(buyer.id).map(note => (
+                                  <Box key={note.id} sx={{ mb: 1, p: 1, bgcolor: 'grey.50', borderRadius: 1 }}>
+                                    <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                                      {note.text}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      {formatDate(note.date)}
+                                    </Typography>
+                                  </Box>
+                                ))}
+                              </Box>
+                            ) : (
+                              <Typography variant="body2" color="text.secondary">
+                                No notes yet. Click &quot;Add Note&quot; to create one.
+                              </Typography>
+                            )}
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid>
+              ) : (
+                <Paper sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography variant="body1" color="text.secondary" paragraph>
+                    {property.status === 'sold' 
+                      ? 'Property is marked as sold but no buyer information is available.'
+                      : 'This property has not been sold yet. When the property is sold, the buyer information will appear here.'}
+                  </Typography>
+                  {property.status !== 'sold' && (
+                    <Typography variant="body2" color="text.secondary" paragraph>
+                      You can view potential buyers in the "Interested Buyers" tab.
+                    </Typography>
+                  )}
+                </Paper>
+              )}
+            </>
+          )}
+          
+          {/* Interested Buyers Tab */}
+          {tabValue === 2 && (
             <>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>

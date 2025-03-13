@@ -245,65 +245,187 @@ const ViewingsAndFollowups: React.FC<ViewingsAndFollowupsProps> = ({ property })
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" component="h2">
+    <Paper elevation={0} sx={{ 
+      p: 3, 
+      borderRadius: 2,
+      background: 'linear-gradient(to bottom, #f9fafc, #ffffff)',
+      border: '1px solid #eaecef' 
+    }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: 4 
+      }}>
+        <Typography 
+          variant="h5" 
+          component="h2" 
+          sx={{ 
+            fontWeight: 600,
+            color: '#1a365d',
+            position: 'relative',
+            '&:after': {
+              content: '""',
+              position: 'absolute',
+              bottom: -8,
+              left: 0,
+              width: 40,
+              height: 3,
+              backgroundColor: 'primary.main',
+              borderRadius: 1
+            }
+          }}
+        >
           Viewings & Follow-ups
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleOpenAddViewingDialog}
-        >
-          Schedule Viewing
-        </Button>
+        
+        {/* Show Schedule button for available properties, and show buyer information for sold properties */}
+        {property.status === 'sold' ? (
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'flex-end'
+          }}>
+            <Chip 
+              label="SOLD" 
+              color="success" 
+              sx={{ 
+                fontWeight: 'bold', 
+                mb: 1,
+                borderRadius: 1,
+                paddingX: 1,
+                fontSize: '0.85rem',
+                letterSpacing: 0.5
+              }} 
+            />
+            {property.buyerId && (
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                Buyer: {getClientName(property.buyerId)}
+              </Typography>
+            )}
+            {property.soldAt && (
+              <Typography variant="body2" color="text.secondary">
+                Sold on: {formatDate(property.soldAt)}
+              </Typography>
+            )}
+          </Box>
+        ) : (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleOpenAddViewingDialog}
+            sx={{
+              borderRadius: 2,
+              boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)'
+              }
+            }}
+          >
+            Schedule Viewing
+          </Button>
+        )}
       </Box>
 
       {/* Statistics Cards */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
+          <Card sx={{ 
+            borderRadius: 2, 
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.07)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'translateY(-5px)',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
+            } 
+          }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography color="textSecondary" variant="subtitle2" gutterBottom sx={{ 
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+                fontWeight: 600,
+                fontSize: '0.75rem'
+              }}>
                 Completed Viewings
               </Typography>
-              <Typography variant="h4" component="div">
+              <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'primary.main' }}>
                 {completedViewings}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
+          <Card sx={{ 
+            borderRadius: 2, 
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.07)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'translateY(-5px)',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
+            } 
+          }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography color="textSecondary" variant="subtitle2" gutterBottom sx={{ 
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+                fontWeight: 600,
+                fontSize: '0.75rem'
+              }}>
                 Unique Visitors
               </Typography>
-              <Typography variant="h4" component="div">
+              <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'info.main' }}>
                 {uniqueAttendees}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
+          <Card sx={{ 
+            borderRadius: 2, 
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.07)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'translateY(-5px)',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
+            } 
+          }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography color="textSecondary" variant="subtitle2" gutterBottom sx={{ 
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+                fontWeight: 600,
+                fontSize: '0.75rem'
+              }}>
                 Interested Buyers
               </Typography>
-              <Typography variant="h4" component="div">
+              <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'success.main' }}>
                 {interestedBuyers.length}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
+          <Card sx={{ 
+            borderRadius: 2, 
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.07)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'translateY(-5px)',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
+            } 
+          }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography color="textSecondary" variant="subtitle2" gutterBottom sx={{ 
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+                fontWeight: 600,
+                fontSize: '0.75rem'
+              }}>
                 Conversion Rate
               </Typography>
-              <Typography variant="h4" component="div">
+              <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'warning.main' }}>
                 {conversionRate}%
               </Typography>
             </CardContent>
@@ -312,8 +434,35 @@ const ViewingsAndFollowups: React.FC<ViewingsAndFollowupsProps> = ({ property })
       </Grid>
 
       {/* Tabs for organizing content */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="viewings tabs">
+      <Box sx={{ 
+        borderBottom: 1, 
+        borderColor: 'divider',
+        mb: 2
+      }}>
+        <Tabs 
+          value={tabValue} 
+          onChange={handleTabChange} 
+          aria-label="viewings tabs"
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            '& .MuiTab-root': {
+              textTransform: 'none',
+              fontWeight: 500,
+              fontSize: '0.9rem',
+              minHeight: 48,
+              color: 'text.secondary',
+              '&.Mui-selected': {
+                color: 'primary.main',
+                fontWeight: 600
+              }
+            },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: 1.5
+            }
+          }}
+        >
           <Tab label="Upcoming Viewings" icon={<CalendarIcon />} iconPosition="start" />
           <Tab label="Past Viewings" icon={<AssignmentIcon />} iconPosition="start" />
           <Tab label="Interested Buyers" icon={<PersonIcon />} iconPosition="start" />
@@ -324,35 +473,52 @@ const ViewingsAndFollowups: React.FC<ViewingsAndFollowupsProps> = ({ property })
       {/* Upcoming Viewings Tab */}
       <Box hidden={tabValue !== 0} sx={{ mt: 3 }}>
         {viewings.filter(v => v.status === 'scheduled').length > 0 ? (
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{ 
+            borderRadius: 2, 
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
+            overflow: 'hidden'
+          }}>
             <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Title</TableCell>
-                  <TableCell>Attendees</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Actions</TableCell>
+                <TableRow sx={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}>
+                  <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Attendees</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {viewings
                   .filter(viewing => viewing.status === 'scheduled')
                   .map(viewing => (
-                    <TableRow key={viewing.id}>
+                    <TableRow key={viewing.id} sx={{ 
+                      '&:hover': { 
+                        backgroundColor: 'rgba(0, 0, 0, 0.01)' 
+                      } 
+                    }}>
                       <TableCell>{formatDate(viewing.date)}</TableCell>
                       <TableCell>{viewing.title}</TableCell>
                       <TableCell>
                         {viewing.attendees.length > 0 ? (
-                          viewing.attendees.map(attendeeId => (
-                            <Chip
-                              key={attendeeId}
-                              avatar={<Avatar><PersonIcon /></Avatar>}
-                              label={getClientName(attendeeId)}
-                              size="small"
-                              sx={{ m: 0.5 }}
-                            />
-                          ))
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            {viewing.attendees.map(attendeeId => (
+                              <Chip
+                                key={attendeeId}
+                                avatar={<Avatar sx={{ bgcolor: 'primary.light' }}><PersonIcon fontSize="small" /></Avatar>}
+                                label={getClientName(attendeeId)}
+                                size="small"
+                                sx={{ 
+                                  m: 0.5, 
+                                  borderRadius: 1,
+                                  transition: 'all 0.2s',
+                                  '&:hover': {
+                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'
+                                  }
+                                }}
+                              />
+                            ))}
+                          </Box>
                         ) : (
                           <Typography variant="body2" color="textSecondary">No attendees specified</Typography>
                         )}
@@ -490,12 +656,31 @@ const ViewingsAndFollowups: React.FC<ViewingsAndFollowupsProps> = ({ property })
               
               return (
                 <Grid item xs={12} md={6} lg={4} key={buyer.clientId}>
-                  <Card>
-                    <CardContent>
+                  <Card sx={{ 
+                    height: '100%', 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    borderRadius: 2,
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-5px)',
+                      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)'
+                    }
+                  }}>
+                    <CardContent sx={{ p: 3, flex: 1 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Avatar sx={{ mr: 2 }}>{client.firstName.charAt(0)}{client.lastName.charAt(0)}</Avatar>
-                          <Typography variant="h6">
+                          <Avatar 
+                            sx={{ 
+                              mr: 2, 
+                              bgcolor: 'primary.light',
+                              boxShadow: '0 3px 5px rgba(0, 0, 0, 0.1)' 
+                            }}
+                          >
+                            {client.firstName.charAt(0)}{client.lastName.charAt(0)}
+                          </Avatar>
+                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
                             {client.firstName} {client.lastName}
                           </Typography>
                         </Box>
@@ -659,8 +844,23 @@ const ViewingsAndFollowups: React.FC<ViewingsAndFollowupsProps> = ({ property })
       </Box>
 
       {/* Add Viewing Dialog */}
-      <Dialog open={addViewingDialogOpen} onClose={handleCloseAddViewingDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>Schedule New Viewing</DialogTitle>
+      <Dialog 
+        open={addViewingDialogOpen} 
+        onClose={handleCloseAddViewingDialog}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          paddingBottom: 1, 
+          fontWeight: 600,
+          borderBottom: '1px solid rgba(0, 0, 0, 0.08)'
+        }}>
+          Schedule New Viewing
+        </DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12}>
@@ -721,8 +921,21 @@ const ViewingsAndFollowups: React.FC<ViewingsAndFollowupsProps> = ({ property })
       </Dialog>
 
       {/* Add Follow-up Dialog */}
-      <Dialog open={addFollowUpDialogOpen} onClose={handleCloseAddFollowUpDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
+      <Dialog 
+        open={addFollowUpDialogOpen} 
+        onClose={handleCloseAddFollowUpDialog}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          paddingBottom: 1, 
+          fontWeight: 600,
+          borderBottom: '1px solid rgba(0, 0, 0, 0.08)'
+        }}>
           Add Follow-up for {selectedClient ? `${selectedClient.firstName} ${selectedClient.lastName}` : ''}
         </DialogTitle>
         <DialogContent>
@@ -825,7 +1038,7 @@ const ViewingsAndFollowups: React.FC<ViewingsAndFollowupsProps> = ({ property })
           <Button variant="contained">Save Notes</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Paper>
   );
 };
 

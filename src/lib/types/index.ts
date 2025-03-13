@@ -25,7 +25,8 @@ export type Property = {
   status: 'available' | 'pending' | 'sold';
   type: 'apartment' | 'house' | 'villa' | 'townhouse' | 'cottage';
   images: string[];
-  ownerId?: string; // Reference to client
+  ownerId?: string; // Reference to client (seller)
+  buyerId?: string; // Reference to client who bought the property
   agentId?: string; // Reference to agent
   createdAt: Date;
   updatedAt: Date;
