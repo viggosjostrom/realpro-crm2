@@ -463,28 +463,10 @@ const DashboardContent = () => {
                 fontWeight: 500,
                 boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
                 px: 3,
-                py: 1,
-                mr: 2
-              }}
-            >
-              Add Property
-            </Button>
-          </Tooltip>
-          <Tooltip title="Logout">
-            <Button
-              variant="outlined"
-              color="primary"
-              component="a"
-              href="/"
-              sx={{ 
-                borderRadius: 8,
-                textTransform: 'none',
-                fontWeight: 500,
-                px: 3,
                 py: 1
               }}
             >
-              Logout
+              Add Property
             </Button>
           </Tooltip>
         </Box>

@@ -22,7 +22,8 @@ import {
   ContactPhone as LeadsIcon,
   EventNote as ActivitiesIcon,
   Settings as SettingsIcon,
-  ChevronLeft as ChevronLeftIcon
+  ChevronLeft as ChevronLeftIcon,
+  Logout as LogoutIcon
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -130,29 +131,49 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle }) => 
         </ListItem>
       </List>
       <Box 
-        sx={{ p: 2, display: 'flex', alignItems: 'center' }}
+        sx={{ 
+          p: 2, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          borderTop: 1,
+          borderColor: 'divider'
+        }}
         aria-label="User information"
       >
-        <Avatar 
-          sx={{ 
-            width: 32, 
-            height: 32, 
-            mr: 1,
-            bgcolor: avatarStyles.bgcolor,
-            color: avatarStyles.color
-          }} 
-          alt="Johan Andersson"
-        >
-          JA
-        </Avatar>
-        <Box>
-          <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-            Johan Andersson
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Admin
-          </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar 
+            sx={{ 
+              width: 32, 
+              height: 32, 
+              mr: 1,
+              bgcolor: avatarStyles.bgcolor,
+              color: avatarStyles.color
+            }} 
+            alt="Johan Andersson"
+          >
+            JA
+          </Avatar>
+          <Box>
+            <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+              Johan Andersson
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Admin
+            </Typography>
+          </Box>
         </Box>
+        <Tooltip title="Logout">
+          <IconButton 
+            component="a" 
+            href="/" 
+            size="small" 
+            color="primary"
+            aria-label="Logout"
+          >
+            <LogoutIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
     </Box>
   );
