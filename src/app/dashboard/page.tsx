@@ -65,29 +65,84 @@ const StatCard = ({ title, value, icon, color, trend }: {
   icon: React.ReactNode, 
   color: string,
   trend?: number 
-}) => (
-  <Card 
-    elevation={0} 
-    sx={{ 
-      height: '100%', 
-      borderRadius: 2,
-      border: '1px solid',
-      borderColor: 'divider',
-      overflow: 'visible',
-      transition: 'transform 0.2s, box-shadow 0.2s',
-      '&:hover': {
-        transform: 'translateY(-4px)',
-        boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
-      }
-    }}
-  >
-    <CardContent sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box>
-          <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+}) => {
+  // Generate a lighter shade of the color for gradient
+  const lighterColor = `${color}20`;
+  
+  // Determine trend direction for styling
+  const isTrendPositive = trend === undefined ? undefined : trend >= 0;
+  const trendColor = isTrendPositive ? 'success.main' : 'error.main';
+  const trendIcon = isTrendPositive ? 
+    <TrendingUpIcon fontSize="small" sx={{ mr: 0.5 }} /> : 
+    <TrendingUpIcon fontSize="small" sx={{ mr: 0.5, transform: 'rotate(180deg)' }} />;
+
+  return (
+    <Card 
+      elevation={0} 
+      sx={{ 
+        height: '100%', 
+        borderRadius: 3,
+        background: `linear-gradient(135deg, ${lighterColor} 0%, #ffffff 100%)`,
+        position: 'relative',
+        overflow: 'visible',
+        transition: 'all 0.3s ease',
+        border: '1px solid',
+        borderColor: 'divider',
+        '&:hover': {
+          transform: 'translateY(-8px)',
+          boxShadow: `0 20px 30px -10px ${color}30`,
+          '& .stat-icon': {
+            transform: 'scale(1.1) translateY(-5px)',
+            boxShadow: `0 15px 25px -5px ${color}50`,
+          }
+        }
+      }}
+    >
+      <CardContent sx={{ p: 2, position: 'relative', zIndex: 1 }}>
+        {/* Icon positioned for visual impact */}
+        <Avatar 
+          className="stat-icon"
+          sx={{ 
+            ...getAccessibleAvatarStyle(color),
+            width: 50, 
+            height: 50,
+            position: 'absolute',
+            top: -15,
+            right: 15,
+            transition: 'all 0.3s ease',
+            boxShadow: `0 10px 20px -5px ${color}40`,
+            border: '3px solid white',
+          }}
+        >
+          {icon}
+        </Avatar>
+        
+        {/* Card content with better spacing */}
+        <Box sx={{ mt: 3, mb: 1 }}>
+          <Typography 
+            variant="subtitle2" 
+            color="text.secondary" 
+            gutterBottom
+            sx={{ 
+              fontWeight: 500,
+              fontSize: '0.8rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}
+          >
             {title}
           </Typography>
-          <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', mb: 1 }}>
+          
+          <Typography 
+            variant="h5" 
+            component="div" 
+            sx={{ 
+              fontWeight: 'bold', 
+              mb: 1,
+              color: color,
+              textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+          >
             {value}
           </Typography>
           
@@ -96,41 +151,40 @@ const StatCard = ({ title, value, icon, color, trend }: {
               sx={{ 
                 display: 'flex', 
                 alignItems: 'center',
-                typography: 'body2',
+                typography: 'caption',
                 fontWeight: 'medium',
-                bgcolor: trend >= 0 ? 'success.main' : 'error.main',
-                color: '#fff',
+                bgcolor: `${trendColor}15`,
+                color: trendColor,
                 px: 1,
                 py: 0.5,
                 borderRadius: 1,
-                width: 'fit-content'
+                width: 'fit-content',
+                border: '1px solid',
+                borderColor: `${trendColor}30`,
               }}
             >
-              {trend >= 0 ? (
-                <TrendingUpIcon fontSize="small" sx={{ mr: 0.5 }} />
-              ) : (
-                <TrendingUpIcon fontSize="small" sx={{ mr: 0.5, transform: 'rotate(180deg)' }} />
-              )}
+              {trendIcon}
               {Math.abs(trend)}% from last month
             </Box>
           )}
         </Box>
         
-        <Avatar 
+        {/* Decorative element */}
+        <Box 
           sx={{ 
-            ...getAccessibleAvatarStyle(color),
-            width: 64, 
-            height: 64,
-            ml: 2,
-            boxShadow: `0 8px 16px -4px ${color}90`
-          }}
-        >
-          {icon}
-        </Avatar>
-      </Box>
-    </CardContent>
-  </Card>
-);
+            position: 'absolute', 
+            bottom: 0, 
+            left: 0, 
+            width: '100%', 
+            height: '4px', 
+            background: `linear-gradient(90deg, ${color} 0%, transparent 100%)`,
+            borderBottomLeftRadius: 3,
+          }} 
+        />
+      </CardContent>
+    </Card>
+  );
+};
 
 // Activity item component
 const ActivityItem = ({ activity }: { activity: Activity }) => {
@@ -473,8 +527,8 @@ const DashboardContent = () => {
       </Box>
 
       {/* Stats Grid */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={6} sm={4} md={3} lg={1.5}>
           <StatCard 
             title="Total Clients" 
             value={mockDashboardStats.totalClients} 
@@ -483,7 +537,7 @@ const DashboardContent = () => {
             trend={12}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={4} md={3} lg={1.5}>
           <StatCard 
             title="Active Listings" 
             value={mockDashboardStats.activeListings} 
@@ -492,22 +546,58 @@ const DashboardContent = () => {
             trend={5}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={4} md={3} lg={1.5}>
           <StatCard 
             title="New Leads" 
             value={mockDashboardStats.newLeadsThisMonth} 
             icon={<ContactPhoneIcon fontSize="large" />} 
-            color="#92400e" 
+            color="#9333ea" 
             trend={-2}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={4} md={3} lg={1.5}>
           <StatCard 
             title="Revenue" 
             value={formatCurrency(mockDashboardStats.revenueGenerated)} 
             icon={<MoneyIcon fontSize="large" />} 
             color="#b91c1c" 
             trend={8}
+          />
+        </Grid>
+        <Grid item xs={6} sm={4} md={3} lg={1.5}>
+          <StatCard 
+            title="Properties Sold" 
+            value={mockDashboardStats.propertiesSold} 
+            icon={<DescriptionIcon fontSize="large" />} 
+            color="#0891b2" 
+            trend={15}
+          />
+        </Grid>
+        <Grid item xs={6} sm={4} md={3} lg={1.5}>
+          <StatCard 
+            title="Pending Deals" 
+            value={mockDashboardStats.pendingDeals} 
+            icon={<EventIcon fontSize="large" />} 
+            color="#d97706" 
+            trend={3}
+          />
+        </Grid>
+        <Grid item xs={6} sm={4} md={3} lg={1.5}>
+          <StatCard 
+            title="Total Leads" 
+            value={mockDashboardStats.totalLeads} 
+            icon={<VisibilityIcon fontSize="large" />} 
+            color="#7c3aed" 
+            trend={7}
+          />
+        </Grid>
+        <Grid item xs={6} sm={4} md={3} lg={1.5}>
+          <StatCard 
+            title="Avg. Sale Price" 
+            value={formatCurrency(mockDashboardStats.revenueGenerated / mockDashboardStats.propertiesSold)} 
+            icon={<TrendingUpIcon fontSize="large" />} 
+            color="#059669" 
+            trend={4}
           />
         </Grid>
       </Grid>

@@ -367,15 +367,12 @@ export const mockActivities: Activity[] = [
 
 // Mock Dashboard Stats
 export const mockDashboardStats: DashboardStats = {
-  totalClients: mockClients.length,
-  totalProperties: mockProperties.length,
-  totalLeads: mockLeads.length,
-  propertiesSold: mockProperties.filter(p => p.status === 'sold').length,
-  revenueGenerated: 24900000, // Based on the sold property
-  activeListings: mockProperties.filter(p => p.status === 'available').length,
-  pendingDeals: mockProperties.filter(p => p.status === 'pending').length,
-  newLeadsThisMonth: mockLeads.filter(l => 
-    l.createdAt.getMonth() === new Date().getMonth() && 
-    l.createdAt.getFullYear() === new Date().getFullYear()
-  ).length,
+  totalClients: 128,
+  totalProperties: 87,
+  totalLeads: 243,
+  propertiesSold: 42,
+  revenueGenerated: 32750000, // 32.75M SEK
+  activeListings: 35,
+  pendingDeals: 10,
+  newLeadsThisMonth: 28,
 }; 
