@@ -260,6 +260,105 @@ const HomeContent = dynamic(() => Promise.resolve(({
         </Grid>
       </Container>
 
+      {/* Meet the Developer Section */}
+      <Box sx={{ bgcolor: 'white', py: { xs: 8, md: 12 } }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={6} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Box 
+                component="img"
+                src="/home/viggo.jpg"
+                alt="Viggo Sjöström - Developer"
+                sx={{
+                  width: '100%',
+                  borderRadius: 2,
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                  transition: 'all 0.5s ease',
+                  '&:hover': {
+                    transform: 'scale(1.02)',
+                    boxShadow: '0 15px 40px rgba(0,0,0,0.15)',
+                  }
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography 
+                variant="h3" 
+                component="h2" 
+                sx={{ 
+                  fontWeight: 'bold', 
+                  mb: 3,
+                  position: 'relative',
+                  display: 'inline-block',
+                  '&:after': {
+                    content: '""',
+                    position: 'absolute',
+                    width: '60%',
+                    height: '4px',
+                    bottom: '-12px',
+                    left: 0,
+                    backgroundColor: 'primary.main',
+                    borderRadius: '2px'
+                  }
+                }}
+              >
+                Meet the Developer
+              </Typography>
+              <Typography 
+                variant="body1" 
+                color="text.secondary" 
+                sx={{ mb: 4, mt: 4, fontSize: '1.1rem' }}
+              >
+                Viggo Sjöström worked several years as a real estate agent in Sweden, gaining first-hand experience in the fast-paced industry. After years of working with CRM systems daily, he recognized the potential to improve and streamline workflows through technology. This passion led him to pursue a career in software development, focusing on creating intuitive and powerful tools for professionals. Today, he works as a full-stack developer at RealPRO CRM, combining his industry expertise with modern technology to build innovative solutions.
+              </Typography>
+              
+              <Box 
+                sx={{ 
+                  my: 4,
+                  mx: 2,
+                  p: 3,
+                  borderLeft: '3px solid',
+                  borderColor: 'primary.main',
+                  bgcolor: 'rgba(25, 118, 210, 0.05)',
+                  borderRadius: '0 8px 8px 0'
+                }}
+              >
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontStyle: 'italic',
+                    fontWeight: 400,
+                    color: 'text.primary',
+                    lineHeight: 1.6
+                  }}
+                >
+                  &ldquo;I&apos;ve always been passionate about technology and problem-solving. For me, development isn&apos;t just about writing code—it&apos;s about creating tools that genuinely make a difference in people&apos;s daily work. I love building solutions that are both powerful and user-friendly, making complex tasks feel effortless.&rdquo;
+                </Typography>
+                <Typography 
+                  variant="subtitle1"
+                  sx={{ 
+                    mt: 2,
+                    textAlign: 'right',
+                    fontWeight: 500,
+                    color: 'primary.main'
+                  }}
+                >
+                  — Viggo Sjöström
+                </Typography>
+              </Box>
+              
+              <Typography 
+                variant="body1" 
+                color="text.secondary" 
+                sx={{ mt: 4, fontSize: '1.1rem' }}
+              >
+                With a deep understanding of both real estate and software development, Viggo bridges the gap between industry needs and technical innovation. His goal is to develop CRM systems that enhance efficiency, improve client relationships, and provide real value to real estate professionals.
+              </Typography>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
       {/* Showcase Section */}
       <Box sx={{ bgcolor: 'grey.50', py: { xs: 8, md: 12 } }}>
         <Container maxWidth="lg">
