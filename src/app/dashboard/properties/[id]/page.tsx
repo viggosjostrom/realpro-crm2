@@ -25,6 +25,7 @@ import { Property, User } from '@/lib/types';
 import PropertyDetails from '@/components/property/PropertyDetails';
 import SellersAndBuyers from '@/components/property/SellersAndBuyers';
 import ViewingsAndFollowups from '@/components/property/ViewingsAndFollowups';
+import OffersAndTransactions from '@/components/property/OffersAndTransactions';
 
 // Helper function to format price in SEK
 const formatPrice = (price: number): string => {
@@ -239,9 +240,7 @@ export default function PropertyDetailsPage() {
                 <ViewingsAndFollowups property={property} />
               )}
               {tabValue === 4 && (
-                <Typography>
-                  Offers & Transactions tab content will be implemented in the next step.
-                </Typography>
+                <OffersAndTransactions property={property} />
               )}
               {tabValue === 5 && (
                 <Typography>

@@ -87,4 +87,33 @@ export type DashboardStats = {
   currentCommission: number;
   commissionLastMonth: number;
   daysLeftInMonth: number;
+};
+
+// Offer status types
+export type OfferStatus = 'submitted' | 'negotiating' | 'accepted' | 'rejected' | 'withdrawn';
+
+// Offer type
+export type Offer = {
+  id: string;
+  propertyId: string;
+  buyerId: string;
+  amount: number;
+  status: OfferStatus;
+  date: Date;
+  expiryDate?: Date;
+  notes?: string;
+};
+
+// Transaction type
+export type Transaction = {
+  id: string;
+  propertyId: string;
+  offerId: string;
+  sellerId: string;
+  buyerId: string;
+  amount: number;
+  status: 'pending' | 'completed' | 'cancelled';
+  contractUrl?: string;
+  completionDate?: Date;
+  notes?: string;
 }; 

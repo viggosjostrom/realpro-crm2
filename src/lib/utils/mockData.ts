@@ -1,4 +1,4 @@
-import { Client, Property, Lead, Activity, User, DashboardStats } from '../types';
+import { Client, Property, Lead, Activity, User, DashboardStats, Offer, Transaction } from '../types';
 
 // Mock Users
 export const mockUsers: User[] = [
@@ -136,6 +136,34 @@ export const mockClients: Client[] = [
     createdAt: new Date('2023-02-01'),
     updatedAt: new Date('2023-02-01'),
   },
+  {
+    id: '9',
+    firstName: 'Henrik',
+    lastName: 'Bergman',
+    email: 'henrik.bergman@gmail.com',
+    phone: '070-777-8888',
+    address: 'Nybrogatan 28',
+    city: 'Stockholm',
+    postalCode: '11439',
+    notes: 'High net worth client looking for premium properties',
+    type: 'buyer',
+    createdAt: new Date('2023-01-18'),
+    updatedAt: new Date('2023-01-18'),
+  },
+  {
+    id: '10',
+    firstName: 'Johanna',
+    lastName: 'Sjöberg',
+    email: 'johanna.sjoberg@outlook.com',
+    phone: '073-222-1111',
+    address: 'Vasagatan 15',
+    city: 'Stockholm',
+    postalCode: '11120',
+    notes: 'Selling apartment to relocate abroad',
+    type: 'seller',
+    createdAt: new Date('2023-02-05'),
+    updatedAt: new Date('2023-02-05'),
+  },
 ];
 
 // Mock Properties
@@ -163,7 +191,7 @@ export const mockProperties: Property[] = [
     address: 'Valhallavägen 128',
     city: 'Stockholm',
     postalCode: '11522',
-    price: 7200000,
+    price: 7100000,
     size: 110,
     rooms: 4,
     description: 'Spacious 4-room apartment near KTH with newly renovated kitchen and bathroom. This elegant apartment is located in a well-maintained building from the 1930s and offers a perfect blend of classic charm and modern comfort. The apartment features a large living room with a beautiful bay window, a separate dining area, and three bedrooms. The kitchen has been completely renovated with high-quality appliances and custom cabinetry. The bathroom features marble tiles, a walk-in shower, and a separate bathtub. The location is ideal, with easy access to universities, parks, and public transportation.',
@@ -171,9 +199,10 @@ export const mockProperties: Property[] = [
     type: 'apartment',
     images: ['/properties/dashboard-property-2.jpg'],
     ownerId: '5',
+    buyerId: '4',
     agentId: '1',
     createdAt: new Date('2023-03-05'),
-    updatedAt: new Date('2023-03-05'),
+    updatedAt: new Date('2023-04-05'),
     listedAt: new Date('2023-03-10'),
   },
   {
@@ -217,18 +246,18 @@ export const mockProperties: Property[] = [
     address: 'Strandvägen 7',
     city: 'Stockholm',
     postalCode: '11456',
-    price: 24900000,
+    price: 24500000,
     size: 210,
     rooms: 6,
     description: 'Prestigious apartment on Strandvägen with high ceilings, stucco, and a fireplace. This extraordinary apartment is located in one of Stockholm\'s most iconic buildings and offers a rare opportunity to own a piece of history. The apartment features grand proportions with ceiling heights of over 3.5 meters, original parquet floors, and intricate stucco work. The living spaces include a formal reception room, a library, a dining room that can accommodate 12 guests, and a modern kitchen that respects the historical context. The apartment has four bedrooms, including a master suite with a dressing room and a marble bathroom. Additional features include three fireplaces, custom built-ins, and a separate staff quarters.',
     status: 'sold',
     type: 'apartment',
     images: ['/properties/dashboard-property-5.jpg'],
-    ownerId: '4',
+    ownerId: '10',
     buyerId: '6',
     agentId: '2',
     createdAt: new Date('2023-01-10'),
-    updatedAt: new Date('2023-01-10'),
+    updatedAt: new Date('2023-02-28'),
     listedAt: new Date('2023-01-15'),
     soldAt: new Date('2023-02-28'),
   },
@@ -244,7 +273,7 @@ export const mockProperties: Property[] = [
     status: 'available',
     type: 'apartment',
     images: ['/properties/dashboard-property-6.jpg'],
-    ownerId: '1',
+    ownerId: '10',
     agentId: '2',
     createdAt: new Date('2023-04-05'),
     updatedAt: new Date('2023-04-05'),
@@ -255,7 +284,7 @@ export const mockProperties: Property[] = [
     address: 'Karlaplan 10',
     city: 'Stockholm',
     postalCode: '11527',
-    price: 8750000,
+    price: 8650000,
     size: 105,
     rooms: 4,
     description: 'Elegant pre-war apartment with original details and a modern renovation. Located in the prestigious Östermalm district, this apartment offers a perfect combination of historical charm and contemporary comfort. Features include high ceilings, herringbone parquet floors, decorative moldings, and three large windows facing a quiet courtyard. The kitchen has been completely updated with high-end appliances and custom cabinetry. The property includes three spacious bedrooms, a formal dining room, and a renovated bathroom with heated marble floors.',
@@ -610,6 +639,219 @@ export const mockActivities: Activity[] = [
     createdAt: new Date('2023-04-16'),
     updatedAt: new Date('2023-04-17'),
   },
+];
+
+// Mock Offers
+export const mockOffers: Offer[] = [
+  {
+    id: '1',
+    propertyId: '1',
+    buyerId: '1',
+    amount: 4800000,
+    status: 'negotiating',
+    date: new Date('2023-03-15'),
+    expiryDate: new Date('2023-03-22'),
+    notes: 'Initial offer, below asking price.'
+  },
+  {
+    id: '2',
+    propertyId: '1',
+    buyerId: '3',
+    amount: 4700000,
+    status: 'rejected',
+    date: new Date('2023-03-14'),
+    expiryDate: new Date('2023-03-21'),
+    notes: 'Too low compared to asking price.'
+  },
+  {
+    id: '3',
+    propertyId: '1',
+    buyerId: '6',
+    amount: 4900000,
+    status: 'submitted',
+    date: new Date('2023-03-18'),
+    expiryDate: new Date('2023-03-25'),
+    notes: 'Received today, close to asking price.'
+  },
+  {
+    id: '4',
+    propertyId: '2',
+    buyerId: '4',
+    amount: 7100000,
+    status: 'accepted',
+    date: new Date('2023-03-12'),
+    expiryDate: new Date('2023-03-19'),
+    notes: 'Offer accepted after minor negotiation.'
+  },
+  {
+    id: '5',
+    propertyId: '5',
+    buyerId: '6',
+    amount: 24500000,
+    status: 'accepted',
+    date: new Date('2023-02-20'),
+    expiryDate: new Date('2023-02-27'),
+    notes: 'Accepted final offer after negotiations.'
+  },
+  {
+    id: '6',
+    propertyId: '7',
+    buyerId: '8',
+    amount: 8650000,
+    status: 'accepted',
+    date: new Date('2023-01-10'),
+    expiryDate: new Date('2023-01-17'),
+    notes: 'Offer accepted at slightly below asking price.'
+  },
+  {
+    id: '7',
+    propertyId: '3',
+    buyerId: '1',
+    amount: 12000000,
+    status: 'submitted',
+    date: new Date('2023-03-28'),
+    expiryDate: new Date('2023-04-04'),
+    notes: 'Initial offer, significantly below asking price.'
+  },
+  {
+    id: '8',
+    propertyId: '4',
+    buyerId: '3',
+    amount: 18000000,
+    status: 'negotiating',
+    date: new Date('2023-04-02'),
+    expiryDate: new Date('2023-04-09'),
+    notes: 'Counteroffer made at 18M SEK.'
+  },
+  {
+    id: '9',
+    propertyId: '1',
+    buyerId: '9',
+    amount: 4925000,
+    status: 'submitted',
+    date: new Date('2023-03-19'),
+    expiryDate: new Date('2023-03-26'),
+    notes: 'High interest buyer, close to asking price.'
+  },
+  {
+    id: '10',
+    propertyId: '2',
+    buyerId: '8',
+    amount: 7000000,
+    status: 'rejected',
+    date: new Date('2023-03-11'),
+    expiryDate: new Date('2023-03-18'),
+    notes: 'Lower than the accepted offer.'
+  },
+  {
+    id: '11',
+    propertyId: '2',
+    buyerId: '9',
+    amount: 7050000,
+    status: 'rejected',
+    date: new Date('2023-03-11'),
+    expiryDate: new Date('2023-03-18'),
+    notes: 'Slightly lower than the accepted offer.'
+  },
+  {
+    id: '12',
+    propertyId: '3',
+    buyerId: '9',
+    amount: 12300000,
+    status: 'submitted',
+    date: new Date('2023-03-29'),
+    expiryDate: new Date('2023-04-05'),
+    notes: 'High interest buyer making competitive offer.'
+  },
+  {
+    id: '13',
+    propertyId: '4',
+    buyerId: '9',
+    amount: 18200000,
+    status: 'submitted',
+    date: new Date('2023-04-03'),
+    expiryDate: new Date('2023-04-10'),
+    notes: 'High interest buyer with strong offer.'
+  },
+  {
+    id: '14',
+    propertyId: '5',
+    buyerId: '9',
+    amount: 24300000,
+    status: 'rejected',
+    date: new Date('2023-02-19'),
+    expiryDate: new Date('2023-02-26'),
+    notes: 'Close but not the highest offer.'
+  },
+  {
+    id: '15',
+    propertyId: '5',
+    buyerId: '1',
+    amount: 24000000,
+    status: 'rejected',
+    date: new Date('2023-02-18'),
+    expiryDate: new Date('2023-02-25'),
+    notes: 'Initial offer, not competitive enough.'
+  },
+  {
+    id: '16',
+    propertyId: '6',
+    buyerId: '4',
+    amount: 5700000,
+    status: 'submitted',
+    date: new Date('2023-04-16'),
+    expiryDate: new Date('2023-04-23'),
+    notes: 'Offer after viewing, below asking price.'
+  },
+  {
+    id: '17',
+    propertyId: '7',
+    buyerId: '4',
+    amount: 8500000,
+    status: 'rejected',
+    date: new Date('2023-01-08'),
+    expiryDate: new Date('2023-01-15'),
+    notes: 'Lower than the accepted offer.'
+  }
+];
+
+// Mock Transactions
+export const mockTransactions: Transaction[] = [
+  {
+    id: '1',
+    propertyId: '2',
+    offerId: '4',
+    sellerId: '5',
+    buyerId: '4',
+    amount: 7100000,
+    status: 'pending',
+    contractUrl: '/contracts/transaction_1.pdf',
+    notes: 'Final contract being drawn up.'
+  },
+  {
+    id: '2',
+    propertyId: '5',
+    offerId: '5',
+    sellerId: '10',
+    buyerId: '6',
+    amount: 24500000,
+    status: 'completed',
+    contractUrl: '/contracts/transaction_2.pdf',
+    completionDate: new Date('2023-02-28'),
+    notes: 'Transaction completed successfully.'
+  },
+  {
+    id: '3',
+    propertyId: '7',
+    offerId: '6',
+    sellerId: '5',
+    buyerId: '8',
+    amount: 8650000,
+    status: 'completed',
+    contractUrl: '/contracts/transaction_3.pdf',
+    completionDate: new Date('2023-01-15'),
+    notes: 'Transaction completed ahead of schedule.'
+  }
 ];
 
 // Mock Dashboard Stats
