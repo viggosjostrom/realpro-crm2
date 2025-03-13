@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:clean": "rimraf .next && rimraf .turbo && next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rimraf .next && rimraf .turbo"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -30,6 +32,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
+    "rimraf": "^5.0.10",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

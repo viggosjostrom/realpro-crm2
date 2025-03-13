@@ -146,9 +146,9 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
         position="fixed" 
         sx={{ 
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          backgroundColor: 'white',
-          color: 'text.primary',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          background: 'linear-gradient(135deg, #1a56db 0%, #1e429f 100%)',
+          color: 'white',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
         }}
       >
         <Toolbar>
@@ -165,8 +165,8 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar 
               sx={{ 
-                bgcolor: avatarStyles.bgcolor,
-                color: avatarStyles.color,
+                bgcolor: 'white',
+                color: theme.palette.primary.main,
                 width: 40, 
                 height: 40, 
                 mr: 1.5,
@@ -180,7 +180,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
               variant="h6"
               noWrap
               component="div"
-              sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 'bold' }}
+              sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 'bold', color: 'white' }}
               id="app-title"
             >
               RealPro CRM
@@ -191,9 +191,9 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
             sx={{ 
               position: 'relative',
               borderRadius: theme.shape.borderRadius,
-              backgroundColor: alpha(theme.palette.common.black, 0.04),
+              backgroundColor: alpha(theme.palette.common.white, 0.15),
               '&:hover': {
-                backgroundColor: alpha(theme.palette.common.black, 0.08),
+                backgroundColor: alpha(theme.palette.common.white, 0.25),
               },
               marginRight: theme.spacing(2),
               marginLeft: theme.spacing(3),
@@ -213,7 +213,8 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
               pointerEvents: 'none', 
               display: 'flex', 
               alignItems: 'center', 
-              justifyContent: 'center' 
+              justifyContent: 'center',
+              color: 'white'
             }}
             aria-hidden="true"
             >
@@ -223,11 +224,15 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
               sx={{
-                color: 'inherit',
+                color: 'white',
                 padding: theme.spacing(1, 1, 1, 0),
                 paddingLeft: `calc(1em + ${theme.spacing(4)})`,
                 transition: theme.transitions.create('width'),
                 width: '100%',
+                '& ::placeholder': {
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  opacity: 1
+                }
               }}
             />
           </Box>
@@ -249,7 +254,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Tooltip title="Account">
+            <Tooltip title="Profile">
               <IconButton
                 size="large"
                 edge="end"
@@ -258,13 +263,19 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
                 aria-haspopup="true"
                 onClick={handleProfileMenuOpen}
                 color="inherit"
+                sx={{ 
+                  ml: 1,
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.common.white, 0.15),
+                  }
+                }}
               >
                 <Avatar 
                   sx={{ 
                     width: 32, 
                     height: 32,
-                    bgcolor: avatarStyles.bgcolor,
-                    color: avatarStyles.color
+                    bgcolor: 'white',
+                    color: theme.palette.primary.main
                   }} 
                   alt="Johan Andersson"
                 >

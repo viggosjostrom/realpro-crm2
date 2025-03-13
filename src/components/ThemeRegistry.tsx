@@ -129,6 +129,14 @@ const theme = createTheme({
         },
       },
     },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: 'transparent',
+          backgroundImage: 'linear-gradient(180deg, rgba(26,86,219,0.05) 0%, rgba(26,86,219,0.02) 100%)',
+        },
+      },
+    },
     MuiTextField: {
       styleOverrides: {
         root: {
