@@ -17,7 +17,10 @@ import {
   Speed as SpeedIcon,
   Security as SecurityIcon,
   Insights as InsightsIcon,
-  DeviceHub as DeviceHubIcon
+  DeviceHub as DeviceHubIcon,
+  People as PeopleIcon,
+  Home as HomeIcon,
+  ContactPhone as ContactPhoneIcon
 } from '@mui/icons-material';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -262,38 +265,192 @@ const HomeContent = dynamic(() => Promise.resolve(({
         <Container maxWidth="lg">
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={12} md={6}>
-              <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', mb: 3 }}>
+              <Typography 
+                variant="h3" 
+                component="h2" 
+                sx={{ 
+                  fontWeight: 'bold', 
+                  mb: 3,
+                  position: 'relative',
+                  display: 'inline-block',
+                  '&:after': {
+                    content: '""',
+                    position: 'absolute',
+                    width: '60%',
+                    height: '4px',
+                    bottom: '-12px',
+                    left: 0,
+                    backgroundColor: 'primary.main',
+                    borderRadius: '2px'
+                  }
+                }}
+              >
                 Comprehensive CRM for Every Aspect of Your Business
               </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+              <Typography 
+                variant="body1" 
+                color="text.secondary" 
+                sx={{ mb: 5, mt: 4, fontSize: '1.1rem' }}
+              >
                 From lead generation to closing deals, RealPro CRM provides all the tools you need to manage your real estate business effectively.
               </Typography>
               
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  Client Management
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Keep track of all your clients, their preferences, and communication history in one place.
-                </Typography>
+              <Box
+                sx={{ mb: 3 }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    p: 2,
+                    borderRadius: 2,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'white',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                      transform: 'translateY(-4px)',
+                      '& .feature-title': {
+                        color: 'primary.main'
+                      }
+                    }
+                  }}
+                >
+                  <Box
+                    className="feature-icon"
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'primary.main',
+                      mr: 2
+                    }}
+                  >
+                    <PeopleIcon fontSize="medium" />
+                  </Box>
+                  <Box>
+                    <Typography 
+                      variant="h6" 
+                      className="feature-title"
+                      sx={{ 
+                        fontWeight: 'bold', 
+                        mb: 0.5,
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      Client Management
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      Keep track of all your clients, their preferences, and communication history in one place.
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
               
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  Property Management
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Manage property listings, track viewings, and monitor the sales process from start to finish.
-                </Typography>
+              <Box sx={{ mb: 3 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    p: 2,
+                    borderRadius: 2,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'white',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                      transform: 'translateY(-4px)',
+                      '& .feature-title': {
+                        color: 'primary.main'
+                      }
+                    }
+                  }}
+                >
+                  <Box
+                    className="feature-icon"
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'primary.main',
+                      mr: 2
+                    }}
+                  >
+                    <HomeIcon fontSize="medium" />
+                  </Box>
+                  <Box>
+                    <Typography 
+                      variant="h6" 
+                      className="feature-title"
+                      sx={{ 
+                        fontWeight: 'bold', 
+                        mb: 0.5,
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      Property Management
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      Manage property listings, track viewings, and monitor the sales process from start to finish.
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
               
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  Lead Management
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Capture, qualify, and convert leads with our powerful lead management tools.
-                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    p: 2,
+                    borderRadius: 2,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'white',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                      transform: 'translateY(-4px)',
+                      '& .feature-title': {
+                        color: 'primary.main'
+                      }
+                    }
+                  }}
+                >
+                  <Box
+                    className="feature-icon"
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'primary.main',
+                      mr: 2
+                    }}
+                  >
+                    <ContactPhoneIcon fontSize="medium" />
+                  </Box>
+                  <Box>
+                    <Typography 
+                      variant="h6" 
+                      className="feature-title"
+                      sx={{ 
+                        fontWeight: 'bold', 
+                        mb: 0.5,
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      Lead Management
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      Capture, qualify, and convert leads with our powerful lead management tools.
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -305,6 +462,11 @@ const HomeContent = dynamic(() => Promise.resolve(({
                   width: '100%',
                   borderRadius: 2,
                   boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                  transition: 'all 0.5s ease',
+                  '&:hover': {
+                    transform: 'scale(1.02)',
+                    boxShadow: '0 15px 40px rgba(0,0,0,0.15)',
+                  }
                 }}
               />
             </Grid>
