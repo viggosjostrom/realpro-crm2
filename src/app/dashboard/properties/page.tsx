@@ -36,7 +36,7 @@ import {
 } from '@mui/icons-material';
 import { mockProperties, mockUsers } from '@/lib/utils/mockData';
 import { Property, User } from '@/lib/types';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 // Helper function to format price in SEK
 const formatPrice = (price: number): string => {
@@ -98,13 +98,18 @@ interface PropertyCardProps {
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
+  const router = useRouter();
   const agent = getAgentById(property.agentId);
   const interestLevel = getInterestLevel();
   const lastActivity = getLastActivity();
 
+  const handleCardClick = () => {
+    router.push(`/dashboard/properties/${property.id}`);
+  };
+
   return (
-    <Link href={`/dashboard/properties/${property.id}`} style={{ textDecoration: 'none' }}>
-      <Card sx={{ 
+    <Card 
+      sx={{ 
         height: '100%', 
         display: 'flex', 
         flexDirection: 'column',
@@ -114,85 +119,86 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
           cursor: 'pointer'
         }
-      }}>
-        <Box sx={{ position: 'relative' }}>
-          <CardMedia
-            component="img"
-            height="160"
-            image={property.images[0] || '/properties/property-placeholder.jpg'}
-            alt={property.address}
-          />
-          <Chip
-            label={getStatusLabel(property.status)}
-            size="small"
-            sx={{
-              position: 'absolute',
-              top: 10,
-              right: 10,
-              backgroundColor: getStatusColor(property.status),
-              color: 'white',
-              fontWeight: 'bold'
-            }}
-          />
-        </Box>
-        <CardContent sx={{ flexGrow: 1, pb: 1 }}>
-          <Typography variant="h6" component="div" sx={{ mb: 1, fontWeight: 'bold' }}>
-            {formatPrice(property.price)}
+      }}
+      onClick={handleCardClick}
+    >
+      <Box sx={{ position: 'relative' }}>
+        <CardMedia
+          component="img"
+          height="160"
+          image={property.images[0] || '/properties/property-placeholder.jpg'}
+          alt={property.address}
+        />
+        <Chip
+          label={getStatusLabel(property.status)}
+          size="small"
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            backgroundColor: getStatusColor(property.status),
+            color: 'white',
+            fontWeight: 'bold'
+          }}
+        />
+      </Box>
+      <CardContent sx={{ flexGrow: 1, pb: 1 }}>
+        <Typography variant="h6" component="div" sx={{ mb: 1, fontWeight: 'bold' }}>
+          {formatPrice(property.price)}
+        </Typography>
+        
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          <LocationIcon fontSize="small" color="action" sx={{ mr: 0.5 }} />
+          <Typography variant="body2" color="text.secondary" noWrap>
+            {property.address}, {property.city}
           </Typography>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <LocationIcon fontSize="small" color="action" sx={{ mr: 0.5 }} />
-            <Typography variant="body2" color="text.secondary" noWrap>
-              {property.address}, {property.city}
-            </Typography>
+        </Box>
+        
+        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <SizeIcon fontSize="small" color="action" sx={{ mr: 0.5 }} />
+            <Typography variant="body2">{property.size} m²</Typography>
           </Box>
-          
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <RoomsIcon fontSize="small" color="action" sx={{ mr: 0.5 }} />
+            <Typography variant="body2">{property.rooms} rooms</Typography>
+          </Box>
+        </Box>
+        
+        <Divider sx={{ my: 1 }} />
+        
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+          {agent && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <SizeIcon fontSize="small" color="action" sx={{ mr: 0.5 }} />
-              <Typography variant="body2">{property.size} m²</Typography>
+              <Avatar 
+                src={agent.avatar} 
+                alt={`${agent.firstName} ${agent.lastName}`}
+                sx={{ width: 24, height: 24, mr: 1 }}
+              />
+              <Typography variant="caption" color="text.secondary">
+                {agent.firstName} {agent.lastName}
+              </Typography>
             </Box>
+          )}
+          
+          <Tooltip title={`${interestLevel} interested buyers`}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <RoomsIcon fontSize="small" color="action" sx={{ mr: 0.5 }} />
-              <Typography variant="body2">{property.rooms} rooms</Typography>
+              <InterestIcon fontSize="small" color="error" sx={{ mr: 0.5 }} />
+              <Typography variant="caption" color="text.secondary">
+                {interestLevel}
+              </Typography>
             </Box>
-          </Box>
-          
-          <Divider sx={{ my: 1 }} />
-          
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-            {agent && (
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Avatar 
-                  src={agent.avatar} 
-                  alt={`${agent.firstName} ${agent.lastName}`}
-                  sx={{ width: 24, height: 24, mr: 1 }}
-                />
-                <Typography variant="caption" color="text.secondary">
-                  {agent.firstName} {agent.lastName}
-                </Typography>
-              </Box>
-            )}
-            
-            <Tooltip title={`${interestLevel} interested buyers`}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <InterestIcon fontSize="small" color="error" sx={{ mr: 0.5 }} />
-                <Typography variant="caption" color="text.secondary">
-                  {interestLevel}
-                </Typography>
-              </Box>
-            </Tooltip>
-          </Box>
-          
-          <Box sx={{ mt: 1 }}>
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
-              <CalendarIcon fontSize="small" sx={{ mr: 0.5, fontSize: 14 }} />
-              {lastActivity}
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
-    </Link>
+          </Tooltip>
+        </Box>
+        
+        <Box sx={{ mt: 1 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+            <CalendarIcon fontSize="small" sx={{ mr: 0.5, fontSize: 14 }} />
+            {lastActivity}
+          </Typography>
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 

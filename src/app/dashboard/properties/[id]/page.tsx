@@ -19,8 +19,7 @@ import {
   Edit as EditIcon,
   Add as AddIcon
 } from '@mui/icons-material';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { mockProperties, mockUsers } from '@/lib/utils/mockData';
 import { Property, User } from '@/lib/types';
 
@@ -65,6 +64,7 @@ const getAgentById = (agentId: string | undefined): User | undefined => {
 
 export default function PropertyDetailsPage() {
   const params = useParams();
+  const router = useRouter();
   const propertyId = params.id as string;
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
@@ -94,12 +94,24 @@ export default function PropertyDetailsPage() {
     <Box>
       {/* Breadcrumbs navigation */}
       <Breadcrumbs sx={{ mb: 2 }}>
-        <Link href="/dashboard" passHref>
-          <MuiLink underline="hover" color="inherit">Dashboard</MuiLink>
-        </Link>
-        <Link href="/dashboard/properties" passHref>
-          <MuiLink underline="hover" color="inherit">Properties</MuiLink>
-        </Link>
+        <MuiLink 
+          underline="hover" 
+          color="inherit" 
+          component="button"
+          onClick={() => router.push('/dashboard')}
+          sx={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        >
+          Dashboard
+        </MuiLink>
+        <MuiLink 
+          underline="hover" 
+          color="inherit" 
+          component="button"
+          onClick={() => router.push('/dashboard/properties')}
+          sx={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        >
+          Properties
+        </MuiLink>
         <Typography color="text.primary">
           {loading ? <Skeleton width={100} /> : property?.address || 'Property Details'}
         </Typography>
@@ -107,14 +119,13 @@ export default function PropertyDetailsPage() {
       
       {/* Back button */}
       <Box sx={{ mb: 3 }}>
-        <Link href="/dashboard/properties" passHref>
-          <Button 
-            startIcon={<ArrowBackIcon />} 
-            sx={{ textTransform: 'none' }}
-          >
-            Back to Properties
-          </Button>
-        </Link>
+        <Button 
+          startIcon={<ArrowBackIcon />} 
+          sx={{ textTransform: 'none' }}
+          onClick={() => router.push('/dashboard/properties')}
+        >
+          Back to Properties
+        </Button>
       </Box>
       
       {loading ? (
@@ -257,11 +268,12 @@ export default function PropertyDetailsPage() {
             The property you are looking for does not exist or has been removed.
           </Typography>
           <Box sx={{ mt: 3 }}>
-            <Link href="/dashboard/properties" passHref>
-              <Button variant="contained">
-                Return to Properties
-              </Button>
-            </Link>
+            <Button 
+              variant="contained"
+              onClick={() => router.push('/dashboard/properties')}
+            >
+              Return to Properties
+            </Button>
           </Box>
         </Paper>
       )}
