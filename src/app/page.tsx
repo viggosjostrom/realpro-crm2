@@ -171,12 +171,11 @@ const HomeContent = dynamic(() => Promise.resolve(({
               <Box 
                 component="img"
                 src="/home/dashboard-1.jpg"
-                alt="RealPro CRM Dashboard"
+                alt="RealPro CRM Features"
                 sx={{
                   width: '100%',
                   borderRadius: 2,
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-                  transform: 'perspective(1000px) rotateY(-5deg) rotateX(5deg)',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
                 }}
               />
             </Grid>
@@ -300,7 +299,7 @@ const HomeContent = dynamic(() => Promise.resolve(({
             <Grid item xs={12} md={6}>
               <Box 
                 component="img"
-                src="/crm-showcase.png"
+                src="/home/property-dashboard.jpg"
                 alt="RealPro CRM Features"
                 sx={{
                   width: '100%',

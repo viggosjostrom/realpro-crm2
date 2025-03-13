@@ -29,6 +29,9 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
+// Import both CSS files to ensure they're loaded
+import '@/styles/components/Sidebar.css';
+import '@/styles/global-overrides.css';
 
 // Default drawer width when expanded
 const drawerWidth = 240;
@@ -83,20 +86,22 @@ const Sidebar: React.FC<SidebarProps> = ({
       aria-label="Main navigation"
     >
       <Box 
+        className={`sidebar-header ${minimized ? 'sidebar-header-minimized' : ''}`}
         sx={{ 
-          p: minimized ? 1 : 2, 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: minimized ? 'center' : 'space-between',
+          p: minimized ? 1 : 2,
           background: 'linear-gradient(135deg, #1a56db 0%, #1e429f 100%)',
           color: 'white',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: minimized ? 'center' : 'space-between'
         }}
       >
         {!minimized && (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar 
-              src="/logo.png" 
+              src="/globe.svg" 
               alt="RealPro CRM" 
               sx={{ 
                 width: 40, 
@@ -116,7 +121,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {minimized && (
           <Avatar 
-            src="/logo.png" 
+            src="/globe.svg" 
             alt="RealPro CRM" 
             sx={{ 
               width: 40, 
@@ -154,31 +159,20 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </Box>
       <Divider />
-      <List sx={{ flexGrow: 1, py: 1 }}>
+      <List sx={{ flexGrow: 1 }}>
         {menuItems.map((item) => (
           <Link href={item.path} key={item.text} style={{ textDecoration: 'none', color: 'inherit' }}>
             <ListItem disablePadding>
               <ListItemButton 
+                className="sidebar-menu-item"
                 selected={pathname === item.path}
                 sx={{ 
-                  borderRadius: '0 24px 24px 0', 
-                  mr: 1,
                   py: 1.2,
                   pl: minimized ? 2 : 3,
-                  '&.Mui-selected': {
-                    bgcolor: theme => `${theme.palette.primary.main}15`,
-                    color: 'primary.main',
-                    '&:hover': {
-                      bgcolor: theme => `${theme.palette.primary.main}25`,
-                    },
-                    '& .MuiListItemIcon-root': {
-                      color: 'primary.main',
-                    }
-                  }
                 }}
               >
                 <Tooltip title={minimized ? item.text : ""} placement="right">
-                  <ListItemIcon sx={{ minWidth: minimized ? 0 : 40, mr: minimized ? 0 : 2 }}>
+                  <ListItemIcon sx={{ mr: minimized ? 0 : 2 }}>
                     {item.icon}
                   </ListItemIcon>
                 </Tooltip>
@@ -191,9 +185,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       <Divider />
       <List>
         <ListItem disablePadding>
-          <ListItemButton sx={{ pl: minimized ? 2 : 3, py: 1.2 }}>
+          <ListItemButton 
+            className="sidebar-menu-item"
+            sx={{ pl: minimized ? 2 : 3, py: 1.2 }}
+          >
             <Tooltip title={minimized ? "Settings" : ""} placement="right">
-              <ListItemIcon sx={{ minWidth: minimized ? 0 : 40, mr: minimized ? 0 : 2 }}>
+              <ListItemIcon sx={{ mr: minimized ? 0 : 2 }}>
                 <SettingsIcon />
               </ListItemIcon>
             </Tooltip>
@@ -202,13 +199,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         </ListItem>
       </List>
       <Box 
+        className={`sidebar-user-info ${minimized ? 'sidebar-user-info-minimized' : ''}`}
         sx={{ 
           p: minimized ? 1 : 2, 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: minimized ? 'center' : 'space-between',
-          borderTop: 1,
-          borderColor: 'divider'
         }}
         aria-label="User information"
       >
@@ -270,14 +263,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     </Box>
   );
 
-  // Common drawer paper styles
-  const drawerPaperStyles = {
-    boxSizing: 'border-box',
-    background: 'linear-gradient(180deg, rgba(26,86,219,0.05) 0%, rgba(26,86,219,0.02) 100%)',
-    overflowX: 'hidden',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
-  };
-
   return (
     <Box
       component="nav"
@@ -292,6 +277,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       {/* Mobile drawer */}
       <Drawer
+        className="sidebar-drawer"
         variant="temporary"
         open={mobileOpen}
         onClose={handleDrawerToggle}
@@ -301,8 +287,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         sx={{
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': { 
-            ...drawerPaperStyles,
+            boxSizing: 'border-box', 
             width: drawerWidth,
+            background: 'linear-gradient(180deg, rgba(26,86,219,0.15) 0%, rgba(30,66,159,0.08) 100%)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            borderRight: '2px solid rgba(26,86,219,0.2)'
           },
         }}
       >
@@ -311,16 +300,20 @@ const Sidebar: React.FC<SidebarProps> = ({
       
       {/* Desktop drawer */}
       <Drawer
+        className="sidebar-drawer"
         variant="permanent"
         sx={{
           display: { xs: 'none', md: 'block' },
           '& .MuiDrawer-paper': { 
-            ...drawerPaperStyles,
+            boxSizing: 'border-box', 
             width: minimized ? miniDrawerWidth : drawerWidth,
             transition: theme.transitions.create('width', {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.enteringScreen,
             }),
+            background: 'linear-gradient(180deg, rgba(26,86,219,0.15) 0%, rgba(30,66,159,0.08) 100%)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            borderRight: '2px solid rgba(26,86,219,0.2)'
           },
         }}
         open

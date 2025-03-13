@@ -22,9 +22,11 @@ import {
   MoreVert as MoreIcon,
   Business as BusinessIcon
 } from '@mui/icons-material';
-import { alpha } from '@mui/material/styles';
 import { useState } from 'react';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
+// Import both CSS files to ensure they're loaded
+import '@/styles/components/Header.css';
+import '@/styles/global-overrides.css';
 
 interface HeaderProps {
   handleDrawerToggle: () => void;
@@ -143,12 +145,10 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar 
+        className="header-appbar"
         position="fixed" 
         sx={{ 
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          background: 'linear-gradient(135deg, #1a56db 0%, #1e429f 100%)',
-          color: 'white',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
         }}
       >
         <Toolbar>
@@ -188,52 +188,19 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
           </Box>
           
           <Box 
-            sx={{ 
-              position: 'relative',
-              borderRadius: theme.shape.borderRadius,
-              backgroundColor: alpha(theme.palette.common.white, 0.15),
-              '&:hover': {
-                backgroundColor: alpha(theme.palette.common.white, 0.25),
-              },
-              marginRight: theme.spacing(2),
-              marginLeft: theme.spacing(3),
-              width: '100%',
-              maxWidth: '400px',
-              [theme.breakpoints.down('md')]: {
-                marginLeft: theme.spacing(1),
-                width: 'auto',
-              }
-            }}
+            className="header-search"
             role="search"
           >
-            <Box sx={{ 
-              padding: theme.spacing(0, 2), 
-              height: '100%', 
-              position: 'absolute', 
-              pointerEvents: 'none', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              color: 'white'
-            }}
-            aria-hidden="true"
+            <Box 
+              className="header-search-icon"
+              aria-hidden="true"
             >
               <SearchIcon />
             </Box>
             <InputBase
+              className="header-search-input"
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
-              sx={{
-                color: 'white',
-                padding: theme.spacing(1, 1, 1, 0),
-                paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-                transition: theme.transitions.create('width'),
-                width: '100%',
-                '& ::placeholder': {
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  opacity: 1
-                }
-              }}
             />
           </Box>
           
@@ -256,6 +223,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
             </Tooltip>
             <Tooltip title="Profile">
               <IconButton
+                className="header-profile-button"
                 size="large"
                 edge="end"
                 aria-label="account of current user"
@@ -263,12 +231,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
                 aria-haspopup="true"
                 onClick={handleProfileMenuOpen}
                 color="inherit"
-                sx={{ 
-                  ml: 1,
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.common.white, 0.15),
-                  }
-                }}
+                sx={{ ml: 1 }}
               >
                 <Avatar 
                   sx={{ 

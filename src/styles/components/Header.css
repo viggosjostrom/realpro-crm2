@@ -1,0 +1,51 @@
+/* Header.css - Custom styles for the header component */
+
+/* Override the AppBar background */
+.header-appbar {
+  background: linear-gradient(135deg, #1a56db 0%, #1e429f 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+}
+
+/* Style for the search box */
+.header-search {
+  position: relative;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.15);
+  margin-right: 16px;
+  margin-left: 24px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.header-search:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.header-search-icon {
+  padding: 0 16px;
+  height: 100%;
+  position: absolute;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.header-search-input {
+  color: white;
+  padding: 8px 8px 8px 0;
+  padding-left: calc(1em + 32px);
+  width: 100%;
+}
+
+.header-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+  opacity: 1;
+}
+
+/* Style for the profile button */
+.header-profile-button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+} 

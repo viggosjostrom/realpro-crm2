@@ -1,0 +1,57 @@
+/* Global overrides for sidebar and header styles */
+
+/* Force the sidebar background */
+html body .sidebar-drawer .MuiDrawer-paper {
+  background: linear-gradient(180deg, rgba(26,86,219,0.15) 0%, rgba(30,66,159,0.08) 100%) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+  border-right: 2px solid rgba(26,86,219,0.2) !important;
+}
+
+/* Force the sidebar header background */
+html body .sidebar-header {
+  background: linear-gradient(135deg, #1a56db 0%, #1e429f 100%) !important;
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Force the header background */
+html body .header-appbar {
+  background: linear-gradient(135deg, #1a56db 0%, #1e429f 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+}
+
+/* Force menu item styles */
+html body .sidebar-menu-item.Mui-selected {
+  background-color: rgba(26, 86, 219, 0.2) !important;
+  color: #1a56db !important;
+  font-weight: 500 !important;
+}
+
+html body .sidebar-menu-item.Mui-selected .MuiListItemIcon-root {
+  color: #1a56db !important;
+}
+
+html body .sidebar-menu-item:hover:not(.Mui-selected) {
+  background-color: rgba(26, 86, 219, 0.1) !important;
+}
+
+/* Force divider styles */
+html body .sidebar-drawer .MuiDivider-root {
+  background-color: rgba(26, 86, 219, 0.15) !important;
+  height: 1px !important;
+  margin: 8px 0 !important;
+}
+
+/* Force user info section styles */
+html body .sidebar-user-info {
+  border-top: 1px solid rgba(26, 86, 219, 0.2) !important;
+  background-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Force icon colors */
+html body .sidebar-drawer .MuiListItemIcon-root {
+  color: rgba(26, 86, 219, 0.8) !important;
+  min-width: 40px !important;
+} 
