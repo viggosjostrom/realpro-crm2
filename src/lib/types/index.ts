@@ -116,4 +116,24 @@ export type Transaction = {
   contractUrl?: string;
   completionDate?: Date;
   notes?: string;
+};
+
+// Document type categories
+export type DocumentType = 'contract' | 'offer_letter' | 'agreement' | 'loan_approval' | 'inspection' | 'insurance' | 'tax' | 'other';
+
+// Document object type
+export type Document = {
+  id: string;
+  propertyId: string;
+  title: string;
+  type: DocumentType;
+  fileUrl: string;
+  fileSize: number; // in KB
+  uploadedBy: string; // User ID
+  uploadedAt: Date;
+  relatedToId?: string; // Can be related to offer, transaction, client, etc.
+  relatedToType?: 'offer' | 'transaction' | 'client';
+  description?: string;
+  tags?: string[];
+  isPublic?: boolean; // Whether the document can be shared with clients
 }; 

@@ -1,4 +1,4 @@
-import { Client, Property, Lead, Activity, User, DashboardStats, Offer, Transaction } from '../types';
+import { Client, Property, Lead, Activity, User, DashboardStats, Offer, Transaction, Document } from '../types';
 
 // Mock Users
 export const mockUsers: User[] = [
@@ -851,6 +851,305 @@ export const mockTransactions: Transaction[] = [
     contractUrl: '/contracts/transaction_3.pdf',
     completionDate: new Date('2023-01-15'),
     notes: 'Transaction completed ahead of schedule.'
+  }
+];
+
+// Mock Documents
+export const mockDocuments: Document[] = [
+  // Property 1 (Hornsgatan 45) - Available
+  {
+    id: '1',
+    propertyId: '1',
+    title: 'Floor Plan - Hornsgatan 45',
+    type: 'other',
+    fileUrl: '/documents/property_1/floor_plan.pdf',
+    fileSize: 1245,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-02-25'),
+    description: 'Detailed floor plan with measurements',
+    tags: ['floor plan', 'property details'],
+    isPublic: true
+  },
+  {
+    id: '2',
+    propertyId: '1',
+    title: 'Property Assessment Report',
+    type: 'other',
+    fileUrl: '/documents/property_1/assessment.pdf',
+    fileSize: 2780,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-02-26'),
+    description: 'Official property assessment and valuation',
+    tags: ['assessment', 'valuation'],
+    isPublic: true
+  },
+  {
+    id: '3',
+    propertyId: '1',
+    title: 'Offer Letter - Anders Johansson',
+    type: 'offer_letter',
+    fileUrl: '/documents/property_1/offer_1.pdf',
+    fileSize: 560,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-03-15'),
+    relatedToId: '1', // Offer ID
+    relatedToType: 'offer',
+    description: 'Formal offer letter from Anders Johansson',
+    tags: ['offer', 'negotiation'],
+    isPublic: false
+  },
+  {
+    id: '4',
+    propertyId: '1',
+    title: 'Offer Letter - Erik Lindgren',
+    type: 'offer_letter',
+    fileUrl: '/documents/property_1/offer_2.pdf',
+    fileSize: 545,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-03-14'),
+    relatedToId: '2', // Offer ID
+    relatedToType: 'offer',
+    description: 'Formal offer letter from Erik Lindgren',
+    tags: ['offer', 'rejected'],
+    isPublic: false
+  },
+  
+  // Property 2 (Valhallavägen 128) - Pending
+  {
+    id: '5',
+    propertyId: '2',
+    title: 'Purchase Agreement - Valhallavägen 128',
+    type: 'contract',
+    fileUrl: '/documents/property_2/purchase_agreement.pdf',
+    fileSize: 3450,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-03-20'),
+    relatedToId: '1', // Transaction ID
+    relatedToType: 'transaction',
+    description: 'Final purchase agreement between Karl Nilsson and Lena Karlsson',
+    tags: ['contract', 'signed', 'purchase'],
+    isPublic: false
+  },
+  {
+    id: '6',
+    propertyId: '2',
+    title: 'Loan Approval - Lena Karlsson',
+    type: 'loan_approval',
+    fileUrl: '/documents/property_2/loan_approval.pdf',
+    fileSize: 1850,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-03-18'),
+    relatedToId: '4', // Client ID
+    relatedToType: 'client',
+    description: 'Bank loan approval for Lena Karlsson',
+    tags: ['loan', 'bank', 'approval'],
+    isPublic: false
+  },
+  {
+    id: '7',
+    propertyId: '2',
+    title: 'Property Inspection Report',
+    type: 'inspection',
+    fileUrl: '/documents/property_2/inspection.pdf',
+    fileSize: 4250,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-03-15'),
+    description: 'Detailed property inspection with findings',
+    tags: ['inspection', 'report'],
+    isPublic: true
+  },
+  
+  // Property 3 (Norr Mälarstrand 84) - Available
+  {
+    id: '8',
+    propertyId: '3',
+    title: 'Floor Plan - Norr Mälarstrand 84',
+    type: 'other',
+    fileUrl: '/documents/property_3/floor_plan.pdf',
+    fileSize: 2560,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-03-20'),
+    description: 'Detailed floor plan with measurements',
+    tags: ['floor plan', 'property details'],
+    isPublic: true
+  },
+  {
+    id: '9',
+    propertyId: '3',
+    title: 'Property Disclosure Statement',
+    type: 'other',
+    fileUrl: '/documents/property_3/disclosure.pdf',
+    fileSize: 1820,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-03-20'),
+    description: 'Seller\'s disclosure of property condition',
+    tags: ['disclosure', 'legal'],
+    isPublic: true
+  },
+  
+  // Property 4 (Djursholmsvägen 22) - Available
+  {
+    id: '10',
+    propertyId: '4',
+    title: 'Floor Plan - Djursholmsvägen 22',
+    type: 'other',
+    fileUrl: '/documents/property_4/floor_plan.pdf',
+    fileSize: 3580,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-03-30'),
+    description: 'Complete floor plan of all levels',
+    tags: ['floor plan', 'property details'],
+    isPublic: true
+  },
+  {
+    id: '11',
+    propertyId: '4',
+    title: 'Property Brochure',
+    type: 'other',
+    fileUrl: '/documents/property_4/brochure.pdf',
+    fileSize: 8450,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-03-30'),
+    description: 'High-quality brochure with professional photos',
+    tags: ['marketing', 'brochure'],
+    isPublic: true
+  },
+  {
+    id: '12',
+    propertyId: '4',
+    title: 'Pre-approval - Erik Lindgren',
+    type: 'loan_approval',
+    fileUrl: '/documents/property_4/pre_approval.pdf',
+    fileSize: 780,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-04-02'),
+    relatedToId: '3', // Client ID
+    relatedToType: 'client',
+    description: 'Bank pre-approval for Erik Lindgren',
+    tags: ['loan', 'pre-approval'],
+    isPublic: false
+  },
+  
+  // Property 5 (Strandvägen 7) - Sold
+  {
+    id: '13',
+    propertyId: '5',
+    title: 'Final Purchase Contract - Strandvägen 7',
+    type: 'contract',
+    fileUrl: '/documents/property_5/purchase_contract.pdf',
+    fileSize: 5240,
+    uploadedBy: '2', // Emma Lindberg
+    uploadedAt: new Date('2023-02-25'),
+    relatedToId: '2', // Transaction ID
+    relatedToType: 'transaction',
+    description: 'Final signed purchase contract between Johanna Sjöberg and Sara Björk',
+    tags: ['contract', 'signed', 'final'],
+    isPublic: false
+  },
+  {
+    id: '14',
+    propertyId: '5',
+    title: 'Loan Documentation - Sara Björk',
+    type: 'loan_approval',
+    fileUrl: '/documents/property_5/loan_docs.pdf',
+    fileSize: 3850,
+    uploadedBy: '2', // Emma Lindberg
+    uploadedAt: new Date('2023-02-22'),
+    relatedToId: '6', // Client ID
+    relatedToType: 'client',
+    description: 'Complete loan documentation for the buyer',
+    tags: ['loan', 'financing', 'approved'],
+    isPublic: false
+  },
+  {
+    id: '15',
+    propertyId: '5',
+    title: 'Transfer of Ownership',
+    type: 'agreement',
+    fileUrl: '/documents/property_5/transfer.pdf',
+    fileSize: 1240,
+    uploadedBy: '2', // Emma Lindberg
+    uploadedAt: new Date('2023-02-28'),
+    relatedToId: '2', // Transaction ID
+    relatedToType: 'transaction',
+    description: 'Legal documentation for property title transfer',
+    tags: ['legal', 'transfer', 'ownership'],
+    isPublic: false
+  },
+  
+  // Property 6 (Götgatan 118) - Available
+  {
+    id: '16',
+    propertyId: '6',
+    title: 'Floor Plan - Götgatan 118',
+    type: 'other',
+    fileUrl: '/documents/property_6/floor_plan.pdf',
+    fileSize: 1960,
+    uploadedBy: '2', // Emma Lindberg
+    uploadedAt: new Date('2023-04-10'),
+    description: 'Detailed floor plan with measurements',
+    tags: ['floor plan', 'property details'],
+    isPublic: true
+  },
+  {
+    id: '17',
+    propertyId: '6',
+    title: 'Property Condition Report',
+    type: 'inspection',
+    fileUrl: '/documents/property_6/condition.pdf',
+    fileSize: 4120,
+    uploadedBy: '2', // Emma Lindberg
+    uploadedAt: new Date('2023-04-10'),
+    description: 'Detailed assessment of property condition',
+    tags: ['condition', 'report', 'inspection'],
+    isPublic: true
+  },
+  
+  // Property 7 (Karlaplan 10) - Sold
+  {
+    id: '18',
+    propertyId: '7',
+    title: 'Final Purchase Contract - Karlaplan 10',
+    type: 'contract',
+    fileUrl: '/documents/property_7/purchase_contract.pdf',
+    fileSize: 4850,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-01-12'),
+    relatedToId: '3', // Transaction ID
+    relatedToType: 'transaction',
+    description: 'Final signed purchase contract between Karl Nilsson and Astrid Lundqvist',
+    tags: ['contract', 'signed', 'final'],
+    isPublic: false
+  },
+  {
+    id: '19',
+    propertyId: '7',
+    title: 'Loan Approval - Astrid Lundqvist',
+    type: 'loan_approval',
+    fileUrl: '/documents/property_7/loan_approval.pdf',
+    fileSize: 2240,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-01-08'),
+    relatedToId: '8', // Client ID
+    relatedToType: 'client',
+    description: 'Bank loan approval for Astrid Lundqvist',
+    tags: ['loan', 'bank', 'approval'],
+    isPublic: false
+  },
+  {
+    id: '20',
+    propertyId: '7',
+    title: 'Closing Statement',
+    type: 'agreement',
+    fileUrl: '/documents/property_7/closing.pdf',
+    fileSize: 1850,
+    uploadedBy: '1', // Johan Andersson
+    uploadedAt: new Date('2023-01-15'),
+    relatedToId: '3', // Transaction ID
+    relatedToType: 'transaction',
+    description: 'Final closing statement with all costs detailed',
+    tags: ['closing', 'financial', 'summary'],
+    isPublic: false
   }
 ];
 
