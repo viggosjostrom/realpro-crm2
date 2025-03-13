@@ -150,7 +150,37 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
-          fontWeight: 500,
+          fontWeight: 600, // Increased from 500 for better readability
+        },
+        colorPrimary: {
+          backgroundColor: '#1a56db', // Darker blue for better contrast
+          color: '#ffffff',
+        },
+        colorSecondary: {
+          backgroundColor: '#047857', // Darker green for better contrast
+          color: '#ffffff',
+        },
+        colorSuccess: {
+          backgroundColor: '#065f46', // Darker green for better contrast
+          color: '#ffffff',
+        },
+        colorError: {
+          backgroundColor: '#b91c1c', // Darker red for better contrast
+          color: '#ffffff',
+        },
+        colorInfo: {
+          backgroundColor: '#1e40af', // Darker blue for better contrast
+          color: '#ffffff',
+        },
+        colorWarning: {
+          backgroundColor: '#92400e', // Darker orange for better contrast
+          color: '#ffffff',
+        },
+        outlined: {
+          borderWidth: 2, // Thicker border for better visibility
+        },
+        label: {
+          fontWeight: 600, // Bolder text for better readability
         },
       },
     },

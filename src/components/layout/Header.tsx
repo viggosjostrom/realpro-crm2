@@ -24,9 +24,13 @@ import {
 } from '@mui/icons-material';
 import { useState } from 'react';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
+import { mockUsers } from '@/lib/utils/mockData';
 // Import both CSS files to ensure they're loaded
 import '@/styles/components/Header.css';
 import '@/styles/global-overrides.css';
+
+// Find the current user (Johan Andersson with id '1')
+const currentUser = mockUsers.find(user => user.id === '1');
 
 interface HeaderProps {
   handleDrawerToggle: () => void;
@@ -126,15 +130,16 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
           color="inherit"
         >
           <Avatar 
+            src={currentUser?.avatar}
             sx={{ 
               width: 32, 
               height: 32,
               bgcolor: avatarStyles.bgcolor,
               color: avatarStyles.color
             }} 
-            alt="Johan Andersson"
+            alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
           >
-            JA
+            {!currentUser?.avatar && `${currentUser?.firstName?.charAt(0)}${currentUser?.lastName?.charAt(0)}`}
           </Avatar>
         </IconButton>
         <p>Profile</p>
@@ -234,15 +239,16 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
                 sx={{ ml: 1 }}
               >
                 <Avatar 
+                  src={currentUser?.avatar}
                   sx={{ 
                     width: 32, 
                     height: 32,
                     bgcolor: 'white',
                     color: theme.palette.primary.main
                   }} 
-                  alt="Johan Andersson"
+                  alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
                 >
-                  JA
+                  {!currentUser?.avatar && `${currentUser?.firstName?.charAt(0)}${currentUser?.lastName?.charAt(0)}`}
                 </Avatar>
               </IconButton>
             </Tooltip>

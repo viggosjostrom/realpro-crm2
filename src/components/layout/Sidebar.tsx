@@ -29,6 +29,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
+import { mockUsers } from '@/lib/utils/mockData';
 // Import both CSS files to ensure they're loaded
 import '@/styles/components/Sidebar.css';
 import '@/styles/global-overrides.css';
@@ -44,6 +45,9 @@ interface SidebarProps {
   minimized?: boolean;
   toggleMinimized?: () => void;
 }
+
+// Find the current user (Johan Andersson with id '1')
+const currentUser = mockUsers.find(user => user.id === '1');
 
 const Sidebar: React.FC<SidebarProps> = ({ 
   mobileOpen, 
@@ -67,8 +71,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Clients', icon: <ClientsIcon />, path: '/dashboard/clients' },
     { text: 'Properties', icon: <PropertiesIcon />, path: '/dashboard/properties' },
+    { text: 'Clients', icon: <ClientsIcon />, path: '/dashboard/clients' },
     { text: 'Leads', icon: <LeadsIcon />, path: '/dashboard/leads' },
     { text: 'Activities', icon: <ActivitiesIcon />, path: '/dashboard/activities' },
   ];
@@ -208,6 +212,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {!minimized && (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar 
+              src={currentUser?.avatar}
               sx={{ 
                 width: 32, 
                 height: 32, 
@@ -215,33 +220,34 @@ const Sidebar: React.FC<SidebarProps> = ({
                 bgcolor: avatarStyles.bgcolor,
                 color: avatarStyles.color
               }} 
-              alt="Johan Andersson"
+              alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
             >
-              JA
+              {!currentUser?.avatar && `${currentUser?.firstName?.charAt(0)}${currentUser?.lastName?.charAt(0)}`}
             </Avatar>
             <Box>
               <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                Johan Andersson
+                {`${currentUser?.firstName} ${currentUser?.lastName}`}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Admin
+                {currentUser?.role === 'admin' ? 'Admin' : 'Agent'}
               </Typography>
             </Box>
           </Box>
         )}
         
         {minimized && (
-          <Tooltip title="Johan Andersson" placement="right">
+          <Tooltip title={`${currentUser?.firstName} ${currentUser?.lastName}`} placement="right">
             <Avatar 
+              src={currentUser?.avatar}
               sx={{ 
                 width: 32, 
                 height: 32,
                 bgcolor: avatarStyles.bgcolor,
                 color: avatarStyles.color
               }} 
-              alt="Johan Andersson"
+              alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
             >
-              JA
+              {!currentUser?.avatar && `${currentUser?.firstName?.charAt(0)}${currentUser?.lastName?.charAt(0)}`}
             </Avatar>
           </Tooltip>
         )}

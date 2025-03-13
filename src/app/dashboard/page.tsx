@@ -18,7 +18,8 @@ import {
   Button,
   Tooltip,
   ButtonProps,
-  CircularProgress
+  CircularProgress,
+  LinearProgress
 } from '@mui/material';
 import {
   People as PeopleIcon,
@@ -32,11 +33,13 @@ import {
   Description as DescriptionIcon,
   ArrowForward as ArrowForwardIcon,
   TrendingUp as TrendingUpIcon,
-  Add as AddIcon
+  Add as AddIcon,
+  EmojiEvents as EmojiEventsIcon,
+  CalendarToday as CalendarTodayIcon
 } from '@mui/icons-material';
 import { mockDashboardStats, mockActivities, mockProperties, mockLeads } from '@/lib/utils/mockData';
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils/formatters';
-import { Activity, Property, Lead } from '@/lib/types';
+import { Activity, Property } from '@/lib/types';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
 
 // Client-only wrapper component
@@ -262,12 +265,12 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
         >
           <Chip 
             label={activity.completed ? 'Completed' : 'Upcoming'} 
-            size="small" 
+            size="small"
+            color={activity.completed ? 'success' : 'warning'}
             sx={{ 
-              bgcolor: getStatusColor() + '20', 
-              color: getStatusColor(),
-              fontWeight: 'medium',
-              borderRadius: 1
+              fontWeight: 'bold',
+              borderRadius: 1,
+              boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
             }} 
           />
           <Typography variant="caption" color="text.secondary" component="span">
@@ -298,6 +301,19 @@ const PropertyCard = ({ property }: { property: Property }) => {
         return 'primary.main';
       default:
         return 'text.secondary';
+    }
+  };
+
+  const getStatusVariant = () => {
+    switch (property.status) {
+      case 'available':
+        return 'success';
+      case 'pending':
+        return 'warning';
+      case 'sold':
+        return 'primary';
+      default:
+        return 'default';
     }
   };
 
@@ -350,14 +366,13 @@ const PropertyCard = ({ property }: { property: Property }) => {
         )}
         <Chip 
           label={property.status.charAt(0).toUpperCase() + property.status.slice(1)} 
-          size="small" 
+          size="small"
+          color={getStatusVariant()}
           sx={{ 
             position: 'absolute',
             top: 8,
             right: 8,
-            bgcolor: 'rgba(255,255,255,0.9)',
-            color: getStatusColor(),
-            fontWeight: 'medium',
+            fontWeight: 'bold',
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
           }} 
         />
@@ -372,90 +387,6 @@ const PropertyCard = ({ property }: { property: Property }) => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="caption" color="text.secondary">
             {isClient ? formatDate(property.updatedAt) : ''}
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
-  );
-};
-
-// Lead card component
-const LeadCard = ({ lead }: { lead: Lead }) => {
-  const [isClient, setIsClient] = useState(false);
-  
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const getStatusColor = () => {
-    switch (lead.status) {
-      case 'new':
-        return 'info.main';
-      case 'contacted':
-        return 'primary.main';
-      case 'qualified':
-        return 'success.main';
-      case 'proposal':
-        return 'warning.main';
-      case 'negotiation':
-        return 'secondary.main';
-      default:
-        return 'text.secondary';
-    }
-  };
-
-  return (
-    <Card 
-      elevation={0} 
-      sx={{ 
-        height: '100%',
-        borderRadius: 2,
-        border: '1px solid',
-        borderColor: 'divider',
-        overflow: 'hidden',
-        transition: 'transform 0.2s, box-shadow 0.2s',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-        }
-      }}
-    >
-      <CardContent sx={{ p: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Avatar 
-            sx={{ 
-              ...getAccessibleAvatarStyle(getStatusColor()),
-              mr: 1.5,
-              width: 48,
-              height: 48,
-              boxShadow: `0 4px 8px -2px ${getStatusColor()}50`
-            }}
-          >
-            {`${lead.firstName.charAt(0)}${lead.lastName.charAt(0)}`}
-          </Avatar>
-          <Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-              {`${lead.firstName} ${lead.lastName}`}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {lead.email}
-            </Typography>
-          </Box>
-        </Box>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Chip 
-            label={lead.status.charAt(0).toUpperCase() + lead.status.slice(1)} 
-            size="small" 
-            sx={{ 
-              bgcolor: getStatusColor() + '20', 
-              color: getStatusColor(),
-              fontWeight: 'medium',
-              borderRadius: 1
-            }} 
-          />
-          <Typography variant="caption" color="text.secondary">
-            {isClient && lead.lastContactedAt ? formatRelativeTime(lead.lastContactedAt) : ''}
           </Typography>
         </Box>
       </CardContent>
@@ -481,6 +412,414 @@ const ButtonWithIcon = ({ children, icon, ...props }: {
     {children}
   </Button>
 );
+
+// Commission Goal Tracker component
+const CommissionGoalTracker = () => {
+  const progress = (mockDashboardStats.currentCommission / mockDashboardStats.commissionGoal) * 100;
+  const isOnTrack = progress >= ((30 - mockDashboardStats.daysLeftInMonth) / 30) * 100;
+  
+  // Calculate the color based on progress
+  const getProgressColor = () => {
+    if (progress >= 90) return '#10b981'; // Green - excellent progress
+    if (progress >= 75) return '#0ea5e9'; // Blue - good progress
+    if (progress >= 50) return '#f59e0b'; // Amber - moderate progress
+    return '#ef4444'; // Red - needs attention
+  };
+  
+  // Calculate projected commission by end of month based on current rate
+  const daysInMonth = 30; // Simplified
+  const daysElapsed = daysInMonth - mockDashboardStats.daysLeftInMonth;
+  const dailyRate = mockDashboardStats.currentCommission / daysElapsed;
+  const projectedCommission = dailyRate * daysInMonth;
+  const willReachGoal = projectedCommission >= mockDashboardStats.commissionGoal;
+  const progressColor = getProgressColor();
+  
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        borderRadius: 2,
+        overflow: 'hidden',
+        border: '1px solid',
+        borderColor: 'divider',
+        boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+        bgcolor: 'background.paper',
+        transition: 'all 0.3s ease',
+        height: '100%',
+        position: 'relative',
+        '&:hover': {
+          boxShadow: `0 16px 32px rgba(0,0,0,0.1), 0 0 0 2px ${progressColor}40`,
+          transform: 'translateY(-4px)',
+        },
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '4px',
+          background: `linear-gradient(90deg, ${progressColor} ${progress}%, #e5e7eb ${progress}%)`,
+          zIndex: 2,
+        }
+      }}
+    >
+      <CardHeader
+        title={
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <EmojiEventsIcon sx={{ color: progressColor, mr: 1 }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              Monthly Commission Goal
+            </Typography>
+          </Box>
+        }
+        action={
+          <ButtonWithIcon 
+            color="primary" 
+            size="small"
+            variant="outlined"
+            sx={{ 
+              borderRadius: 8, 
+              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              }
+            }}
+          >
+            Set Goals
+          </ButtonWithIcon>
+        }
+        sx={{
+          px: 3,
+          py: 2,
+          bgcolor: 'background.paper',
+          borderBottom: '2px solid',
+          borderColor: progressColor,
+        }}
+      />
+      <CardContent sx={{ p: 3 }}>
+        <Grid container spacing={3}>
+          {/* Progress visualization */}
+          <Grid item xs={12}>
+            <Box sx={{ position: 'relative', mb: 4 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                mb: 1,
+                alignItems: 'flex-end'
+              }}>
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                    Current
+                  </Typography>
+                  <Typography variant="h5" fontWeight="bold" sx={{ color: progressColor }}>
+                    {formatCurrency(mockDashboardStats.currentCommission)}
+                  </Typography>
+                </Box>
+                <Box sx={{ textAlign: 'right' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                    Goal
+                  </Typography>
+                  <Typography variant="h5" fontWeight="bold">
+                    {formatCurrency(mockDashboardStats.commissionGoal)}
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <Box sx={{ position: 'relative', height: 24, mb: 1 }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={progress}
+                  sx={{
+                    height: 24,
+                    borderRadius: 3,
+                    backgroundColor: 'rgba(0,0,0,0.05)',
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: progressColor,
+                      borderRadius: 3,
+                      backgroundImage: `linear-gradient(45deg, 
+                        rgba(255, 255, 255, 0.15) 25%, 
+                        transparent 25%, 
+                        transparent 50%, 
+                        rgba(255, 255, 255, 0.15) 50%, 
+                        rgba(255, 255, 255, 0.15) 75%, 
+                        transparent 75%, 
+                        transparent)`,
+                      backgroundSize: '40px 40px',
+                      animation: 'progress-animation 2s linear infinite',
+                      '@keyframes progress-animation': {
+                        '0%': {
+                          backgroundPosition: '0 0',
+                        },
+                        '100%': {
+                          backgroundPosition: '40px 0',
+                        },
+                      },
+                    }
+                  }}
+                />
+                
+                <Box sx={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  left: 0, 
+                  right: 0, 
+                  bottom: 0, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}>
+                  <Typography variant="body2" fontWeight="bold" color="white" sx={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                    {Math.round(progress)}% Complete
+                  </Typography>
+                </Box>
+              </Box>
+              
+              {/* Milestone markers */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                <Box sx={{ 
+                  width: 2, 
+                  height: 8, 
+                  bgcolor: progress >= 25 ? progressColor : 'divider',
+                  position: 'relative',
+                  left: '25%',
+                  '&::after': {
+                    content: '"25%"',
+                    position: 'absolute',
+                    top: '100%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    fontSize: '0.7rem',
+                    color: 'text.secondary',
+                    mt: 0.5,
+                  }
+                }} />
+                <Box sx={{ 
+                  width: 2, 
+                  height: 8, 
+                  bgcolor: progress >= 50 ? progressColor : 'divider',
+                  position: 'relative',
+                  left: '0%',
+                  '&::after': {
+                    content: '"50%"',
+                    position: 'absolute',
+                    top: '100%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    fontSize: '0.7rem',
+                    color: 'text.secondary',
+                    mt: 0.5,
+                  }
+                }} />
+                <Box sx={{ 
+                  width: 2, 
+                  height: 8, 
+                  bgcolor: progress >= 75 ? progressColor : 'divider',
+                  position: 'relative',
+                  right: '0%',
+                  '&::after': {
+                    content: '"75%"',
+                    position: 'absolute',
+                    top: '100%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    fontSize: '0.7rem',
+                    color: 'text.secondary',
+                    mt: 0.5,
+                  }
+                }} />
+                <Box sx={{ 
+                  width: 2, 
+                  height: 8, 
+                  bgcolor: progress >= 100 ? progressColor : 'divider',
+                  position: 'relative',
+                  right: '25%',
+                  '&::after': {
+                    content: '"100%"',
+                    position: 'absolute',
+                    top: '100%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    fontSize: '0.7rem',
+                    color: 'text.secondary',
+                    mt: 0.5,
+                  }
+                }} />
+              </Box>
+            </Box>
+          </Grid>
+          
+          {/* Stats and insights */}
+          <Grid item xs={12} sm={6}>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              height: '100%',
+              '& > div': {
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  transform: 'translateX(5px)',
+                }
+              }
+            }}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 2,
+                pb: 2,
+                borderBottom: '1px dashed',
+                borderColor: 'divider'
+              }}>
+                <Avatar sx={{ 
+                  bgcolor: 'primary.main', 
+                  mr: 2,
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                }}>
+                  <EmojiEventsIcon />
+                </Avatar>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Monthly Goal
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold">
+                    {formatCurrency(mockDashboardStats.commissionGoal)}
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 2,
+                pb: 2,
+                borderBottom: '1px dashed',
+                borderColor: 'divider'
+              }}>
+                <Avatar sx={{ 
+                  bgcolor: progressColor, 
+                  mr: 2,
+                  boxShadow: `0 4px 8px ${progressColor}40`
+                }}>
+                  <MoneyIcon />
+                </Avatar>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Current Commission
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold">
+                    {formatCurrency(mockDashboardStats.currentCommission)}
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Avatar sx={{ 
+                  bgcolor: 'info.main', 
+                  mr: 2,
+                  boxShadow: '0 4px 8px rgba(0,120,220,0.2)'
+                }}>
+                  <TrendingUpIcon />
+                </Avatar>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Last Month
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold">
+                    {formatCurrency(mockDashboardStats.commissionLastMonth)}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Grid>
+          
+          {/* Projections and time left */}
+          <Grid item xs={12} sm={6}>
+            <Box sx={{ 
+              p: 2.5, 
+              borderRadius: 3, 
+              bgcolor: 'background.default',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.05)',
+              position: 'relative',
+              overflow: 'hidden',
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                bottom: 0,
+                right: 0,
+                width: '120px',
+                height: '120px',
+                backgroundImage: `radial-gradient(circle, ${progressColor}20 0%, transparent 70%)`,
+                borderRadius: '50%',
+                transform: 'translate(30%, 30%)',
+                zIndex: 0,
+              }
+            }}>
+              <Box sx={{ mb: 3, position: 'relative', zIndex: 1 }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Projected by Month End
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+                  <Typography variant="h4" fontWeight="bold" color={willReachGoal ? 'success.main' : 'error.main'}>
+                    {formatCurrency(projectedCommission)}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                    ({willReachGoal ? '+' : ''}{formatCurrency(projectedCommission - mockDashboardStats.commissionGoal)})
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 2.5,
+                position: 'relative',
+                zIndex: 1
+              }}>
+                <Box sx={{ 
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  bgcolor: 'background.paper',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                  mr: 2
+                }}>
+                  <CalendarTodayIcon sx={{ color: 'text.secondary', fontSize: '1.2rem' }} />
+                </Box>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Time Remaining
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold">
+                    {mockDashboardStats.daysLeftInMonth} days
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <Box sx={{ position: 'relative', zIndex: 1 }}>
+                <Chip 
+                  label={isOnTrack ? "On Track" : "Needs Attention"} 
+                  color={isOnTrack ? "success" : "warning"}
+                  sx={{ 
+                    fontWeight: 'bold',
+                    px: 2,
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                  }}
+                  icon={isOnTrack ? <TrendingUpIcon /> : <TrendingUpIcon sx={{ transform: 'rotate(180deg)' }} />}
+                />
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Paper>
+  );
+};
 
 // Main Dashboard Content
 const DashboardContent = () => {
@@ -703,8 +1042,13 @@ const DashboardContent = () => {
           </Paper>
         </Grid>
 
-        {/* Recent Leads */}
-        <Grid item xs={12}>
+        {/* Commission Goal Tracker - New Section */}
+        <Grid item xs={12} md={6}>
+          <CommissionGoalTracker />
+        </Grid>
+
+        {/* Recent Leads - Resized */}
+        <Grid item xs={12} md={6}>
           <Paper 
             elevation={0} 
             sx={{ 
@@ -714,20 +1058,36 @@ const DashboardContent = () => {
               borderColor: 'divider',
               boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
               bgcolor: 'background.paper',
-              transition: 'box-shadow 0.2s',
+              transition: 'all 0.3s ease',
+              height: '100%',
               '&:hover': {
                 boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
+                transform: 'translateY(-4px)',
               }
             }}
           >
             <CardHeader 
               title={
-                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  Recent Leads
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <ContactPhoneIcon sx={{ color: '#9333ea', mr: 1 }} />
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    Recent Leads
+                  </Typography>
+                </Box>
               }
               action={
-                <ButtonWithIcon color="primary" size="small">
+                <ButtonWithIcon 
+                  color="primary" 
+                  size="small"
+                  variant="outlined"
+                  sx={{ 
+                    borderRadius: 8, 
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                    '&:hover': {
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    }
+                  }}
+                >
                   View All
                 </ButtonWithIcon>
               }
@@ -736,14 +1096,81 @@ const DashboardContent = () => {
                 py: 2, 
                 bgcolor: 'background.paper',
                 borderBottom: '2px solid',
-                borderColor: 'primary.main'
+                borderColor: '#9333ea',
               }}
             />
             <CardContent sx={{ p: 2 }}>
               <Grid container spacing={2}>
                 {mockLeads.slice(0, 4).map((lead) => (
-                  <Grid item xs={12} sm={6} md={3} key={lead.id}>
-                    <LeadCard lead={lead} />
+                  <Grid item xs={12} sm={6} key={lead.id}>
+                    <Card 
+                      elevation={0} 
+                      sx={{ 
+                        height: '100%',
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        overflow: 'hidden',
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                          borderColor: '#9333ea40',
+                        }
+                      }}
+                    >
+                      <CardContent sx={{ p: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <Avatar 
+                            sx={{ 
+                              ...getAccessibleAvatarStyle(lead.status === 'new' ? '#3b82f6' : 
+                                lead.status === 'contacted' ? '#8b5cf6' : 
+                                lead.status === 'qualified' ? '#10b981' : 
+                                lead.status === 'proposal' ? '#f59e0b' : 
+                                lead.status === 'negotiation' ? '#ef4444' : '#6b7280'),
+                              mr: 1.5,
+                              width: 48,
+                              height: 48,
+                              boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+                              border: '2px solid white'
+                            }}
+                          >
+                            {`${lead.firstName.charAt(0)}${lead.lastName.charAt(0)}`}
+                          </Avatar>
+                          <Box>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                              {`${lead.firstName} ${lead.lastName}`}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 150 }}>
+                              {lead.email}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Chip 
+                            label={lead.status.charAt(0).toUpperCase() + lead.status.slice(1)} 
+                            size="small"
+                            color={
+                              lead.status === 'new' ? 'info' : 
+                              lead.status === 'contacted' ? 'primary' : 
+                              lead.status === 'qualified' ? 'success' : 
+                              lead.status === 'proposal' ? 'warning' : 
+                              lead.status === 'negotiation' ? 'error' : 
+                              'default'
+                            }
+                            sx={{ 
+                              fontWeight: 'bold',
+                              borderRadius: 1,
+                              boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                            }} 
+                          />
+                          <Typography variant="caption" color="text.secondary">
+                            {lead.lastContactedAt ? formatRelativeTime(lead.lastContactedAt) : 'New'}
+                          </Typography>
+                        </Box>
+                      </CardContent>
+                    </Card>
                   </Grid>
                 ))}
               </Grid>

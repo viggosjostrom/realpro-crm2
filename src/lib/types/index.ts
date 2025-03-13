@@ -82,4 +82,8 @@ export type DashboardStats = {
   activeListings: number;
   pendingDeals: number;
   newLeadsThisMonth: number;
+  commissionGoal: number;
+  currentCommission: number;
+  commissionLastMonth: number;
+  daysLeftInMonth: number;
 }; 

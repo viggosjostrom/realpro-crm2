@@ -375,4 +375,8 @@ export const mockDashboardStats: DashboardStats = {
   activeListings: 35,
   pendingDeals: 10,
   newLeadsThisMonth: 28,
+  commissionGoal: 250000, // 250,000 SEK monthly goal
+  currentCommission: 187500, // 187,500 SEK current commission (75% of goal)
+  commissionLastMonth: 235000, // 235,000 SEK last month's commission
+  daysLeftInMonth: 8, // 8 days left in the current month
 }; 
