@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Box, 
   Button, 
@@ -23,8 +23,6 @@ import {
   ContactPhone as ContactPhoneIcon
 } from '@mui/icons-material';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-import ClientOnly from '@/components/ClientOnly';
 
 // Static feature data
 const featureData = [
@@ -46,7 +44,7 @@ const featureData = [
   }
 ];
 
-// Create a separate component for the loading state
+// Loading component for initial render
 const LoadingComponent = () => (
   <Box sx={{ 
     minHeight: '100vh', 
@@ -59,30 +57,31 @@ const LoadingComponent = () => (
   </Box>
 );
 
-// Use dynamic import for the loading component to avoid hydration issues
-const DynamicLoadingComponent = dynamic(() => Promise.resolve(LoadingComponent), { ssr: false });
-
-// Create a component for the copyright year to avoid hydration issues
+// Simple year component
 const CopyrightYear = () => {
-  const [isClient, setIsClient] = useState(false);
-  
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-  
-  // Only render the current year on the client side
-  // Use suppressHydrationWarning to prevent React from complaining about the mismatch
-  return <span suppressHydrationWarning>{isClient ? new Date().getFullYear() : '2024'}</span>;
+  // Use static year to avoid hydration mismatch
+  return <span suppressHydrationWarning>2024</span>;
 };
 
-// Use dynamic import with no SSR to prevent hydration issues
-const HomeContent = dynamic(() => Promise.resolve(({ 
-  textSecondaryColor, 
-  dividerColor 
-}: { 
-  textSecondaryColor: string, 
-  dividerColor: string 
-}) => {
+export default function Home() {
+  // Single state for client-side rendering
+  const [isReady, setIsReady] = useState(false);
+  const theme = useTheme();
+  
+  // Set ready state after mount
+  useEffect(() => {
+    setIsReady(true);
+  }, []);
+  
+  // Show loading until client-side rendering is ready
+  if (!isReady) {
+    return <LoadingComponent />;
+  }
+  
+  // Safe access to theme properties
+  const textSecondaryColor = theme.palette.text.secondary;
+  const dividerColor = theme.palette.divider;
+  
   // Create features with icons
   const features = [
     {
@@ -695,35 +694,5 @@ const HomeContent = dynamic(() => Promise.resolve(({
         </Container>
       </Box>
     </Box>
-  );
-}), { ssr: false });
-
-export default function Home() {
-  // Use a more robust approach for client detection
-  const [isClient, setIsClient] = useState(false);
-  
-  // Always call hooks unconditionally
-  const theme = useTheme();
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Safe access to theme properties only after mounting
-  const textSecondaryColor = isClient ? theme.palette.text.secondary : '';
-  const dividerColor = isClient ? theme.palette.divider : '';
-
-  // Simple skeleton loader for server-side rendering
-  if (!isClient) {
-    return <DynamicLoadingComponent />;
-  }
-
-  // Use ClientOnly to ensure the component only renders on the client
-  return (
-    <ClientOnly>
-      <Suspense fallback={<DynamicLoadingComponent />}>
-        <HomeContent textSecondaryColor={textSecondaryColor} dividerColor={dividerColor} />
-      </Suspense>
-    </ClientOnly>
   );
 }

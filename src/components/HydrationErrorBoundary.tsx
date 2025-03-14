@@ -8,6 +8,7 @@ interface Props {
 
 interface State {
   hasError: boolean;
+  errorCount: number;
 }
 
 /**
@@ -18,12 +19,12 @@ interface State {
 class HydrationErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, errorCount: 0 };
   }
 
   static getDerivedStateFromError(): State {
     // Update state so the next render will show the fallback UI
-    return { hasError: true };
+    return { hasError: true, errorCount: 0 };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
@@ -38,20 +39,20 @@ class HydrationErrorBoundary extends Component<Props, State> {
       console.error('Error caught by HydrationErrorBoundary:', error, errorInfo);
     }
     
-    // Reset the error state after a short delay to allow React to recover
-    if (isHydrationError) {
-      setTimeout(() => {
-        this.setState({ hasError: false });
-      }, 0);
+    // Only reset the error state if it's a hydration error and we haven't tried too many times
+    if (isHydrationError && this.state.errorCount < 3) {
+      // Use requestAnimationFrame instead of setTimeout for more reliable scheduling
+      requestAnimationFrame(() => {
+        this.setState(prevState => ({ 
+          hasError: false, 
+          errorCount: prevState.errorCount + 1 
+        }));
+      });
     }
   }
 
   render(): ReactNode {
-    if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return this.props.children;
-    }
-
+    // Always render children to allow React to recover from hydration errors
     return this.props.children;
   }
 }

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { StyledEngineProvider } from '@mui/material/styles';
-import ClientOnly from '@/components/ClientOnly';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 
@@ -214,28 +213,32 @@ const theme = createTheme({
   },
 });
 
-// Client-side only skip link component to avoid hydration errors
+// Skip link component without ClientOnly wrapper
 const SkipLinkContent = () => {
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
+  if (!isMounted) return null;
+  
   return <a href="#main-content" className="skip-link">Skip to main content</a>;
 };
 
-// Create a custom cache for Emotion to prevent hydration mismatches
-const createEmotionCache = () => {
-  return createCache({ key: 'css', prepend: true });
-};
+// Create emotion cache once outside component
+const clientSideEmotionCache = typeof window !== 'undefined' ? createCache({ key: 'css', prepend: true }) : null;
 
 export default function ThemeRegistry({ children }: { children: React.ReactNode }) {
-  // Create client-side cache after mount
-  const [emotionCache, setEmotionCache] = useState<ReturnType<typeof createEmotionCache> | null>(null);
+  // Track if we're on client side
+  const [isMounted, setIsMounted] = useState(false);
   
   useEffect(() => {
-    // Only create the cache on the client side
-    setEmotionCache(createEmotionCache());
+    setIsMounted(true);
   }, []);
   
-  // Render a simple loading state or null during SSR
-  if (!emotionCache) {
-    // During SSR, return a simplified version without Emotion styles
+  // Simplified version for server-side rendering
+  if (!isMounted) {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -244,15 +247,13 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
     );
   }
 
-  // On the client, use the full version with Emotion cache
+  // Client-side rendering with emotion cache
   return (
-    <CacheProvider value={emotionCache}>
+    <CacheProvider value={clientSideEmotionCache!}>
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <ClientOnly>
-            <SkipLinkContent />
-          </ClientOnly>
+          <SkipLinkContent />
           {children}
         </ThemeProvider>
       </StyledEngineProvider>

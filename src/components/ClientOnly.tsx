@@ -11,8 +11,11 @@ const NoSSR = ({ children }: { children: React.ReactNode }) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    // Use a flag to prevent multiple state updates
+    if (!isMounted) {
+      setIsMounted(true);
+    }
+  }, [isMounted]);
 
   if (!isMounted) {
     return null;
@@ -32,6 +35,10 @@ const NoSSR = ({ children }: { children: React.ReactNode }) => {
  * </ClientOnly>
  * ```
  */
-const ClientOnly = dynamic(() => Promise.resolve(NoSSR), { ssr: false });
+const ClientOnly = dynamic(() => Promise.resolve(NoSSR), { 
+  ssr: false,
+  // Disable automatic retrying on error to prevent render loops
+  loading: () => null 
+});
 
 export default ClientOnly; 
