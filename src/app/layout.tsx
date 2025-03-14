@@ -7,6 +7,26 @@ import "@/styles/global-overrides.css";
 import Script from "next/script";
 import HydrationErrorBoundary from "@/components/HydrationErrorBoundary";
 
+// Add a script to help prevent hydration loops in navigation
+const PreventHydrationLoop = () => (
+  <Script id="prevent-hydration-loops" strategy="beforeInteractive">
+    {`
+      // Track if we've already handled hydration for navigation
+      if (typeof window !== 'undefined') {
+        window.__NAVIGATION_STATE__ = window.__NAVIGATION_STATE__ || {};
+        
+        // Add hook to reset layout state on navigation
+        const originalPushState = history.pushState;
+        history.pushState = function() {
+          // Reset any hydration state
+          window.__NAVIGATION_STATE__ = {};
+          return originalPushState.apply(this, arguments);
+        };
+      }
+    `}
+  </Script>
+);
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -49,6 +69,7 @@ export default function RootLayout({
             };
           `}
         </Script>
+        <PreventHydrationLoop />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
         <HydrationErrorBoundary>

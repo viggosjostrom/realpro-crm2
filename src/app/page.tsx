@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { 
   Box, 
   Button, 
@@ -10,8 +10,7 @@ import {
   Card, 
   CardContent, 
   Stack,
-  useTheme,
-  CircularProgress
+  useTheme
 } from '@mui/material';
 import {
   Speed as SpeedIcon,
@@ -44,70 +43,42 @@ const featureData = [
   }
 ];
 
-// Loading component for initial render
-const LoadingComponent = () => (
-  <Box sx={{ 
-    minHeight: '100vh', 
-    bgcolor: 'background.default',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }}>
-    <CircularProgress />
-  </Box>
-);
+// Static features
+const features = [
+  {
+    icon: <SpeedIcon sx={{ fontSize: 40 }} />,
+    title: featureData[0].title,
+    description: featureData[0].description
+  },
+  {
+    icon: <InsightsIcon sx={{ fontSize: 40 }} />,
+    title: featureData[1].title,
+    description: featureData[1].description
+  },
+  {
+    icon: <SecurityIcon sx={{ fontSize: 40 }} />,
+    title: featureData[2].title,
+    description: featureData[2].description
+  },
+  {
+    icon: <DeviceHubIcon sx={{ fontSize: 40 }} />,
+    title: featureData[3].title,
+    description: featureData[3].description
+  }
+];
 
-// Simple year component
-const CopyrightYear = () => {
-  // Use static year to avoid hydration mismatch
-  return <span suppressHydrationWarning>2024</span>;
-};
-
+// Static component that doesn't use any state or side effects
 export default function Home() {
-  // Single state for client-side rendering
-  const [isReady, setIsReady] = useState(false);
+  // Use theme directly without any state or side effects
   const theme = useTheme();
   
-  // Set ready state after mount
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
-  
-  // Show loading until client-side rendering is ready
-  if (!isReady) {
-    return <LoadingComponent />;
-  }
-  
-  // Safe access to theme properties
+  // Static values for colors
   const textSecondaryColor = theme.palette.text.secondary;
   const dividerColor = theme.palette.divider;
-  
-  // Create features with icons
-  const features = [
-    {
-      icon: <SpeedIcon sx={{ fontSize: 40 }} />,
-      title: featureData[0].title,
-      description: featureData[0].description
-    },
-    {
-      icon: <InsightsIcon sx={{ fontSize: 40 }} />,
-      title: featureData[1].title,
-      description: featureData[1].description
-    },
-    {
-      icon: <SecurityIcon sx={{ fontSize: 40 }} />,
-      title: featureData[2].title,
-      description: featureData[2].description
-    },
-    {
-      icon: <DeviceHubIcon sx={{ fontSize: 40 }} />,
-      title: featureData[3].title,
-      description: featureData[3].description
-    }
-  ];
 
+  // Force remounting on navigation by using a random key
   return (
-    <Box>
+    <Box key={`home-page-${Math.random()}`}>
       {/* Hero Section */}
       <Box 
         sx={{ 
@@ -688,7 +659,7 @@ export default function Home() {
           </Grid>
           <Box sx={{ mt: 6, pt: 3, borderTop: `1px solid ${dividerColor}`, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              © <CopyrightYear /> RealPro CRM. All rights reserved.
+              © 2024 RealPro CRM. All rights reserved.
             </Typography>
           </Box>
         </Container>
