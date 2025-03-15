@@ -25,7 +25,10 @@ import {
   Tab,
   useTheme,
   alpha,
-  ButtonGroup
+  Select,
+  MenuItem,
+  FormControl,
+  SelectChangeEvent
 } from '@mui/material';
 import {
   Home as HomeIcon,
@@ -440,10 +443,10 @@ const ButtonWithIcon = ({ children, icon, ...props }: {
 } & ButtonProps) => (
   <Button 
     endIcon={icon || <ArrowForwardIcon />} 
-    sx={{ 
+      sx={{ 
       borderRadius: 8,
       textTransform: 'none',
-      fontWeight: 500,
+                fontWeight: 500,
       px: 2
     }}
     {...props}
@@ -966,17 +969,15 @@ const CommissionGoalTracker = () => {
   );
 };
 
-// Price Development Card
+// Price Development Card - remove hover effects and use standard shadow
 const PriceDevelopmentCard = () => {
   const theme = useTheme();
   const [region, setRegion] = useState<Region>('Sweden');
   const data = mockMarketStats.priceDevelopment[region];
   const timeSeriesData = mockMarketStats.percentageChangeTimeSeries[region];
   
-  const handleRegionChange = (event: React.MouseEvent<HTMLElement>, newRegion: Region | null) => {
-    if (newRegion !== null) {
-      setRegion(newRegion);
-    }
+  const handleRegionChange = (event: SelectChangeEvent) => {
+    setRegion(event.target.value as Region);
   };
 
   // Prepare data for charts
@@ -1019,11 +1020,7 @@ const PriceDevelopmentCard = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top' as const,
-        labels: {
-          boxWidth: 10,
-          usePointStyle: true,
-        },
+        display: false, // Hide legend to save space
       },
       tooltip: {
         mode: 'index' as const,
@@ -1033,8 +1030,8 @@ const PriceDevelopmentCard = () => {
         bodyColor: theme.palette.text.secondary,
         borderColor: theme.palette.divider,
         borderWidth: 1,
-        padding: 10,
-        boxPadding: 5,
+        padding: 8,
+        boxPadding: 4,
         callbacks: {
           label: function(context: {
             dataset: { label: string };
@@ -1064,7 +1061,10 @@ const PriceDevelopmentCard = () => {
         ticks: {
           maxRotation: 0,
           autoSkip: true,
-          maxTicksLimit: 7,
+          maxTicksLimit: 5,
+          font: {
+            size: 10
+          }
         },
       },
       y: {
@@ -1075,6 +1075,9 @@ const PriceDevelopmentCard = () => {
           callback: function(value: number) {
             return value.toFixed(1) + '%';
           },
+          font: {
+            size: 10
+          }
         },
       },
     },
@@ -1094,13 +1097,9 @@ const PriceDevelopmentCard = () => {
         background: `linear-gradient(135deg, ${blue[50]} 0%, #ffffff 100%)`,
         position: 'relative',
         overflow: 'visible',
-        transition: 'all 0.3s ease',
         border: '1px solid',
         borderColor: 'divider',
-        '&:hover': {
-          transform: 'translateY(-8px)',
-          boxShadow: `0 20px 30px -10px ${blue[100]}`,
-        }
+        boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
       }}
     >
       <CardHeader
@@ -1112,146 +1111,129 @@ const PriceDevelopmentCard = () => {
             </Typography>
           </Box>
         }
-        subheader="Last month's price trend"
+        action={
+          <FormControl size="small" sx={{ m: 0, minWidth: 140 }}>
+            <Select
+              value={region}
+              onChange={handleRegionChange}
+              displayEmpty
+              variant="outlined"
+              sx={{ fontSize: '0.875rem' }}
+            >
+              <MenuItem value="Sweden">Sweden</MenuItem>
+              <MenuItem value="Stockholm Urban Area">Stockholm Urban</MenuItem>
+              <MenuItem value="Stockholm County">Stockholm County</MenuItem>
+            </Select>
+          </FormControl>
+        }
         sx={{ pb: 0 }}
       />
-      <CardContent>
-        <Box sx={{ mb: 2 }}>
-          <ButtonGroup 
-            variant="outlined" 
-            size="small" 
-            color="primary"
-            fullWidth
-            aria-label="region selection"
-          >
-            <Button 
-              onClick={(e) => handleRegionChange(e, 'Sweden')}
-              variant={region === 'Sweden' ? 'contained' : 'outlined'}
-            >
-              Sweden
-            </Button>
-            <Button 
-              onClick={(e) => handleRegionChange(e, 'Stockholm Urban Area')}
-              variant={region === 'Stockholm Urban Area' ? 'contained' : 'outlined'}
-            >
-              Stockholm Urban
-            </Button>
-            <Button 
-              onClick={(e) => handleRegionChange(e, 'Stockholm County')}
-              variant={region === 'Stockholm County' ? 'contained' : 'outlined'}
-            >
-              Stockholm County
-            </Button>
-          </ButtonGroup>
-        </Box>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 3 }}>
-          {/* Houses */}
-          <Box sx={{ textAlign: 'center', width: '45%' }}>
-            <Box sx={{ 
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center', 
-              flexDirection: 'column'
-            }}>
-              <Avatar 
-                sx={{ 
-                  bgcolor: theme.palette.primary.main,
-                  width: 50,
-                  height: 50,
-                  mb: 1,
-                  boxShadow: `0 0 20px ${alpha(theme.palette.primary.main, 0.5)}`
-                }}
-              >
-                <HouseIcon />
-              </Avatar>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Houses
-              </Typography>
-              <Typography 
-                variant="h4" 
-                color={data.houses >= 0 ? "success.main" : "error.main"}
-                sx={{ 
-                  fontWeight: 'bold',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                {data.houses > 0 && "+"}
-                {data.houses.toFixed(1)}%
-                {data.houses >= 0 
-                  ? <TrendingUpIcon fontSize="small" sx={{ ml: 0.5 }} /> 
-                  : <TrendingUpIcon fontSize="small" sx={{ ml: 0.5, transform: 'rotate(180deg)' }} />
-                }
-              </Typography>
+      <CardContent sx={{ pt: 1, pb: 2, px: { xs: 2, md: 3 } }}>
+        <Grid container spacing={0.5}>
+          {/* Chart on the left - increased to 11/12 columns */}
+          <Grid item xs={11}>
+            <Typography variant="caption" fontWeight="medium" sx={{ mb: 0.5, display: 'block' }}>
+              Price Change (%) - Last 14 Days
+            </Typography>
+            <Box sx={{ height: 155 }}>
+              <Line options={chartOptions} data={formatDataForPercentageChart()} />
             </Box>
-          </Box>
+          </Grid>
           
-          {/* Apartments */}
-          <Box sx={{ textAlign: 'center', width: '45%' }}>
+          {/* Price indicators on the right - reduced to 1/12 columns */}
+          <Grid item xs={1} sx={{ pl: 0 }}>
             <Box sx={{ 
-              display: 'flex',
-              alignItems: 'center',
+              display: 'flex', 
+              flexDirection: 'column', 
+              height: '100%', 
               justifyContent: 'center', 
-              flexDirection: 'column'
+              gap: 0.5,
+              minWidth: '60px' // Prevent indicators from becoming too small
             }}>
-              <Avatar 
-                sx={{ 
-                  bgcolor: theme.palette.secondary.main,
-                  width: 50,
-                  height: 50,
-                  mb: 1,
-                  boxShadow: `0 0 20px ${alpha(theme.palette.secondary.main, 0.5)}`
-                }}
-              >
-                <ApartmentIcon />
-              </Avatar>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Apartments
-              </Typography>
-              <Typography 
-                variant="h4" 
-                color={data.apartments >= 0 ? "success.main" : "error.main"}
-                sx={{ 
-                  fontWeight: 'bold',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                {data.apartments > 0 && "+"}
-                {data.apartments.toFixed(1)}%
-                {data.apartments >= 0 
-                  ? <TrendingUpIcon fontSize="small" sx={{ ml: 0.5 }} /> 
-                  : <TrendingUpIcon fontSize="small" sx={{ ml: 0.5, transform: 'rotate(180deg)' }} />
-                }
-              </Typography>
+              {/* Houses indicator - ultra compact */}
+              <Box sx={{ 
+                p: 0.5, 
+                bgcolor: alpha(theme.palette.primary.main, 0.05),
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: alpha(theme.palette.primary.main, 0.1)
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
+                  <HouseIcon sx={{ fontSize: '0.6rem', color: theme.palette.primary.main, mr: 0.25 }} />
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
+                    Houses
+                  </Typography>
+                </Box>
+                <Typography 
+                  color={data.houses >= 0 ? "success.main" : "error.main"}
+                  sx={{ 
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontSize: '0.75rem',
+                    mt: 0.25
+                  }}
+                >
+                  {data.houses > 0 && "+"}
+                  {data.houses.toFixed(1)}%
+                  <TrendingUpIcon sx={{ 
+                    ml: 0.25, 
+                    fontSize: '0.7rem',
+                    transform: data.houses < 0 ? 'rotate(180deg)' : 'none'
+                  }} />
+                </Typography>
+              </Box>
+              
+              {/* Apartments indicator - ultra compact */}
+              <Box sx={{ 
+                p: 0.5, 
+                bgcolor: alpha(theme.palette.secondary.main, 0.05),
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: alpha(theme.palette.secondary.main, 0.1)
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
+                  <ApartmentIcon sx={{ fontSize: '0.6rem', color: theme.palette.secondary.main, mr: 0.25 }} />
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
+                    Apartment
+                  </Typography>
+                </Box>
+                <Typography 
+                  color={data.apartments >= 0 ? "success.main" : "error.main"}
+                  sx={{ 
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontSize: '0.75rem',
+                    mt: 0.25
+                  }}
+                >
+                  {data.apartments > 0 && "+"}
+                  {data.apartments.toFixed(1)}%
+                  <TrendingUpIcon sx={{ 
+                    ml: 0.25, 
+                    fontSize: '0.7rem',
+                    transform: data.apartments < 0 ? 'rotate(180deg)' : 'none'
+                  }} />
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-        </Box>
-
-        {/* Add Chart */}
-        <Box sx={{ height: 220, mt: 4 }}>
-          <Typography variant="subtitle2" fontWeight="medium" sx={{ mb: 1 }}>
-            Price Change (%) - Last 14 Days
-          </Typography>
-          <Line options={chartOptions} data={formatDataForPercentageChart()} />
-        </Box>
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   );
 };
 
-// Average Price Card
+// Average Price Card - remove hover effects and use standard shadow
 const AveragePriceCard = () => {
   const theme = useTheme();
   const [region, setRegion] = useState<Region>('Sweden');
   const data = mockMarketStats.averagePricePerSqm[region];
   const timeSeriesData = mockMarketStats.priceDevelopmentTimeSeries[region];
   
-  const handleRegionChange = (event: React.MouseEvent<HTMLElement>, newRegion: Region | null) => {
-    if (newRegion !== null) {
-      setRegion(newRegion);
-    }
+  const handleRegionChange = (event: SelectChangeEvent) => {
+    setRegion(event.target.value as Region);
   };
 
   // Prepare data for charts
@@ -1294,11 +1276,7 @@ const AveragePriceCard = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top' as const,
-        labels: {
-          boxWidth: 10,
-          usePointStyle: true,
-        },
+        display: false, // Hide legend to save space
       },
       tooltip: {
         mode: 'index' as const,
@@ -1308,8 +1286,8 @@ const AveragePriceCard = () => {
         bodyColor: theme.palette.text.secondary,
         borderColor: theme.palette.divider,
         borderWidth: 1,
-        padding: 10,
-        boxPadding: 5,
+        padding: 8,
+        boxPadding: 4,
         callbacks: {
           label: function(context: {
             dataset: { label: string };
@@ -1339,7 +1317,10 @@ const AveragePriceCard = () => {
         ticks: {
           maxRotation: 0,
           autoSkip: true,
-          maxTicksLimit: 7,
+          maxTicksLimit: 5,
+          font: {
+            size: 10
+          }
         },
       },
       y: {
@@ -1355,6 +1336,9 @@ const AveragePriceCard = () => {
               maximumFractionDigits: 0
             }).format(value);
           },
+          font: {
+            size: 10
+          }
         },
       },
     },
@@ -1374,13 +1358,9 @@ const AveragePriceCard = () => {
         background: `linear-gradient(135deg, ${purple[50]} 0%, #ffffff 100%)`,
         position: 'relative',
         overflow: 'visible',
-        transition: 'all 0.3s ease',
         border: '1px solid',
         borderColor: 'divider',
-        '&:hover': {
-          transform: 'translateY(-8px)',
-          boxShadow: `0 20px 30px -10px ${purple[100]}`,
-        }
+        boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
       }}
     >
       <CardHeader
@@ -1392,112 +1372,99 @@ const AveragePriceCard = () => {
             </Typography>
           </Box>
         }
-        subheader="Current market rates"
+        action={
+          <FormControl size="small" sx={{ m: 0, minWidth: 140 }}>
+            <Select
+              value={region}
+              onChange={handleRegionChange}
+              displayEmpty
+              variant="outlined"
+              sx={{ fontSize: '0.875rem' }}
+            >
+              <MenuItem value="Sweden">Sweden</MenuItem>
+              <MenuItem value="Stockholm Urban Area">Stockholm Urban</MenuItem>
+              <MenuItem value="Stockholm County">Stockholm County</MenuItem>
+            </Select>
+          </FormControl>
+        }
         sx={{ pb: 0 }}
       />
-      <CardContent>
-        <Box sx={{ mb: 2 }}>
-          <ButtonGroup 
-            variant="outlined" 
-            size="small" 
-            color="primary"
-            fullWidth
-            aria-label="region selection"
-          >
-            <Button 
-              onClick={(e) => handleRegionChange(e, 'Sweden')}
-              variant={region === 'Sweden' ? 'contained' : 'outlined'}
-            >
-              Sweden
-            </Button>
-            <Button 
-              onClick={(e) => handleRegionChange(e, 'Stockholm Urban Area')}
-              variant={region === 'Stockholm Urban Area' ? 'contained' : 'outlined'}
-            >
-              Stockholm Urban
-            </Button>
-            <Button 
-              onClick={(e) => handleRegionChange(e, 'Stockholm County')}
-              variant={region === 'Stockholm County' ? 'contained' : 'outlined'}
-            >
-              Stockholm County
-            </Button>
-          </ButtonGroup>
-        </Box>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 3 }}>
-          {/* Houses */}
-          <Box sx={{ textAlign: 'center', width: '45%' }}>
-            <Box sx={{ 
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center', 
-              flexDirection: 'column'
-            }}>
-              <Avatar 
-                sx={{ 
-                  bgcolor: theme.palette.primary.main,
-                  width: 50,
-                  height: 50,
-                  mb: 1,
-                  boxShadow: `0 0 20px ${alpha(theme.palette.primary.main, 0.5)}`
-                }}
-              >
-                <HouseIcon />
-              </Avatar>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Houses
-              </Typography>
-              <Typography 
-                variant="h5" 
-                color="text.primary"
-                sx={{ fontWeight: 'bold' }}
-              >
-                {formatCurrency(data.houses)}
-              </Typography>
+      <CardContent sx={{ pt: 1, pb: 2, px: { xs: 2, md: 3 } }}>
+        <Grid container spacing={0.5}>
+          {/* Chart on the left - increased to 11/12 columns */}
+          <Grid item xs={11}>
+            <Typography variant="caption" fontWeight="medium" sx={{ mb: 0.5, display: 'block' }}>
+              Average Price Trend - Last 14 Days
+            </Typography>
+            <Box sx={{ height: 155 }}>
+              <Line options={chartOptions} data={formatDataForPriceChart()} />
             </Box>
-          </Box>
+          </Grid>
           
-          {/* Apartments */}
-          <Box sx={{ textAlign: 'center', width: '45%' }}>
+          {/* Price indicators on the right - reduced to 1/12 columns */}
+          <Grid item xs={1} sx={{ pl: 0 }}>
             <Box sx={{ 
-              display: 'flex',
-              alignItems: 'center',
+              display: 'flex', 
+              flexDirection: 'column', 
+              height: '100%', 
               justifyContent: 'center', 
-              flexDirection: 'column'
+              gap: 0.5,
+              minWidth: '60px' // Prevent indicators from becoming too small
             }}>
-              <Avatar 
-                sx={{ 
-                  bgcolor: theme.palette.secondary.main,
-                  width: 50,
-                  height: 50,
-                  mb: 1,
-                  boxShadow: `0 0 20px ${alpha(theme.palette.secondary.main, 0.5)}`
-                }}
-              >
-                <ApartmentIcon />
-              </Avatar>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Apartments
-              </Typography>
-              <Typography 
-                variant="h5" 
-                color="text.primary"
-                sx={{ fontWeight: 'bold' }}
-              >
-                {formatCurrency(data.apartments)}
-              </Typography>
+              {/* Houses indicator - ultra compact */}
+              <Box sx={{ 
+                p: 0.5, 
+                bgcolor: alpha(theme.palette.primary.main, 0.05),
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: alpha(theme.palette.primary.main, 0.1)
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
+                  <HouseIcon sx={{ fontSize: '0.6rem', color: theme.palette.primary.main, mr: 0.25 }} />
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
+                    Houses
+                  </Typography>
+                </Box>
+                <Typography 
+                  color="text.primary"
+                  sx={{ 
+                    fontWeight: 'bold',
+                    fontSize: '0.75rem',
+                    mt: 0.25
+                  }}
+                >
+                  {formatCurrency(data.houses)}
+                </Typography>
+              </Box>
+              
+              {/* Apartments indicator - ultra compact */}
+              <Box sx={{ 
+                p: 0.5, 
+                bgcolor: alpha(theme.palette.secondary.main, 0.05),
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: alpha(theme.palette.secondary.main, 0.1)
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
+                  <ApartmentIcon sx={{ fontSize: '0.6rem', color: theme.palette.secondary.main, mr: 0.25 }} />
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
+                    Apartment
+                  </Typography>
+                </Box>
+                <Typography 
+                  color="text.primary"
+                  sx={{ 
+                    fontWeight: 'bold',
+                    fontSize: '0.75rem',
+                    mt: 0.25
+                  }}
+                >
+                  {formatCurrency(data.apartments)}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-        </Box>
-
-        {/* Add Chart */}
-        <Box sx={{ height: 220, mt: 4 }}>
-          <Typography variant="subtitle2" fontWeight="medium" sx={{ mb: 1 }}>
-            Average Price Trend - Last 14 Days
-          </Typography>
-          <Line options={chartOptions} data={formatDataForPriceChart()} />
-        </Box>
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   );
