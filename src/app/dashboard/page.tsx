@@ -731,15 +731,10 @@ const CommissionGoalTracker = () => {
         overflow: 'hidden',
         border: '1px solid',
         borderColor: 'divider',
-        boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+        boxShadow: '0 12px 24px rgba(0,0,0,0.1), 0 0 0 2px ${progressColor}40',
         bgcolor: 'background.paper',
-        transition: 'all 0.3s ease',
         height: '100%',
         position: 'relative',
-        '&:hover': {
-          boxShadow: `0 16px 32px rgba(0,0,0,0.1), 0 0 0 2px ${progressColor}40`,
-          transform: 'translateY(-4px)',
-        },
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -748,7 +743,6 @@ const CommissionGoalTracker = () => {
           right: 0,
           height: '4px',
           background: `linear-gradient(90deg, ${progressColor} ${progress}%, #e5e7eb ${progress}%)`,
-          zIndex: 2,
         }
       }}
     >
@@ -1312,12 +1306,8 @@ const DashboardContent = () => {
               overflow: 'hidden',
               border: '1px solid',
               borderColor: 'divider',
-              boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+              boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
               bgcolor: 'background.paper',
-              transition: 'box-shadow 0.2s',
-              '&:hover': {
-                boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
-              }
             }}
           >
             <CardHeader 
@@ -1454,12 +1444,8 @@ const DashboardContent = () => {
               overflow: 'hidden',
               border: '1px solid',
               borderColor: 'divider',
-              boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+              boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
               bgcolor: 'background.paper',
-              transition: 'box-shadow 0.2s',
-              '&:hover': {
-                boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
-              }
             }}
           >
             <CardHeader 
@@ -1518,14 +1504,9 @@ const DashboardContent = () => {
               overflow: 'hidden',
               border: '1px solid',
               borderColor: 'divider',
-              boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+              boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
               bgcolor: 'background.paper',
-              transition: 'all 0.3s ease',
               height: '100%',
-              '&:hover': {
-                boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
-                transform: 'translateY(-4px)',
-              }
             }}
           >
             <CardHeader 
