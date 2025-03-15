@@ -331,6 +331,7 @@ const ActivityItem = ({ activity }: { activity: Activity }): React.ReactElement 
             <Typography
               variant="body2"
               color="text.secondary"
+              component="span"
               sx={{
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
@@ -341,16 +342,33 @@ const ActivityItem = ({ activity }: { activity: Activity }): React.ReactElement 
             >
               {activity.description}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+            <Box 
+              component="span" 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mt: 1 
+              }}
+            >
               <AccessTimeIcon sx={{ fontSize: '0.875rem', color: 'text.secondary', mr: 0.5 }} />
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="text.secondary" component="span">
                 {timeText}
               </Typography>
               {activity.contact && (
                 <>
-                  <Box sx={{ display: 'inline-block', mx: 1, width: 4, height: 4, borderRadius: '50%', bgcolor: 'text.disabled' }} />
+                  <Box 
+                    component="span" 
+                    sx={{ 
+                      display: 'inline-block', 
+                      mx: 1, 
+                      width: 4, 
+                      height: 4, 
+                      borderRadius: '50%', 
+                      bgcolor: 'text.disabled' 
+                    }} 
+                  />
                   <PersonIcon sx={{ fontSize: '0.875rem', color: 'text.secondary', mr: 0.5 }} />
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" color="text.secondary" component="span">
                     {activity.contact}
                   </Typography>
                 </>
