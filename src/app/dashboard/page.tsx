@@ -1870,10 +1870,14 @@ const DashboardContent = () => {
   );
 };
 
+// Import WelcomePopup
+import WelcomePopup from '../../components/WelcomePopup';
+
 // Main Dashboard component with client-side only rendering
 export default function Dashboard() {
   return (
     <ClientOnly>
+      <WelcomePopup />
       <DashboardContent />
     </ClientOnly>
   );

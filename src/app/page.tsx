@@ -113,6 +113,7 @@ export default function Home() {
                   size="large"
                   component={Link}
                   href="/dashboard"
+                  onClick={() => localStorage.setItem('fromLandingPage', 'true')}
                   sx={{ 
                     bgcolor: 'white', 
                     color: 'primary.main',
@@ -564,6 +565,7 @@ export default function Home() {
             size="large"
             component={Link}
             href="/dashboard"
+            onClick={() => localStorage.setItem('fromLandingPage', 'true')}
             sx={{ 
               bgcolor: 'white', 
               color: 'primary.main',
