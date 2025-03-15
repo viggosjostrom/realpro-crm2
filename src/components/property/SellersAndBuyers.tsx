@@ -38,7 +38,9 @@ import {
   CalendarToday as CalendarIcon,
   Notes as NotesIcon,
   Search as SearchIcon,
-  LocationOn as LocationIcon
+  LocationOn as LocationIcon,
+  Call as CallIcon,
+  Sms as SmsIcon
 } from '@mui/icons-material';
 import { Property, Client } from '@/lib/types';
 import { mockClients } from '@/lib/utils/mockData';
@@ -292,6 +294,50 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
                                   {seller.postalCode} {seller.city}
                                 </Typography>
                               </Box>
+                              
+                              <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                                <Tooltip title={`Call ${seller.phone || 'N/A'}`} arrow placement="top">
+                                  <Button 
+                                    variant="outlined" 
+                                    size="small" 
+                                    startIcon={<CallIcon />}
+                                    sx={{ 
+                                      color: 'success.main', 
+                                      borderColor: 'success.main',
+                                      '&:hover': { 
+                                        backgroundColor: 'success.lighter', 
+                                        borderColor: 'success.main' 
+                                      }
+                                    }}
+                                  >
+                                    Call
+                                  </Button>
+                                </Tooltip>
+                                <Tooltip title={`Text ${seller.phone || 'N/A'}`} arrow placement="top">
+                                  <Button 
+                                    variant="outlined" 
+                                    size="small" 
+                                    startIcon={<SmsIcon />}
+                                    sx={{ 
+                                      color: 'info.main', 
+                                      borderColor: 'info.main',
+                                      '&:hover': { 
+                                        backgroundColor: 'info.lighter', 
+                                        borderColor: 'info.main' 
+                                      }
+                                    }}
+                                  >
+                                    Text
+                                  </Button>
+                                </Tooltip>
+                                <Button 
+                                  variant="outlined" 
+                                  size="small" 
+                                  startIcon={<EmailIcon />}
+                                >
+                                  Email
+                                </Button>
+                              </Box>
                             </Grid>
                             
                             <Grid item xs={12} md={6}>
@@ -332,20 +378,6 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
                           <Divider sx={{ my: 2 }} />
                           
                           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                            <Button 
-                              variant="outlined" 
-                              size="small" 
-                              startIcon={<PhoneIcon />}
-                            >
-                              Call
-                            </Button>
-                            <Button 
-                              variant="outlined" 
-                              size="small" 
-                              startIcon={<EmailIcon />}
-                            >
-                              Email
-                            </Button>
                             <Button 
                               variant="outlined" 
                               size="small" 
@@ -394,15 +426,13 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
                     />
                   )}
                 </Box>
-                {property.status !== 'sold' && (
-                  <Button 
-                    variant="contained" 
-                    startIcon={<AddIcon />}
-                    onClick={handleOpenAddDialog}
-                  >
-                    Add Buyer
-                  </Button>
-                )}
+                <Button 
+                  variant="contained" 
+                  startIcon={<AddIcon />}
+                  onClick={handleOpenAddDialog}
+                >
+                  Add Buyer
+                </Button>
               </Box>
               
               {property.status === 'sold' && buyer ? (
@@ -472,6 +502,50 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
                                 {buyer.postalCode} {buyer.city}
                               </Typography>
                             </Box>
+                            
+                            <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                              <Tooltip title={`Call ${buyer.phone || 'N/A'}`} arrow placement="top">
+                                <Button 
+                                  variant="outlined" 
+                                  size="small" 
+                                  startIcon={<CallIcon />}
+                                  sx={{ 
+                                    color: 'success.main', 
+                                    borderColor: 'success.main',
+                                    '&:hover': { 
+                                      backgroundColor: 'success.lighter', 
+                                      borderColor: 'success.main' 
+                                    }
+                                  }}
+                                >
+                                  Call
+                                </Button>
+                              </Tooltip>
+                              <Tooltip title={`Text ${buyer.phone || 'N/A'}`} arrow placement="top">
+                                <Button 
+                                  variant="outlined" 
+                                  size="small" 
+                                  startIcon={<SmsIcon />}
+                                  sx={{ 
+                                    color: 'info.main', 
+                                    borderColor: 'info.main',
+                                    '&:hover': { 
+                                      backgroundColor: 'info.lighter', 
+                                      borderColor: 'info.main' 
+                                    }
+                                  }}
+                                >
+                                  Text
+                                </Button>
+                              </Tooltip>
+                              <Button 
+                                variant="outlined" 
+                                size="small" 
+                                startIcon={<EmailIcon />}
+                              >
+                                Email
+                              </Button>
+                            </Box>
                           </Grid>
                           
                           <Grid item xs={12} md={6}>
@@ -508,6 +582,18 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
                             )}
                           </Grid>
                         </Grid>
+                        
+                        <Divider sx={{ my: 2 }} />
+                        
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                          <Button 
+                            variant="outlined" 
+                            size="small" 
+                            startIcon={<EventIcon />}
+                          >
+                            Schedule Meeting
+                          </Button>
+                        </Box>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -521,9 +607,16 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
                   </Typography>
                   {property.status !== 'sold' && (
                     <Typography variant="body2" color="text.secondary" paragraph>
-                      You can view potential buyers in the "Interested Buyers" tab.
+                      You can view potential buyers in the &quot;Interested Buyers&quot; tab.
                     </Typography>
                   )}
+                  <Button 
+                    variant="contained" 
+                    startIcon={<AddIcon />}
+                    onClick={handleOpenAddDialog}
+                  >
+                    Add Buyer
+                  </Button>
                 </Paper>
               )}
             </>

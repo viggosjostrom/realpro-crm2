@@ -31,7 +31,9 @@ import {
   Phone as PhoneIcon,
   Email as EmailIcon,
   LocalOffer as OfferIcon,
-  ArrowForward as ArrowIcon
+  ArrowForward as ArrowIcon,
+  Call as CallIcon,
+  Sms as SmsIcon
 } from '@mui/icons-material';
 import { Property, Client } from '@/lib/types';
 import { mockClients, mockOffers, mockActivities } from '@/lib/utils/mockData';
@@ -159,51 +161,67 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Most recent first
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, bgcolor: '#f5f7fa' }}>
       <Grid container spacing={3}>
         {/* Left Column: Property Info, Seller & Buyer, Activity Data */}
         <Grid item xs={12} md={8}>
           <Grid container spacing={3}>
             {/* Basic Property Info */}
             <Grid item xs={12}>
-              <Paper elevation={2} sx={{ p: 2 }}>
-                <Typography variant="h5" component="div" gutterBottom>
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'box-shadow 0.3s ease-in-out',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)'
+                  }
+                }}
+              >
+                <Typography variant="h5" component="div" gutterBottom fontWeight="600">
                   {property.address}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary" gutterBottom>
                   {property.postalCode} {property.city}
                 </Typography>
                 
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', mb: 2.5, mt: 2 }}>
                   <Chip 
                     icon={<MoneyIcon />} 
                     label={formatPrice(property.price)}
                     color="primary"
                     variant="outlined"
                     size="small"
+                    sx={{ borderRadius: 1.5, fontWeight: 500, px: 0.5 }}
                   />
                   <Chip 
                     icon={<SizeIcon />} 
                     label={`${property.size} m²`}
                     variant="outlined"
                     size="small"
+                    sx={{ borderRadius: 1.5, fontWeight: 500, px: 0.5 }}
                   />
                   <Chip 
                     icon={<RoomsIcon />} 
                     label={`${property.rooms} room${property.rooms > 1 ? 's' : ''}`}
                     variant="outlined"
                     size="small"
+                    sx={{ borderRadius: 1.5, fontWeight: 500, px: 0.5 }}
                   />
                   <Chip 
                     icon={<ApartmentIcon />} 
                     label={getPropertyTypeLabel(property.type)}
                     variant="outlined"
                     size="small"
+                    sx={{ borderRadius: 1.5, fontWeight: 500, px: 0.5 }}
                   />
                   <Chip 
                     label={getPropertyStatusLabel(property.status)}
                     color={getPropertyStatusColor(property.status)}
                     size="small"
+                    sx={{ borderRadius: 1.5, fontWeight: 500, px: 0.5 }}
                   />
                 </Box>
                 
@@ -215,22 +233,67 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
 
             {/* Seller and Buyer Information */}
             <Grid item xs={12} sm={6}>
-              <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <PersonIcon sx={{ mr: 1, color: 'primary.main' }} /> Seller
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  height: '100%', 
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'box-shadow 0.3s ease-in-out',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)'
+                  }
+                }}
+              >
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
+                  <PersonIcon sx={{ mr: 1.5, color: 'primary.main' }} /> Seller
                 </Typography>
                 
                 {seller ? (
-                  <Box>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1.05rem' }}>
                       {seller.firstName} {seller.lastName}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                      <PhoneIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                      <Typography variant="body2">{seller.phone}</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.5 }}>
+                      <PhoneIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
+                      <Typography variant="body2" sx={{ flex: 1 }}>{seller.phone}</Typography>
+                      <Box>
+                        <Tooltip title={`Call ${seller.phone}`} arrow placement="top">
+                          <IconButton 
+                            size="medium" 
+                            sx={{ 
+                              color: 'success.main',
+                              mr: 0.5,
+                              width: 36,
+                              height: 36,
+                              '&:hover': { 
+                                backgroundColor: 'success.lighter',
+                              }
+                            }}
+                          >
+                            <CallIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title={`Text ${seller.phone}`} arrow placement="top">
+                          <IconButton 
+                            size="medium" 
+                            sx={{ 
+                              color: 'info.main',
+                              width: 36,
+                              height: 36,
+                              '&:hover': { 
+                                backgroundColor: 'info.lighter',
+                              }
+                            }}
+                          >
+                            <SmsIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                      <EmailIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.2 }}>
+                      <EmailIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
                       <Typography variant="body2">{seller.email}</Typography>
                     </Box>
                   </Box>
@@ -242,27 +305,72 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
 
             {/* Buyer Information */}
             <Grid item xs={12} sm={6}>
-              <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <PersonIcon sx={{ mr: 1, color: 'primary.main' }} /> Buyer
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  height: '100%', 
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'box-shadow 0.3s ease-in-out',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)'
+                  }
+                }}
+              >
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
+                  <PersonIcon sx={{ mr: 1.5, color: 'primary.main' }} /> Buyer
                 </Typography>
                 
                 {property.status === 'sold' && buyer ? (
-                  <Box>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1.05rem' }}>
                       {buyer.firstName} {buyer.lastName}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                      <PhoneIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                      <Typography variant="body2">{buyer.phone}</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.5 }}>
+                      <PhoneIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
+                      <Typography variant="body2" sx={{ flex: 1 }}>{buyer.phone}</Typography>
+                      <Box>
+                        <Tooltip title={`Call ${buyer.phone}`} arrow placement="top">
+                          <IconButton 
+                            size="medium" 
+                            sx={{ 
+                              color: 'success.main',
+                              mr: 0.5,
+                              width: 36,
+                              height: 36,
+                              '&:hover': { 
+                                backgroundColor: 'success.lighter',
+                              }
+                            }}
+                          >
+                            <CallIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title={`Text ${buyer.phone}`} arrow placement="top">
+                          <IconButton 
+                            size="medium" 
+                            sx={{ 
+                              color: 'info.main',
+                              width: 36,
+                              height: 36,
+                              '&:hover': { 
+                                backgroundColor: 'info.lighter',
+                              }
+                            }}
+                          >
+                            <SmsIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                      <EmailIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.2 }}>
+                      <EmailIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
                       <Typography variant="body2">{buyer.email}</Typography>
                     </Box>
                   </Box>
                 ) : (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                     No buyer(s) yet.
                   </Typography>
                 )}
@@ -271,18 +379,45 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
 
             {/* Upcoming Viewings */}
             <Grid item xs={12}>
-              <Paper elevation={2} sx={{ p: 2 }}>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <CalendarIcon sx={{ mr: 1, color: 'primary.main' }} /> Upcoming Viewings
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'box-shadow 0.3s ease-in-out',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)'
+                  }
+                }}
+              >
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
+                  <CalendarIcon sx={{ mr: 1.5, color: 'primary.main' }} /> Upcoming Viewings
                 </Typography>
                 
                 {upcomingViewings.length > 0 ? (
-                  <TableContainer component={Paper} variant="outlined">
-                    <Table size="small">
+                  <TableContainer 
+                    component={Paper} 
+                    variant="outlined" 
+                    sx={{ 
+                      mt: 2.5, 
+                      border: 'none', 
+                      boxShadow: 'none',
+                      backgroundColor: 'transparent'
+                    }}
+                  >
+                    <Table size="small" sx={{ '& .MuiTableCell-root': { borderColor: 'rgba(0,0,0,0.06)' } }}>
                       <TableBody>
                         {upcomingViewings.slice(0, 5).map((viewing) => (
-                          <TableRow key={viewing.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                            <TableCell sx={{ width: '30%' }}>
+                          <TableRow 
+                            key={viewing.id} 
+                            sx={{ 
+                              '&:last-child td, &:last-child th': { border: 0 },
+                              '&:hover': { backgroundColor: 'rgba(0,0,0,0.02)' },
+                              transition: 'background-color 0.2s ease-in-out'
+                            }}
+                          >
+                            <TableCell sx={{ width: '30%', py: 1.5 }}>
                               <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                                 {formatDate(viewing.date)}
                               </Typography>
@@ -290,8 +425,8 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
                                 {new Date(viewing.date).toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })}
                               </Typography>
                             </TableCell>
-                            <TableCell>
-                              <Typography variant="body2">
+                            <TableCell sx={{ py: 1.5 }}>
+                              <Typography variant="body2" fontWeight={500}>
                                 {viewing.title}
                               </Typography>
                               {viewing.description && (
@@ -300,11 +435,12 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
                                 </Typography>
                               )}
                             </TableCell>
-                            <TableCell align="right">
+                            <TableCell align="right" sx={{ py: 1.5 }}>
                               <Chip 
                                 size="small" 
                                 label={viewing.status} 
                                 color={viewing.status === 'scheduled' ? 'primary' : 'default'} 
+                                sx={{ borderRadius: 1.5, fontWeight: 500, px: 0.5 }}
                               />
                             </TableCell>
                           </TableRow>
@@ -313,7 +449,7 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
                     </Table>
                   </TableContainer>
                 ) : (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                     No upcoming viewings scheduled
                   </Typography>
                 )}
@@ -322,20 +458,47 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
 
             {/* Offers */}
             <Grid item xs={12}>
-              <Paper elevation={2} sx={{ p: 2 }}>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <OfferIcon sx={{ mr: 1, color: 'primary.main' }} /> Recent Offers
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'box-shadow 0.3s ease-in-out',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)'
+                  }
+                }}
+              >
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
+                  <OfferIcon sx={{ mr: 1.5, color: 'primary.main' }} /> Recent Offers
                 </Typography>
                 
                 {propertyOffers.length > 0 ? (
-                  <TableContainer component={Paper} variant="outlined">
-                    <Table size="small">
+                  <TableContainer 
+                    component={Paper} 
+                    variant="outlined" 
+                    sx={{ 
+                      mt: 2.5, 
+                      border: 'none', 
+                      boxShadow: 'none',
+                      backgroundColor: 'transparent'
+                    }}
+                  >
+                    <Table size="small" sx={{ '& .MuiTableCell-root': { borderColor: 'rgba(0,0,0,0.06)' } }}>
                       <TableBody>
                         {propertyOffers.slice(0, 5).map((offer) => {
                           const offerBuyer = getClient(offer.buyerId);
                           return (
-                            <TableRow key={offer.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                              <TableCell sx={{ width: '40%' }}>
+                            <TableRow 
+                              key={offer.id} 
+                              sx={{ 
+                                '&:last-child td, &:last-child th': { border: 0 },
+                                '&:hover': { backgroundColor: 'rgba(0,0,0,0.02)' },
+                                transition: 'background-color 0.2s ease-in-out'
+                              }}
+                            >
+                              <TableCell sx={{ width: '40%', py: 1.5 }}>
                                 <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                                   {formatPrice(offer.amount)}
                                 </Typography>
@@ -343,23 +506,24 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
                                   {formatDate(offer.date)}
                                 </Typography>
                               </TableCell>
-                              <TableCell>
+                              <TableCell sx={{ py: 1.5 }}>
                                 {offerBuyer && (
                                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Avatar sx={{ width: 24, height: 24, mr: 1, fontSize: '0.75rem' }}>
+                                    <Avatar sx={{ width: 28, height: 28, mr: 1.5, fontSize: '0.75rem', bgcolor: 'primary.light' }}>
                                       {offerBuyer.firstName.charAt(0)}{offerBuyer.lastName.charAt(0)}
                                     </Avatar>
-                                    <Typography variant="body2">
+                                    <Typography variant="body2" fontWeight={500}>
                                       {offerBuyer.firstName} {offerBuyer.lastName}
                                     </Typography>
                                   </Box>
                                 )}
                               </TableCell>
-                              <TableCell align="right">
+                              <TableCell align="right" sx={{ py: 1.5 }}>
                                 <Chip 
                                   size="small" 
                                   label={offer.status.charAt(0).toUpperCase() + offer.status.slice(1)} 
                                   color={getOfferStatusColor(offer.status)} 
+                                  sx={{ borderRadius: 1.5, fontWeight: 500, px: 0.5 }}
                                 />
                               </TableCell>
                             </TableRow>
@@ -369,7 +533,7 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
                     </Table>
                   </TableContainer>
                 ) : (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                     No offers received yet
                   </Typography>
                 )}
@@ -378,36 +542,65 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
 
             {/* Interested Buyers */}
             <Grid item xs={12}>
-              <Paper elevation={2} sx={{ p: 2 }}>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <PersonIcon sx={{ mr: 1, color: 'primary.main' }} /> Interested Buyers
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'box-shadow 0.3s ease-in-out',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)'
+                  }
+                }}
+              >
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
+                  <PersonIcon sx={{ mr: 1.5, color: 'primary.main' }} /> Interested Buyers
                 </Typography>
                 
                 {interestedBuyers.length > 0 ? (
-                  <List dense sx={{ p: 0 }}>
-                    <Grid container spacing={2}>
+                  <List dense sx={{ p: 0, mt: 2 }}>
+                    <Grid container spacing={2.5}>
                       {interestedBuyers.slice(0, 6).map((buyer) => (
                         <Grid item xs={12} sm={6} key={buyer.id}>
                           <ListItem 
                             sx={{ 
                               border: '1px solid', 
-                              borderColor: 'divider', 
-                              borderRadius: 1,
-                              p: 1
+                              borderColor: 'rgba(0,0,0,0.08)', 
+                              borderRadius: 2,
+                              p: 1.5,
+                              transition: 'all 0.2s ease-in-out',
+                              '&:hover': {
+                                borderColor: 'primary.light',
+                                backgroundColor: 'rgba(0,0,0,0.01)'
+                              }
                             }}
                           >
                             <ListItemAvatar>
-                              <Avatar>
+                              <Avatar sx={{ bgcolor: 'primary.light' }}>
                                 {buyer.firstName.charAt(0)}{buyer.lastName.charAt(0)}
                               </Avatar>
                             </ListItemAvatar>
                             <ListItemText 
                               primary={`${buyer.firstName} ${buyer.lastName}`} 
                               secondary={buyer.phone}
+                              primaryTypographyProps={{ fontWeight: 500 }}
+                              sx={{ my: 0 }}
                             />
                             <ListItemSecondaryAction>
                               <Tooltip title="View details">
-                                <IconButton edge="end" size="small">
+                                <IconButton 
+                                  edge="end" 
+                                  size="small" 
+                                  sx={{ 
+                                    color: 'primary.main',
+                                    transition: 'all 0.2s',
+                                    '&:hover': { 
+                                      backgroundColor: 'primary.lighter', 
+                                      transform: 'translateX(2px)' 
+                                    } 
+                                  }}
+                                >
                                   <ArrowIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
@@ -419,16 +612,16 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
                     {interestedBuyers.length > 6 && (
                       <Typography 
                         variant="body2" 
-                        color="text.secondary" 
+                        color="primary" 
                         align="center" 
-                        sx={{ mt: 2 }}
+                        sx={{ mt: 2.5, fontWeight: 500, cursor: 'pointer' }}
                       >
                         + {interestedBuyers.length - 6} more interested buyers
                       </Typography>
                     )}
                   </List>
                 ) : (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                     No interested buyers recorded
                   </Typography>
                 )}
@@ -440,13 +633,20 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
         {/* Right Column: Property Image only */}
         <Grid item xs={12} md={4}>
           <Card 
-            elevation={3} 
+            elevation={0} 
             sx={{ 
               position: 'sticky', 
               top: 16,
               maxHeight: 'calc(100vh - 32px)',
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              borderRadius: 2,
+              overflow: 'hidden',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+              transition: 'box-shadow 0.3s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 8px 30px rgba(0,0,0,0.2)'
+              }
             }}
           >
             <CardMedia
@@ -457,7 +657,7 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
                 aspectRatio: '1/1',
                 width: '100%',
                 objectFit: 'cover',
-                borderRadius: 1
+                borderRadius: 2
               }}
             />
           </Card>
