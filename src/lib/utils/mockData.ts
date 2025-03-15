@@ -1499,4 +1499,36 @@ export const mockDashboardStats: DashboardStats = {
   currentCommission: 187500, // 187,500 SEK current commission (75% of goal)
   commissionLastMonth: 235000, // 235,000 SEK last month's commission
   daysLeftInMonth: 8, // 8 days left in the current month
+};
+
+// Mock Market Stats for price development and average prices
+export const mockMarketStats = {
+  priceDevelopment: {
+    'Sweden': {
+      houses: 2.3,
+      apartments: 1.8,
+    },
+    'Stockholm Urban Area': {
+      houses: 3.1,
+      apartments: 2.7,
+    },
+    'Stockholm County': {
+      houses: 2.8,
+      apartments: 2.5,
+    }
+  },
+  averagePricePerSqm: {
+    'Sweden': {
+      houses: 32500,
+      apartments: 48700,
+    },
+    'Stockholm Urban Area': {
+      houses: 57800,
+      apartments: 79200,
+    },
+    'Stockholm County': {
+      houses: 51200,
+      apartments: 68500,
+    }
+  }
 }; 

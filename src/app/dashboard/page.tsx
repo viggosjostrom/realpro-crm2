@@ -24,16 +24,14 @@ import {
   Tabs,
   Tab,
   useTheme,
-  alpha
+  alpha,
+  ButtonGroup
 } from '@mui/material';
 import {
-  People as PeopleIcon,
   Home as HomeIcon,
   ContactPhone as ContactPhoneIcon,
   AttachMoney as MoneyIcon,
   Email as EmailIcon,
-  Event as EventIcon,
-  Visibility as VisibilityIcon,
   Description as DescriptionIcon,
   ArrowForward as ArrowForwardIcon,
   TrendingUp as TrendingUpIcon,
@@ -54,15 +52,19 @@ import {
   Person as PersonIcon,
   Assignment as AssignmentIcon,
   Replay as ReplayIcon,
-  RateReview as RateReviewIcon
+  RateReview as RateReviewIcon,
+  Apartment as ApartmentIcon,
+  PriceChange as PriceChangeIcon,
+  SquareFoot as SquareFootIcon,
+  House as HouseIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
-import { mockDashboardStats, mockActivities, mockProperties, mockLeads } from '@/lib/utils/mockData';
+import { mockDashboardStats, mockActivities, mockProperties, mockLeads, mockMarketStats } from '@/lib/utils/mockData';
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils/formatters';
 import { Activity, Property } from '@/lib/types';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
 import { format } from 'date-fns';
 import { green, orange, red, blue, purple } from '@mui/material/colors';
-import capitalize from 'lodash/capitalize';
 
 // Client-only wrapper component
 const ClientOnly = ({ children }: { children: React.ReactNode }) => {
@@ -83,133 +85,8 @@ const ClientOnly = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Enhanced Stat card component with more visual impact
-const StatCard = ({ title, value, icon, color, trend }: { 
-  title: string, 
-  value: string | number, 
-  icon: React.ReactNode, 
-  color: string,
-  trend?: number 
-}) => {
-  // Generate a lighter shade of the color for gradient
-  const lighterColor = `${color}20`;
-  
-  // Determine trend direction for styling
-  const isTrendPositive = trend === undefined ? undefined : trend >= 0;
-  const trendColor = isTrendPositive ? 'success.main' : 'error.main';
-  const trendIcon = isTrendPositive ? 
-    <TrendingUpIcon fontSize="small" sx={{ mr: 0.5 }} /> : 
-    <TrendingUpIcon fontSize="small" sx={{ mr: 0.5, transform: 'rotate(180deg)' }} />;
-
-  return (
-    <Card 
-      elevation={0} 
-      sx={{ 
-        height: '100%', 
-        borderRadius: 3,
-        background: `linear-gradient(135deg, ${lighterColor} 0%, #ffffff 100%)`,
-        position: 'relative',
-        overflow: 'visible',
-        transition: 'all 0.3s ease',
-        border: '1px solid',
-        borderColor: 'divider',
-        '&:hover': {
-          transform: 'translateY(-8px)',
-          boxShadow: `0 20px 30px -10px ${color}30`,
-          '& .stat-icon': {
-            transform: 'scale(1.1) translateY(-5px)',
-            boxShadow: `0 15px 25px -5px ${color}50`,
-          }
-        }
-      }}
-    >
-      <CardContent sx={{ p: 2, position: 'relative', zIndex: 1 }}>
-        {/* Icon positioned for visual impact */}
-        <Avatar 
-          className="stat-icon"
-          sx={{ 
-            ...getAccessibleAvatarStyle(color),
-            width: 50, 
-            height: 50,
-            position: 'absolute',
-            top: -15,
-            right: 15,
-            transition: 'all 0.3s ease',
-            boxShadow: `0 10px 20px -5px ${color}40`,
-            border: '3px solid white',
-          }}
-        >
-          {icon}
-        </Avatar>
-        
-        {/* Card content with better spacing */}
-        <Box sx={{ mt: 3, mb: 1 }}>
-          <Typography 
-            variant="subtitle2" 
-            color="text.secondary" 
-            gutterBottom
-            sx={{ 
-              fontWeight: 500,
-              fontSize: '0.8rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}
-          >
-            {title}
-          </Typography>
-          
-          <Typography 
-            variant="h5" 
-            component="div" 
-            sx={{ 
-              fontWeight: 'bold', 
-              mb: 1,
-              color: color,
-              textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}
-          >
-            {value}
-          </Typography>
-          
-          {trend !== undefined && (
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center',
-                typography: 'caption',
-                fontWeight: 'medium',
-                bgcolor: `${trendColor}15`,
-                color: trendColor,
-                px: 1,
-                py: 0.5,
-                borderRadius: 1,
-                width: 'fit-content',
-                border: '1px solid',
-                borderColor: `${trendColor}30`,
-              }}
-            >
-              {trendIcon}
-              {Math.abs(trend)}% from last month
-            </Box>
-          )}
-        </Box>
-        
-        {/* Decorative element */}
-        <Box 
-          sx={{ 
-            position: 'absolute', 
-            bottom: 0, 
-            left: 0, 
-            width: '100%', 
-            height: '4px', 
-            background: `linear-gradient(90deg, ${color} 0%, transparent 100%)`,
-            borderBottomLeftRadius: 3,
-          }} 
-        />
-      </CardContent>
-    </Card>
-  );
-};
+// Region selector type
+type Region = 'Sweden' | 'Stockholm Urban Area' | 'Stockholm County';
 
 // Update the Activity type definition with the new fields
 type ActivityType = 'appointment' | 'task' | 'call' | 'email' | 'meeting' | 'viewing' | 'offer' | 'contract' | 'follow-up' | 'evaluation' | 'reminder' | 'other';
@@ -247,6 +124,7 @@ const getActivityIcon = (type: ActivityType): React.ReactElement => {
 };
 
 // Function to get status color based on activity status
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getStatusColor = (status: ActivityStatus): string => {
   switch (status) {
     case 'completed':
@@ -318,6 +196,61 @@ const getTimeText = (activity: Activity): string => {
   return `${format(date, 'MMM d')} at ${format(date, 'h:mm a')}`;
 };
 
+// Filter activities by tab
+const filterActivitiesByTab = (activities: Activity[], tab: number): Activity[] => {
+  // Use our fixed reference date
+  const referenceDate = new Date(REFERENCE_TODAY);
+  referenceDate.setHours(0, 0, 0, 0);
+  
+  const tomorrow = new Date(referenceDate);
+  tomorrow.setDate(referenceDate.getDate() + 1);
+  
+  const nextWeek = new Date(referenceDate);
+  nextWeek.setDate(referenceDate.getDate() + 7);
+  
+  switch (tab) {
+    case 0: // All
+      return activities;
+    case 1: // Today
+      return activities.filter(activity => {
+        const activityDate = new Date(activity.date);
+        activityDate.setHours(0, 0, 0, 0);
+        return activityDate.getTime() === referenceDate.getTime();
+      });
+    case 2: // Tomorrow
+      return activities.filter(activity => {
+        const activityDate = new Date(activity.date);
+        activityDate.setHours(0, 0, 0, 0);
+        return activityDate.getTime() === tomorrow.getTime();
+      });
+    case 3: // This Week
+      return activities.filter(activity => {
+        const activityDate = new Date(activity.date);
+        activityDate.setHours(0, 0, 0, 0);
+        return activityDate >= referenceDate && activityDate < nextWeek;
+      });
+    default:
+      return activities;
+  }
+};
+
+// Sort activities by date (closest upcoming first, then completed)
+const sortActivitiesByDate = (activities: Activity[]): Activity[] => {
+  return [...activities].sort((a, b) => {
+    // Upcoming activities (not completed) come first
+    if (!a.completed && b.completed) return -1;
+    if (a.completed && !b.completed) return 1;
+    
+    // For upcoming activities, sort by closest date
+    if (!a.completed && !b.completed) {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    }
+    
+    // For completed activities, sort by most recent
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+};
+
 // Special ActivityItem component specifically for the dashboard
 // This version adds Today/Tomorrow indicators and removes the status chip
 const DashboardActivityItem = ({ activity }: { activity: Activity }): React.ReactElement => {
@@ -371,7 +304,7 @@ const DashboardActivityItem = ({ activity }: { activity: Activity }): React.Reac
           borderColor: 'divider',
           ...(isToday && { boxShadow: '0 0 0 2px rgba(26, 86, 219, 0.3)' })
         }}>
-          {getActivityIcon(activity.type)}
+          {getActivityIcon(activity.type as ActivityType)}
         </Avatar>
       </ListItemAvatar>
       <ListItemText
@@ -474,102 +407,24 @@ const DashboardActivityItem = ({ activity }: { activity: Activity }): React.Reac
   );
 };
 
-// Keep the original ActivityItem component for use in other parts of the application
-// This is needed by ViewingsAndFollowups.tsx
-export const ActivityItem = ({ activity }: { activity: Activity }): React.ReactElement => {
-  const statusColor = getStatusColor(activity.status);
-  const timeText = getTimeText(activity);
-  
-  return (
-    <ListItem 
-      alignItems="flex-start"
-      sx={{ 
-        py: 2, 
-        px: 3,
-        transition: 'background-color 0.2s',
-        '&:hover': {
-          bgcolor: 'action.hover',
-        }
-      }}
-    >
-      <ListItemAvatar>
-        <Avatar sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
-          {getActivityIcon(activity.type)}
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText
-        primary={
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-              {activity.title}
-            </Typography>
-            <Chip 
-              label={capitalize(activity.status)} 
-              size="small"
-              sx={{ 
-                bgcolor: alpha(statusColor, 0.1),
-                color: statusColor,
-                fontWeight: 500,
-                fontSize: '0.75rem',
-                height: 24
-              }}
-            />
-          </Box>
-        }
-        secondary={
-          <>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              component="span"
-              sx={{
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                mb: 1
-              }}
-            >
-              {activity.description}
-            </Typography>
-            <Box 
-              component="span" 
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                mt: 1 
-              }}
-            >
-              <AccessTimeIcon sx={{ fontSize: '0.875rem', color: 'text.secondary', mr: 0.5 }} />
-              <Typography variant="caption" color="text.secondary" component="span">
-                {timeText}
-              </Typography>
-              {activity.contact && (
-                <>
-                  <Box 
-                    component="span" 
-                    sx={{ 
-                      display: 'inline-block', 
-                      mx: 1, 
-                      width: 4, 
-                      height: 4, 
-                      borderRadius: '50%', 
-                      bgcolor: 'text.disabled' 
-                    }} 
-                  />
-                  <PersonIcon sx={{ fontSize: '0.875rem', color: 'text.secondary', mr: 0.5 }} />
-                  <Typography variant="caption" color="text.secondary" component="span">
-                    {activity.contact}
-                  </Typography>
-                </>
-              )}
-            </Box>
-          </>
-        }
-      />
-    </ListItem>
-  );
-};
+// Enhanced Button with Icon
+const ButtonWithIcon = ({ children, icon, ...props }: { 
+  children: React.ReactNode, 
+  icon?: React.ReactNode
+} & ButtonProps) => (
+  <Button 
+    endIcon={icon || <ArrowForwardIcon />} 
+    sx={{ 
+      borderRadius: 8,
+      textTransform: 'none',
+      fontWeight: 500,
+      px: 2
+    }}
+    {...props}
+  >
+    {children}
+  </Button>
+);
 
 // Property card component
 const PropertyCard = ({ property }: { property: Property }) => {
@@ -683,25 +538,6 @@ const PropertyCard = ({ property }: { property: Property }) => {
   );
 };
 
-// Enhanced Button with Icon
-const ButtonWithIcon = ({ children, icon, ...props }: { 
-  children: React.ReactNode, 
-  icon?: React.ReactNode
-} & ButtonProps) => (
-  <Button 
-    endIcon={icon || <ArrowForwardIcon />} 
-    sx={{ 
-      borderRadius: 8,
-      textTransform: 'none',
-      fontWeight: 500,
-      px: 2
-    }}
-    {...props}
-  >
-    {children}
-  </Button>
-);
-
 // Commission Goal Tracker component
 const CommissionGoalTracker = () => {
   const progress = (mockDashboardStats.currentCommission / mockDashboardStats.commissionGoal) * 100;
@@ -731,7 +567,7 @@ const CommissionGoalTracker = () => {
         overflow: 'hidden',
         border: '1px solid',
         borderColor: 'divider',
-        boxShadow: '0 12px 24px rgba(0,0,0,0.1), 0 0 0 2px ${progressColor}40',
+        boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
         bgcolor: 'background.paper',
         height: '100%',
         position: 'relative',
@@ -1104,59 +940,364 @@ const CommissionGoalTracker = () => {
   );
 };
 
-// Filter activities by tab
-const filterActivitiesByTab = (activities: Activity[], tab: number): Activity[] => {
-  // Use our fixed reference date
-  const referenceDate = new Date(REFERENCE_TODAY);
-  referenceDate.setHours(0, 0, 0, 0);
+// Price Development Card
+const PriceDevelopmentCard = () => {
+  const theme = useTheme();
+  const [region, setRegion] = useState<Region>('Sweden');
+  const data = mockMarketStats.priceDevelopment[region];
   
-  const tomorrow = new Date(referenceDate);
-  tomorrow.setDate(referenceDate.getDate() + 1);
-  
-  const nextWeek = new Date(referenceDate);
-  nextWeek.setDate(referenceDate.getDate() + 7);
-  
-  switch (tab) {
-    case 0: // All
-      return activities;
-    case 1: // Today
-      return activities.filter(activity => {
-        const activityDate = new Date(activity.date);
-        activityDate.setHours(0, 0, 0, 0);
-        return activityDate.getTime() === referenceDate.getTime();
-      });
-    case 2: // Tomorrow
-      return activities.filter(activity => {
-        const activityDate = new Date(activity.date);
-        activityDate.setHours(0, 0, 0, 0);
-        return activityDate.getTime() === tomorrow.getTime();
-      });
-    case 3: // This Week
-      return activities.filter(activity => {
-        const activityDate = new Date(activity.date);
-        activityDate.setHours(0, 0, 0, 0);
-        return activityDate >= referenceDate && activityDate < nextWeek;
-      });
-    default:
-      return activities;
-  }
+  const handleRegionChange = (event: React.MouseEvent<HTMLElement>, newRegion: Region | null) => {
+    if (newRegion !== null) {
+      setRegion(newRegion);
+    }
+  };
+
+  return (
+    <Card
+      elevation={0}
+      sx={{
+        height: '100%',
+        borderRadius: 3,
+        background: `linear-gradient(135deg, ${blue[50]} 0%, #ffffff 100%)`,
+        position: 'relative',
+        overflow: 'visible',
+        transition: 'all 0.3s ease',
+        border: '1px solid',
+        borderColor: 'divider',
+        '&:hover': {
+          transform: 'translateY(-8px)',
+          boxShadow: `0 20px 30px -10px ${blue[100]}`,
+        }
+      }}
+    >
+      <CardHeader
+        title={
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <PriceChangeIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              Price Development
+            </Typography>
+          </Box>
+        }
+        subheader="Last month's price trend"
+        sx={{ pb: 0 }}
+      />
+      <CardContent>
+        <Box sx={{ mb: 2 }}>
+          <ButtonGroup 
+            variant="outlined" 
+            size="small" 
+            color="primary"
+            fullWidth
+            aria-label="region selection"
+          >
+            <Button 
+              onClick={(e) => handleRegionChange(e, 'Sweden')}
+              variant={region === 'Sweden' ? 'contained' : 'outlined'}
+            >
+              Sweden
+            </Button>
+            <Button 
+              onClick={(e) => handleRegionChange(e, 'Stockholm Urban Area')}
+              variant={region === 'Stockholm Urban Area' ? 'contained' : 'outlined'}
+            >
+              Stockholm Urban
+            </Button>
+            <Button 
+              onClick={(e) => handleRegionChange(e, 'Stockholm County')}
+              variant={region === 'Stockholm County' ? 'contained' : 'outlined'}
+            >
+              Stockholm County
+            </Button>
+          </ButtonGroup>
+        </Box>
+        
+        <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 3 }}>
+          {/* Houses */}
+          <Box sx={{ textAlign: 'center', width: '45%' }}>
+            <Avatar
+              sx={{
+                bgcolor: green[100],
+                width: 56,
+                height: 56,
+                mb: 1,
+                mx: 'auto',
+                color: green[700],
+                boxShadow: `0 8px 16px -4px ${green[200]}`,
+              }}
+            >
+              <HouseIcon />
+            </Avatar>
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Houses
+            </Typography>
+            <Box
+              sx={{
+                width: '100%',
+                height: 100,
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+              }}
+            >
+              <Box
+                sx={{
+                  width: '60%',
+                  height: `${data.houses * 20}%`,
+                  bgcolor: green[600],
+                  borderRadius: '4px 4px 0 0',
+                  position: 'relative',
+                  transition: 'all 0.3s ease',
+                }}
+              />
+              <Typography
+                variant="h5"
+                sx={{
+                  color: data.houses >= 0 ? green[600] : red[600],
+                  fontWeight: 'bold',
+                  mt: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                {data.houses >= 0 ? '+' : ''}{data.houses}%
+                {data.houses >= 0 ? (
+                  <TrendingUpIcon fontSize="small" sx={{ ml: 0.5 }} />
+                ) : (
+                  <TrendingUpIcon fontSize="small" sx={{ ml: 0.5, transform: 'rotate(180deg)' }} />
+                )}
+              </Typography>
+            </Box>
+          </Box>
+          
+          {/* Apartments */}
+          <Box sx={{ textAlign: 'center', width: '45%' }}>
+            <Avatar
+              sx={{
+                bgcolor: blue[100],
+                width: 56,
+                height: 56,
+                mb: 1,
+                mx: 'auto',
+                color: blue[700],
+                boxShadow: `0 8px 16px -4px ${blue[200]}`,
+              }}
+            >
+              <ApartmentIcon />
+            </Avatar>
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Apartments
+            </Typography>
+            <Box
+              sx={{
+                width: '100%',
+                height: 100,
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+              }}
+            >
+              <Box
+                sx={{
+                  width: '60%',
+                  height: `${data.apartments * 20}%`,
+                  bgcolor: blue[600],
+                  borderRadius: '4px 4px 0 0',
+                  position: 'relative',
+                  transition: 'all 0.3s ease',
+                }}
+              />
+              <Typography
+                variant="h5"
+                sx={{
+                  color: data.apartments >= 0 ? blue[600] : red[600],
+                  fontWeight: 'bold',
+                  mt: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                {data.apartments >= 0 ? '+' : ''}{data.apartments}%
+                {data.apartments >= 0 ? (
+                  <TrendingUpIcon fontSize="small" sx={{ ml: 0.5 }} />
+                ) : (
+                  <TrendingUpIcon fontSize="small" sx={{ ml: 0.5, transform: 'rotate(180deg)' }} />
+                )}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
 };
 
-// Sort activities by date (closest upcoming first, then completed)
-const sortActivitiesByDate = (activities: Activity[]): Activity[] => {
-  return [...activities].sort((a, b) => {
-    // Upcoming activities (not completed) come first
-    if (!a.completed && b.completed) return -1;
-    if (a.completed && !b.completed) return 1;
-    
-    // For upcoming activities, sort by closest date
-    if (!a.completed && !b.completed) {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
+// Average Price Card
+const AveragePriceCard = () => {
+  const theme = useTheme();
+  const [region, setRegion] = useState<Region>('Sweden');
+  const data = mockMarketStats.averagePricePerSqm[region];
+  
+  const handleRegionChange = (event: React.MouseEvent<HTMLElement>, newRegion: Region | null) => {
+    if (newRegion !== null) {
+      setRegion(newRegion);
     }
-    
-    // For completed activities, sort by most recent
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
+  };
+
+  return (
+    <Card
+      elevation={0}
+      sx={{
+        height: '100%',
+        borderRadius: 3,
+        background: `linear-gradient(135deg, ${purple[50]} 0%, #ffffff 100%)`,
+        position: 'relative',
+        overflow: 'visible',
+        transition: 'all 0.3s ease',
+        border: '1px solid',
+        borderColor: 'divider',
+        '&:hover': {
+          transform: 'translateY(-8px)',
+          boxShadow: `0 20px 30px -10px ${purple[100]}`,
+        }
+      }}
+    >
+      <CardHeader
+        title={
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <SquareFootIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              Average Price (SEK/m²)
+            </Typography>
+          </Box>
+        }
+        subheader="Current market rates"
+        sx={{ pb: 0 }}
+      />
+      <CardContent>
+        <Box sx={{ mb: 2 }}>
+          <ButtonGroup 
+            variant="outlined" 
+            size="small" 
+            color="primary"
+            fullWidth
+            aria-label="region selection"
+          >
+            <Button 
+              onClick={(e) => handleRegionChange(e, 'Sweden')}
+              variant={region === 'Sweden' ? 'contained' : 'outlined'}
+            >
+              Sweden
+            </Button>
+            <Button 
+              onClick={(e) => handleRegionChange(e, 'Stockholm Urban Area')}
+              variant={region === 'Stockholm Urban Area' ? 'contained' : 'outlined'}
+            >
+              Stockholm Urban
+            </Button>
+            <Button 
+              onClick={(e) => handleRegionChange(e, 'Stockholm County')}
+              variant={region === 'Stockholm County' ? 'contained' : 'outlined'}
+            >
+              Stockholm County
+            </Button>
+          </ButtonGroup>
+        </Box>
+        
+        <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 3 }}>
+          {/* Houses */}
+          <Box sx={{ textAlign: 'center', width: '45%' }}>
+            <Avatar
+              sx={{
+                bgcolor: orange[100],
+                width: 56,
+                height: 56,
+                mb: 1,
+                mx: 'auto',
+                color: orange[700],
+                boxShadow: `0 8px 16px -4px ${orange[200]}`,
+              }}
+            >
+              <HouseIcon />
+            </Avatar>
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Houses
+            </Typography>
+            <Typography
+              variant="h5"
+              sx={{
+                color: orange[700],
+                fontWeight: 'bold',
+                my: 2,
+              }}
+            >
+              {formatCurrency(data.houses)}
+            </Typography>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 1,
+                bgcolor: orange[50],
+                borderRadius: 2,
+                border: `1px solid ${orange[100]}`,
+              }}
+            >
+              <Typography variant="caption" sx={{ fontWeight: 'medium' }}>
+                per square meter
+              </Typography>
+            </Paper>
+          </Box>
+          
+          {/* Apartments */}
+          <Box sx={{ textAlign: 'center', width: '45%' }}>
+            <Avatar
+              sx={{
+                bgcolor: purple[100],
+                width: 56,
+                height: 56,
+                mb: 1,
+                mx: 'auto',
+                color: purple[700],
+                boxShadow: `0 8px 16px -4px ${purple[200]}`,
+              }}
+            >
+              <ApartmentIcon />
+            </Avatar>
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Apartments
+            </Typography>
+            <Typography
+              variant="h5"
+              sx={{
+                color: purple[700],
+                fontWeight: 'bold',
+                my: 2,
+              }}
+            >
+              {formatCurrency(data.apartments)}
+            </Typography>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 1,
+                bgcolor: purple[50],
+                borderRadius: 2,
+                border: `1px solid ${purple[100]}`,
+              }}
+            >
+              <Typography variant="caption" sx={{ fontWeight: 'medium' }}>
+                per square meter
+              </Typography>
+            </Paper>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
 };
 
 // Main Dashboard Content
@@ -1216,79 +1357,13 @@ const DashboardContent = () => {
         </Box>
       </Box>
 
-      {/* Stats Grid */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={6} sm={4} md={3} lg={1.5}>
-          <StatCard 
-            title="Total Clients" 
-            value={mockDashboardStats.totalClients} 
-            icon={<PeopleIcon fontSize="large" />} 
-            color="#1a56db" 
-            trend={12}
-          />
+      {/* New Stats Grid with just two cards */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={6}>
+          <PriceDevelopmentCard />
         </Grid>
-        <Grid item xs={6} sm={4} md={3} lg={1.5}>
-          <StatCard 
-            title="Active Listings" 
-            value={mockDashboardStats.activeListings} 
-            icon={<HomeIcon fontSize="large" />} 
-            color="#047857" 
-            trend={5}
-          />
-        </Grid>
-        <Grid item xs={6} sm={4} md={3} lg={1.5}>
-          <StatCard 
-            title="New Leads" 
-            value={mockDashboardStats.newLeadsThisMonth} 
-            icon={<ContactPhoneIcon fontSize="large" />} 
-            color="#9333ea" 
-            trend={-2}
-          />
-        </Grid>
-        <Grid item xs={6} sm={4} md={3} lg={1.5}>
-          <StatCard 
-            title="Revenue" 
-            value={formatCurrency(mockDashboardStats.revenueGenerated)} 
-            icon={<MoneyIcon fontSize="large" />} 
-            color="#b91c1c" 
-            trend={8}
-          />
-        </Grid>
-        <Grid item xs={6} sm={4} md={3} lg={1.5}>
-          <StatCard 
-            title="Properties Sold" 
-            value={mockDashboardStats.propertiesSold} 
-            icon={<DescriptionIcon fontSize="large" />} 
-            color="#0891b2" 
-            trend={15}
-          />
-        </Grid>
-        <Grid item xs={6} sm={4} md={3} lg={1.5}>
-          <StatCard 
-            title="Pending Deals" 
-            value={mockDashboardStats.pendingDeals} 
-            icon={<EventIcon fontSize="large" />} 
-            color="#d97706" 
-            trend={3}
-          />
-        </Grid>
-        <Grid item xs={6} sm={4} md={3} lg={1.5}>
-          <StatCard 
-            title="Total Leads" 
-            value={mockDashboardStats.totalLeads} 
-            icon={<VisibilityIcon fontSize="large" />} 
-            color="#7c3aed" 
-            trend={7}
-          />
-        </Grid>
-        <Grid item xs={6} sm={4} md={3} lg={1.5}>
-          <StatCard 
-            title="Avg. Sale Price" 
-            value={formatCurrency(mockDashboardStats.revenueGenerated / mockDashboardStats.propertiesSold)} 
-            icon={<TrendingUpIcon fontSize="large" />} 
-            color="#059669" 
-            trend={4}
-          />
+        <Grid item xs={12} md={6}>
+          <AveragePriceCard />
         </Grid>
       </Grid>
 
