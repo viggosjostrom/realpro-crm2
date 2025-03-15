@@ -8,28 +8,11 @@
   border-right: 1px solid rgba(26,86,219,0.2);
 }
 
-/* Style for the sidebar header */
-.sidebar-header {
-  /* Match the header gradient exactly */
-  background: linear-gradient(135deg, #1a56db 0%, #1e429f 100%) !important;
-  color: white !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Style for the minimized sidebar header */
-.sidebar-header-minimized {
-  padding: 8px;
-  justify-content: center;
-}
+/* The sidebar header styles are removed as we no longer have a sidebar header */
 
 /* Style for the list container */
 .sidebar-drawer .MuiList-root {
-  padding-top: 8px;
+  padding-top: 0;
   padding-bottom: 8px;
 }
 

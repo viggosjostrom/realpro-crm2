@@ -89,81 +89,47 @@ const Sidebar: React.FC<SidebarProps> = ({
       role="navigation"
       aria-label="Main navigation"
     >
-      <Box 
-        className={`sidebar-header ${minimized ? 'sidebar-header-minimized' : ''}`}
-        sx={{ 
-          p: minimized ? 1 : 2,
-          background: 'linear-gradient(135deg, #1a56db 0%, #1e429f 100%)',
-          color: 'white',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: minimized ? 'center' : 'space-between'
-        }}
-      >
-        {!minimized && (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar 
-              src="/globe.svg" 
-              alt="RealPro CRM" 
+      <List sx={{ flexGrow: 1, pt: 2 }}>
+        {/* Toggle button for desktop */}
+        {isDesktop && !isMobile && (
+          <ListItem disablePadding sx={{ mb: 1 }}>
+            <ListItemButton 
+              className="sidebar-menu-item"
+              onClick={handleToggleMinimized}
               sx={{ 
-                width: 40, 
-                height: 40, 
-                mr: 1, 
-                bgcolor: 'white',
-                color: theme.palette.primary.main
+                py: 1.2,
+                pl: minimized ? 2 : 3,
               }}
             >
-              R
-            </Avatar>
-            <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: 'white' }}>
-              RealPro CRM
-            </Typography>
-          </Box>
+              <Tooltip title={minimized ? "Expand menu" : "Collapse menu"} placement="right">
+                <ListItemIcon sx={{ mr: minimized ? 0 : 2 }}>
+                  {minimized ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                </ListItemIcon>
+              </Tooltip>
+              {!minimized && <ListItemText primary={minimized ? "" : "Collapse Menu"} />}
+            </ListItemButton>
+          </ListItem>
         )}
         
-        {minimized && (
-          <Avatar 
-            src="/globe.svg" 
-            alt="RealPro CRM" 
-            sx={{ 
-              width: 40, 
-              height: 40,
-              bgcolor: 'white',
-              color: theme.palette.primary.main
-            }}
-          >
-            R
-          </Avatar>
-        )}
-
-        {isDesktop && !isMobile && (
-          <Tooltip title={minimized ? "Expand menu" : "Collapse menu"}>
-            <IconButton 
-              onClick={handleToggleMinimized}
-              aria-label={minimized ? "Expand navigation menu" : "Collapse navigation menu"}
-              sx={{ color: 'white' }}
-            >
-              {minimized ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            </IconButton>
-          </Tooltip>
-        )}
-        
+        {/* Close button for mobile - now minimizes instead of closing */}
         {!isDesktop && (
-          <Tooltip title="Close menu">
-            <IconButton 
-              onClick={handleDrawerToggle}
-              aria-label="Close navigation menu"
-              sx={{ color: 'white' }}
+          <ListItem disablePadding sx={{ mb: 1 }}>
+            <ListItemButton 
+              className="sidebar-menu-item"
+              onClick={handleToggleMinimized}
+              sx={{ 
+                py: 1.2,
+                pl: 3,
+              }}
             >
-              <ChevronLeftIcon />
-            </IconButton>
-          </Tooltip>
+              <ListItemIcon sx={{ mr: 2 }}>
+                <ChevronLeftIcon />
+              </ListItemIcon>
+              <ListItemText primary="Minimize Menu" />
+            </ListItemButton>
+          </ListItem>
         )}
-      </Box>
-      <Divider />
-      <List sx={{ flexGrow: 1 }}>
+        
         {menuItems.map((item) => (
           <Link href={item.path} key={item.text} style={{ textDecoration: 'none', color: 'inherit' }}>
             <ListItem disablePadding>
@@ -281,7 +247,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       }}
       aria-label="Navigation sidebar"
     >
-      {/* Mobile drawer */}
+      {/* Mobile drawer - Only shown when mobileOpen is true */}
       <Drawer
         className="sidebar-drawer"
         variant="temporary"
@@ -304,15 +270,20 @@ const Sidebar: React.FC<SidebarProps> = ({
         {drawer}
       </Drawer>
       
-      {/* Desktop drawer */}
+      {/* Persistent drawer - Always visible */}
       <Drawer
         className="sidebar-drawer"
         variant="permanent"
         sx={{
-          display: { xs: 'none', md: 'block' },
+          display: 'block', // Always visible
+          zIndex: 1200, // Ensure it's visible above other content
           '& .MuiDrawer-paper': { 
             boxSizing: 'border-box', 
-            width: minimized ? miniDrawerWidth : drawerWidth,
+            width: { 
+              xs: miniDrawerWidth, // Always minimized on extra small screens
+              sm: miniDrawerWidth,
+              md: minimized ? miniDrawerWidth : drawerWidth 
+            },
             transition: theme.transitions.create('width', {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.enteringScreen,

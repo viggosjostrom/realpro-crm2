@@ -159,10 +159,11 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
         <Toolbar>
           <IconButton
             color="inherit"
-            aria-label="open drawer"
+            aria-label="toggle sidebar expansion"
             edge="start"
             onClick={handleDrawerToggle}
             sx={{ mr: 2, display: { md: 'none' } }}
+            title="Toggle sidebar expansion"
           >
             <MenuIcon />
           </IconButton>

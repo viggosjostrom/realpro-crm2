@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Toolbar, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Toolbar, useTheme } from '@mui/material';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
@@ -15,7 +15,6 @@ interface DashboardLayoutProps {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const [minimized, setMinimized] = useState(false);
 
   // Handle window resize to auto-minimize on smaller screens
@@ -36,7 +35,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   }, [theme.breakpoints.values.md]);
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    // On mobile, the drawer toggle now toggles minimization instead of opening/closing
+    if (window.innerWidth < theme.breakpoints.values.md) {
+      setMinimized(!minimized);
+    } else {
+      // On desktop, still use mobile drawer for compatibility with original design
+      setMobileOpen(!mobileOpen);
+    }
   };
 
   const toggleMinimized = () => {
@@ -60,8 +65,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           flexGrow: 1,
           p: 3,
           width: { 
-            xs: '100%',
-            md: `calc(100% - ${isDesktop ? (minimized ? miniDrawerWidth : drawerWidth) : 0}px)` 
+            // Account for the sidebar width at all screen sizes
+            xs: `calc(100% - ${miniDrawerWidth}px)`,
+            sm: `calc(100% - ${miniDrawerWidth}px)`,
+            md: `calc(100% - ${minimized ? miniDrawerWidth : drawerWidth}px)`
           },
           backgroundColor: '#f9fafb',
           minHeight: '100vh',
