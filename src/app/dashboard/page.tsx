@@ -1171,7 +1171,18 @@ const DashboardContent = () => {
                 </Box>
               }
               action={
-                <ButtonWithIcon color="primary" size="small">
+                <ButtonWithIcon 
+                  color="primary" 
+                  size="small"
+                  variant="outlined"
+                  sx={{ 
+                    borderRadius: 8, 
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                    '&:hover': {
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    }
+                  }}
+                >
                   View All
                 </ButtonWithIcon>
               }
@@ -1299,7 +1310,18 @@ const DashboardContent = () => {
                 </Typography>
               }
               action={
-                <ButtonWithIcon color="primary" size="small">
+                <ButtonWithIcon 
+                  color="primary" 
+                  size="small"
+                  variant="outlined"
+                  sx={{ 
+                    borderRadius: 8, 
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                    '&:hover': {
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    }
+                  }}
+                >
                   View All
                 </ButtonWithIcon>
               }
