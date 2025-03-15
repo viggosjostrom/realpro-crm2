@@ -12,17 +12,23 @@ import {
   MenuItem,
   Divider,
   useTheme,
-  Tooltip
+  Tooltip,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Slide
 } from '@mui/material';
+import { TransitionProps } from '@mui/material/transitions';
 import { 
   Menu as MenuIcon, 
   Search as SearchIcon, 
   Notifications as NotificationsIcon,
   Mail as MailIcon,
   MoreVert as MoreIcon,
-  Business as BusinessIcon
+  Business as BusinessIcon,
+  Close as CloseIcon
 } from '@mui/icons-material';
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
 import { mockUsers } from '@/lib/utils/mockData';
 // Import both CSS files to ensure they're loaded
@@ -32,6 +38,14 @@ import '@/styles/global-overrides.css';
 // Find the current user (Johan Andersson with id '1')
 const currentUser = mockUsers.find(user => user.id === '1');
 
+// Transition for the search dialog
+const Transition = forwardRef(function Transition(
+  props: TransitionProps & { children: React.ReactElement },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
+
 interface HeaderProps {
   handleDrawerToggle: () => void;
 }
@@ -40,6 +54,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -59,6 +74,10 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const handleMobileSearchToggle = () => {
+    setMobileSearchOpen(!mobileSearchOpen);
   };
 
   // Get accessible avatar styles
@@ -105,6 +124,12 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
+      <MenuItem>
+        <IconButton size="large" aria-label="search" color="inherit">
+          <SearchIcon />
+        </IconButton>
+        <p>Search</p>
+      </MenuItem>
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new messages" color="inherit">
           <Badge badgeContent={4} color="error">
@@ -193,9 +218,20 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
             </Typography>
           </Box>
           
+          <Box sx={{ flexGrow: 1 }} />
+          
           <Box 
             className="header-search"
             role="search"
+            sx={{ 
+              mr: 2, 
+              display: { xs: 'none', sm: 'flex' },
+              width: { sm: '180px', md: '240px', lg: '300px' },
+              transition: 'width 0.3s ease',
+              '&:focus-within': {
+                width: { sm: '220px', md: '280px', lg: '350px' }
+              }
+            }}
           >
             <Box 
               className="header-search-icon"
@@ -205,12 +241,11 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
             </Box>
             <InputBase
               className="header-search-input"
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
+              placeholder="Search for properties or clients..."
+              inputProps={{ 'aria-label': 'search for properties or clients' }}
+              fullWidth
             />
           </Box>
-          
-          <Box sx={{ flexGrow: 1 }} />
           
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Tooltip title="Messages">
@@ -258,6 +293,15 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
+              aria-label="search"
+              color="inherit"
+              sx={{ mr: 1 }}
+              onClick={handleMobileSearchToggle}
+            >
+              <SearchIcon />
+            </IconButton>
+            <IconButton
+              size="large"
               aria-label="show more"
               aria-controls={mobileMenuId}
               aria-haspopup="true"
@@ -271,6 +315,52 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      
+      {/* Mobile search dialog */}
+      <Dialog
+        open={mobileSearchOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleMobileSearchToggle}
+        fullWidth
+        maxWidth="sm"
+        aria-labelledby="mobile-search-dialog"
+      >
+        <DialogTitle sx={{ p: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h6">Search</Typography>
+            <IconButton 
+              edge="end" 
+              color="inherit" 
+              onClick={handleMobileSearchToggle} 
+              aria-label="close search"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ p: 2, pt: 0 }}>
+          <Box 
+            sx={{ 
+              display: 'flex',
+              alignItems: 'center',
+              borderRadius: 1,
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'divider',
+              p: 1
+            }}
+          >
+            <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
+            <InputBase
+              fullWidth
+              placeholder="Search for properties or clients..."
+              inputProps={{ 'aria-label': 'search for properties or clients' }}
+              autoFocus
+            />
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

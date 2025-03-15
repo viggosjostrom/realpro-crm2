@@ -10,16 +10,18 @@
 /* Style for the search box */
 .header-search {
   position: relative;
-  border-radius: 4px;
+  border-radius: 20px;
   background-color: rgba(255, 255, 255, 0.15);
   margin-right: 16px;
-  margin-left: 24px;
+  margin-left: 0;
   width: 100%;
-  max-width: 400px;
+  max-width: 300px;
+  transition: all 0.3s ease;
 }
 
 .header-search:hover {
   background-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
 
 .header-search-icon {
@@ -35,14 +37,16 @@
 
 .header-search-input {
   color: white;
-  padding: 8px 8px 8px 0;
+  padding: 8px 16px 8px 0;
   padding-left: calc(1em + 32px);
   width: 100%;
+  font-size: 0.9rem;
 }
 
 .header-search-input::placeholder {
   color: rgba(255, 255, 255, 0.7);
   opacity: 1;
+  font-size: 0.9rem;
 }
 
 /* Style for the profile button */
