@@ -1530,5 +1530,70 @@ export const mockMarketStats = {
       houses: 51200,
       apartments: 68500,
     }
+  },
+  // Add time-series data for the last 30 days
+  priceDevelopmentTimeSeries: {
+    'Sweden': {
+      houses: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 32000 + Math.random() * 2000 * Math.sin(i / 5) + i * 100
+      })),
+      apartments: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 48000 + Math.random() * 1500 * Math.sin(i / 4) + i * 80
+      }))
+    },
+    'Stockholm Urban Area': {
+      houses: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 57000 + Math.random() * 3000 * Math.sin(i / 6) + i * 150
+      })),
+      apartments: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 78500 + Math.random() * 2500 * Math.sin(i / 5) + i * 120
+      }))
+    },
+    'Stockholm County': {
+      houses: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 50500 + Math.random() * 2800 * Math.sin(i / 5.5) + i * 130
+      })),
+      apartments: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 67800 + Math.random() * 2200 * Math.sin(i / 4.5) + i * 100
+      }))
+    }
+  },
+  percentageChangeTimeSeries: {
+    'Sweden': {
+      houses: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 2 + Math.random() * 0.8 * Math.sin(i / 10) + (i / 100)
+      })),
+      apartments: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 1.6 + Math.random() * 0.6 * Math.sin(i / 8) + (i / 120)
+      }))
+    },
+    'Stockholm Urban Area': {
+      houses: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 2.9 + Math.random() * 1.2 * Math.sin(i / 9) + (i / 90)
+      })),
+      apartments: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 2.5 + Math.random() * 1 * Math.sin(i / 7) + (i / 100)
+      }))
+    },
+    'Stockholm County': {
+      houses: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 2.6 + Math.random() * 1 * Math.sin(i / 8.5) + (i / 95)
+      })),
+      apartments: Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2023, 5, i + 1), // June 2023
+        value: 2.3 + Math.random() * 0.8 * Math.sin(i / 7.5) + (i / 110)
+      }))
+    }
   }
 }; 

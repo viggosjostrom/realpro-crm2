@@ -65,6 +65,32 @@ import { Activity, Property } from '@/lib/types';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
 import { format } from 'date-fns';
 import { green, orange, red, blue, purple } from '@mui/material/colors';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip as ChartTooltip,
+  Legend,
+  Filler,
+  ChartOptions,
+  ChartData
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  ChartTooltip,
+  Legend,
+  Filler
+);
 
 // Client-only wrapper component
 const ClientOnly = ({ children }: { children: React.ReactNode }) => {
@@ -945,12 +971,119 @@ const PriceDevelopmentCard = () => {
   const theme = useTheme();
   const [region, setRegion] = useState<Region>('Sweden');
   const data = mockMarketStats.priceDevelopment[region];
+  const timeSeriesData = mockMarketStats.percentageChangeTimeSeries[region];
   
   const handleRegionChange = (event: React.MouseEvent<HTMLElement>, newRegion: Region | null) => {
     if (newRegion !== null) {
       setRegion(newRegion);
     }
   };
+
+  // Prepare data for charts
+  const formatDataForPercentageChart = () => {
+    const labels = timeSeriesData.houses.map((item) => 
+      format(item.date, 'MMM d')
+    ).slice(-14); // Show only last 14 days for clarity
+    
+    return {
+      labels,
+      datasets: [
+        {
+          label: 'Houses',
+          data: timeSeriesData.houses.map(item => item.value).slice(-14),
+          borderColor: theme.palette.primary.main,
+          backgroundColor: alpha(theme.palette.primary.main, 0.1),
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.4,
+          fill: 'origin',
+        },
+        {
+          label: 'Apartments',
+          data: timeSeriesData.apartments.map(item => item.value).slice(-14),
+          borderColor: theme.palette.secondary.main,
+          backgroundColor: alpha(theme.palette.secondary.main, 0.1),
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.4,
+          fill: 'origin',
+        },
+      ],
+    } as ChartData<'line'>;
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+        labels: {
+          boxWidth: 10,
+          usePointStyle: true,
+        },
+      },
+      tooltip: {
+        mode: 'index' as const,
+        intersect: false,
+        backgroundColor: alpha(theme.palette.background.paper, 0.9),
+        titleColor: theme.palette.text.primary,
+        bodyColor: theme.palette.text.secondary,
+        borderColor: theme.palette.divider,
+        borderWidth: 1,
+        padding: 10,
+        boxPadding: 5,
+        callbacks: {
+          label: function(context: {
+            dataset: { label: string };
+            parsed: { y: number };
+          }) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += new Intl.NumberFormat('sv-SE', { 
+                style: 'percent', 
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1 
+              }).format(context.parsed.y / 100);
+            }
+            return label;
+          }
+        }
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          maxRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: 7,
+        },
+      },
+      y: {
+        grid: {
+          drawBorder: false,
+        },
+        ticks: {
+          callback: function(value: number) {
+            return value.toFixed(1) + '%';
+          },
+        },
+      },
+    },
+    interaction: {
+      mode: 'nearest' as const,
+      axis: 'x' as const,
+      intersect: false,
+    },
+  } as ChartOptions<'line'>;
 
   return (
     <Card
@@ -1015,121 +1148,93 @@ const PriceDevelopmentCard = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 3 }}>
           {/* Houses */}
           <Box sx={{ textAlign: 'center', width: '45%' }}>
-            <Avatar
-              sx={{
-                bgcolor: green[100],
-                width: 56,
-                height: 56,
-                mb: 1,
-                mx: 'auto',
-                color: green[700],
-                boxShadow: `0 8px 16px -4px ${green[200]}`,
-              }}
-            >
-              <HouseIcon />
-            </Avatar>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-              Houses
-            </Typography>
-            <Box
-              sx={{
-                width: '100%',
-                height: 100,
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-              }}
-            >
-              <Box
-                sx={{
-                  width: '60%',
-                  height: `${data.houses * 20}%`,
-                  bgcolor: green[600],
-                  borderRadius: '4px 4px 0 0',
-                  position: 'relative',
-                  transition: 'all 0.3s ease',
-                }}
-              />
-              <Typography
-                variant="h5"
-                sx={{
-                  color: data.houses >= 0 ? green[600] : red[600],
-                  fontWeight: 'bold',
-                  mt: 1,
-                  display: 'flex',
-                  alignItems: 'center',
+            <Box sx={{ 
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center', 
+              flexDirection: 'column'
+            }}>
+              <Avatar 
+                sx={{ 
+                  bgcolor: theme.palette.primary.main,
+                  width: 50,
+                  height: 50,
+                  mb: 1,
+                  boxShadow: `0 0 20px ${alpha(theme.palette.primary.main, 0.5)}`
                 }}
               >
-                {data.houses >= 0 ? '+' : ''}{data.houses}%
-                {data.houses >= 0 ? (
-                  <TrendingUpIcon fontSize="small" sx={{ ml: 0.5 }} />
-                ) : (
-                  <TrendingUpIcon fontSize="small" sx={{ ml: 0.5, transform: 'rotate(180deg)' }} />
-                )}
+                <HouseIcon />
+              </Avatar>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Houses
+              </Typography>
+              <Typography 
+                variant="h4" 
+                color={data.houses >= 0 ? "success.main" : "error.main"}
+                sx={{ 
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                {data.houses > 0 && "+"}
+                {data.houses.toFixed(1)}%
+                {data.houses >= 0 
+                  ? <TrendingUpIcon fontSize="small" sx={{ ml: 0.5 }} /> 
+                  : <TrendingUpIcon fontSize="small" sx={{ ml: 0.5, transform: 'rotate(180deg)' }} />
+                }
               </Typography>
             </Box>
           </Box>
           
           {/* Apartments */}
           <Box sx={{ textAlign: 'center', width: '45%' }}>
-            <Avatar
-              sx={{
-                bgcolor: blue[100],
-                width: 56,
-                height: 56,
-                mb: 1,
-                mx: 'auto',
-                color: blue[700],
-                boxShadow: `0 8px 16px -4px ${blue[200]}`,
-              }}
-            >
-              <ApartmentIcon />
-            </Avatar>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-              Apartments
-            </Typography>
-            <Box
-              sx={{
-                width: '100%',
-                height: 100,
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-              }}
-            >
-              <Box
-                sx={{
-                  width: '60%',
-                  height: `${data.apartments * 20}%`,
-                  bgcolor: blue[600],
-                  borderRadius: '4px 4px 0 0',
-                  position: 'relative',
-                  transition: 'all 0.3s ease',
-                }}
-              />
-              <Typography
-                variant="h5"
-                sx={{
-                  color: data.apartments >= 0 ? blue[600] : red[600],
-                  fontWeight: 'bold',
-                  mt: 1,
-                  display: 'flex',
-                  alignItems: 'center',
+            <Box sx={{ 
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center', 
+              flexDirection: 'column'
+            }}>
+              <Avatar 
+                sx={{ 
+                  bgcolor: theme.palette.secondary.main,
+                  width: 50,
+                  height: 50,
+                  mb: 1,
+                  boxShadow: `0 0 20px ${alpha(theme.palette.secondary.main, 0.5)}`
                 }}
               >
-                {data.apartments >= 0 ? '+' : ''}{data.apartments}%
-                {data.apartments >= 0 ? (
-                  <TrendingUpIcon fontSize="small" sx={{ ml: 0.5 }} />
-                ) : (
-                  <TrendingUpIcon fontSize="small" sx={{ ml: 0.5, transform: 'rotate(180deg)' }} />
-                )}
+                <ApartmentIcon />
+              </Avatar>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Apartments
+              </Typography>
+              <Typography 
+                variant="h4" 
+                color={data.apartments >= 0 ? "success.main" : "error.main"}
+                sx={{ 
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                {data.apartments > 0 && "+"}
+                {data.apartments.toFixed(1)}%
+                {data.apartments >= 0 
+                  ? <TrendingUpIcon fontSize="small" sx={{ ml: 0.5 }} /> 
+                  : <TrendingUpIcon fontSize="small" sx={{ ml: 0.5, transform: 'rotate(180deg)' }} />
+                }
               </Typography>
             </Box>
           </Box>
+        </Box>
+
+        {/* Add Chart */}
+        <Box sx={{ height: 220, mt: 4 }}>
+          <Typography variant="subtitle2" fontWeight="medium" sx={{ mb: 1 }}>
+            Price Change (%) - Last 14 Days
+          </Typography>
+          <Line options={chartOptions} data={formatDataForPercentageChart()} />
         </Box>
       </CardContent>
     </Card>
@@ -1141,12 +1246,124 @@ const AveragePriceCard = () => {
   const theme = useTheme();
   const [region, setRegion] = useState<Region>('Sweden');
   const data = mockMarketStats.averagePricePerSqm[region];
+  const timeSeriesData = mockMarketStats.priceDevelopmentTimeSeries[region];
   
   const handleRegionChange = (event: React.MouseEvent<HTMLElement>, newRegion: Region | null) => {
     if (newRegion !== null) {
       setRegion(newRegion);
     }
   };
+
+  // Prepare data for charts
+  const formatDataForPriceChart = () => {
+    const labels = timeSeriesData.houses.map((item) => 
+      format(item.date, 'MMM d')
+    ).slice(-14); // Show only last 14 days for clarity
+    
+    return {
+      labels,
+      datasets: [
+        {
+          label: 'Houses (SEK/m²)',
+          data: timeSeriesData.houses.map(item => item.value).slice(-14),
+          borderColor: theme.palette.primary.main,
+          backgroundColor: alpha(theme.palette.primary.main, 0.1),
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.4,
+          fill: 'origin',
+        },
+        {
+          label: 'Apartments (SEK/m²)',
+          data: timeSeriesData.apartments.map(item => item.value).slice(-14),
+          borderColor: theme.palette.secondary.main,
+          backgroundColor: alpha(theme.palette.secondary.main, 0.1),
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.4,
+          fill: 'origin',
+        },
+      ],
+    } as ChartData<'line'>;
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+        labels: {
+          boxWidth: 10,
+          usePointStyle: true,
+        },
+      },
+      tooltip: {
+        mode: 'index' as const,
+        intersect: false,
+        backgroundColor: alpha(theme.palette.background.paper, 0.9),
+        titleColor: theme.palette.text.primary,
+        bodyColor: theme.palette.text.secondary,
+        borderColor: theme.palette.divider,
+        borderWidth: 1,
+        padding: 10,
+        boxPadding: 5,
+        callbacks: {
+          label: function(context: {
+            dataset: { label: string };
+            parsed: { y: number };
+          }) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += new Intl.NumberFormat('sv-SE', { 
+                style: 'currency', 
+                currency: 'SEK',
+                maximumFractionDigits: 0
+              }).format(context.parsed.y);
+            }
+            return label;
+          }
+        }
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          maxRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: 7,
+        },
+      },
+      y: {
+        grid: {
+          drawBorder: false,
+        },
+        ticks: {
+          callback: function(value: number) {
+            return new Intl.NumberFormat('sv-SE', { 
+              style: 'currency', 
+              currency: 'SEK',
+              notation: 'compact',
+              maximumFractionDigits: 0
+            }).format(value);
+          },
+        },
+      },
+    },
+    interaction: {
+      mode: 'nearest' as const,
+      axis: 'x' as const,
+      intersect: false,
+    },
+  } as ChartOptions<'line'>;
 
   return (
     <Card
@@ -1211,89 +1428,75 @@ const AveragePriceCard = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 3 }}>
           {/* Houses */}
           <Box sx={{ textAlign: 'center', width: '45%' }}>
-            <Avatar
-              sx={{
-                bgcolor: orange[100],
-                width: 56,
-                height: 56,
-                mb: 1,
-                mx: 'auto',
-                color: orange[700],
-                boxShadow: `0 8px 16px -4px ${orange[200]}`,
-              }}
-            >
-              <HouseIcon />
-            </Avatar>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-              Houses
-            </Typography>
-            <Typography
-              variant="h5"
-              sx={{
-                color: orange[700],
-                fontWeight: 'bold',
-                my: 2,
-              }}
-            >
-              {formatCurrency(data.houses)}
-            </Typography>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 1,
-                bgcolor: orange[50],
-                borderRadius: 2,
-                border: `1px solid ${orange[100]}`,
-              }}
-            >
-              <Typography variant="caption" sx={{ fontWeight: 'medium' }}>
-                per square meter
+            <Box sx={{ 
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center', 
+              flexDirection: 'column'
+            }}>
+              <Avatar 
+                sx={{ 
+                  bgcolor: theme.palette.primary.main,
+                  width: 50,
+                  height: 50,
+                  mb: 1,
+                  boxShadow: `0 0 20px ${alpha(theme.palette.primary.main, 0.5)}`
+                }}
+              >
+                <HouseIcon />
+              </Avatar>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Houses
               </Typography>
-            </Paper>
+              <Typography 
+                variant="h5" 
+                color="text.primary"
+                sx={{ fontWeight: 'bold' }}
+              >
+                {formatCurrency(data.houses)}
+              </Typography>
+            </Box>
           </Box>
           
           {/* Apartments */}
           <Box sx={{ textAlign: 'center', width: '45%' }}>
-            <Avatar
-              sx={{
-                bgcolor: purple[100],
-                width: 56,
-                height: 56,
-                mb: 1,
-                mx: 'auto',
-                color: purple[700],
-                boxShadow: `0 8px 16px -4px ${purple[200]}`,
-              }}
-            >
-              <ApartmentIcon />
-            </Avatar>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-              Apartments
-            </Typography>
-            <Typography
-              variant="h5"
-              sx={{
-                color: purple[700],
-                fontWeight: 'bold',
-                my: 2,
-              }}
-            >
-              {formatCurrency(data.apartments)}
-            </Typography>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 1,
-                bgcolor: purple[50],
-                borderRadius: 2,
-                border: `1px solid ${purple[100]}`,
-              }}
-            >
-              <Typography variant="caption" sx={{ fontWeight: 'medium' }}>
-                per square meter
+            <Box sx={{ 
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center', 
+              flexDirection: 'column'
+            }}>
+              <Avatar 
+                sx={{ 
+                  bgcolor: theme.palette.secondary.main,
+                  width: 50,
+                  height: 50,
+                  mb: 1,
+                  boxShadow: `0 0 20px ${alpha(theme.palette.secondary.main, 0.5)}`
+                }}
+              >
+                <ApartmentIcon />
+              </Avatar>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Apartments
               </Typography>
-            </Paper>
+              <Typography 
+                variant="h5" 
+                color="text.primary"
+                sx={{ fontWeight: 'bold' }}
+              >
+                {formatCurrency(data.apartments)}
+              </Typography>
+            </Box>
           </Box>
+        </Box>
+
+        {/* Add Chart */}
+        <Box sx={{ height: 220, mt: 4 }}>
+          <Typography variant="subtitle2" fontWeight="medium" sx={{ mb: 1 }}>
+            Average Price Trend - Last 14 Days
+          </Typography>
+          <Line options={chartOptions} data={formatDataForPriceChart()} />
         </Box>
       </CardContent>
     </Card>
