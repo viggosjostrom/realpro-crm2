@@ -12,6 +12,7 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  ListItemText,
   Avatar,
   Divider,
   Chip,
@@ -19,14 +20,17 @@ import {
   Tooltip,
   ButtonProps,
   CircularProgress,
-  LinearProgress
+  LinearProgress,
+  Tabs,
+  Tab,
+  useTheme,
+  alpha
 } from '@mui/material';
 import {
   People as PeopleIcon,
   Home as HomeIcon,
   ContactPhone as ContactPhoneIcon,
   AttachMoney as MoneyIcon,
-  Call as CallIcon,
   Email as EmailIcon,
   Event as EventIcon,
   Visibility as VisibilityIcon,
@@ -35,12 +39,30 @@ import {
   TrendingUp as TrendingUpIcon,
   Add as AddIcon,
   EmojiEvents as EmojiEventsIcon,
-  CalendarToday as CalendarTodayIcon
+  CalendarToday as CalendarTodayIcon,
+  Today as TodayIcon,
+  Schedule as ScheduleIcon,
+  DateRange as DateRangeIcon,
+  ListAlt as ListAltIcon,
+  EventAvailable as EventAvailableIcon,
+  TaskAlt as TaskAltIcon,
+  PhoneInTalk as PhoneInTalkIcon,
+  Groups as GroupsIcon,
+  NotificationsActive as NotificationsActiveIcon,
+  Info as InfoIcon,
+  AccessTime as AccessTimeIcon,
+  Person as PersonIcon,
+  Assignment as AssignmentIcon,
+  Replay as ReplayIcon,
+  RateReview as RateReviewIcon
 } from '@mui/icons-material';
 import { mockDashboardStats, mockActivities, mockProperties, mockLeads } from '@/lib/utils/mockData';
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils/formatters';
 import { Activity, Property } from '@/lib/types';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
+import { format, isToday, isTomorrow, isThisWeek } from 'date-fns';
+import { green, orange, red, blue, purple } from '@mui/material/colors';
+import capitalize from 'lodash/capitalize';
 
 // Client-only wrapper component
 const ClientOnly = ({ children }: { children: React.ReactNode }) => {
@@ -189,42 +211,91 @@ const StatCard = ({ title, value, icon, color, trend }: {
   );
 };
 
-// Activity item component
-const ActivityItem = ({ activity }: { activity: Activity }) => {
-  const [isClient, setIsClient] = React.useState(false);
+// Update the Activity type definition with the new fields
+type ActivityType = 'appointment' | 'task' | 'call' | 'email' | 'meeting' | 'viewing' | 'offer' | 'contract' | 'follow-up' | 'evaluation' | 'reminder' | 'other';
+type ActivityStatus = 'completed' | 'pending' | 'cancelled' | 'scheduled';
+
+// Function to get the appropriate activity icon based on type
+const getActivityIcon = (type: ActivityType): React.ReactElement => {
+  switch (type) {
+    case 'appointment':
+      return <EventAvailableIcon color="primary" />;
+    case 'task':
+      return <TaskAltIcon sx={{ color: green[600] }} />;
+    case 'call':
+      return <PhoneInTalkIcon sx={{ color: blue[600] }} />;
+    case 'email':
+      return <EmailIcon sx={{ color: purple[600] }} />;
+    case 'meeting':
+      return <GroupsIcon sx={{ color: orange[600] }} />;
+    case 'viewing':
+      return <VisibilityIcon sx={{ color: blue[400] }} />;
+    case 'offer':
+      return <DescriptionIcon sx={{ color: green[800] }} />;
+    case 'contract':
+      return <AssignmentIcon sx={{ color: purple[800] }} />;
+    case 'follow-up':
+      return <ReplayIcon sx={{ color: orange[800] }} />;
+    case 'evaluation':
+      return <RateReviewIcon sx={{ color: blue[800] }} />;
+    case 'reminder':
+      return <NotificationsActiveIcon sx={{ color: red[600] }} />;
+    case 'other':
+    default:
+      return <InfoIcon color="action" />;
+  }
+};
+
+// Function to get status color based on activity status
+const getStatusColor = (status: ActivityStatus): string => {
+  switch (status) {
+    case 'completed':
+      return green[600];
+    case 'pending':
+      return orange[600];
+    case 'cancelled':
+      return red[600];
+    case 'scheduled':
+      return blue[600];
+    default:
+      return 'text.secondary';
+  }
+};
+
+// Function to format the date and time text
+const getTimeText = (activity: Activity): string => {
+  const date = new Date(activity.date);
   
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // For today, show only time
+  if (isToday(date)) {
+    return format(date, 'h:mm a');
+  }
+  
+  // For tomorrow, show "Tomorrow at [time]"
+  if (isTomorrow(date)) {
+    return `Tomorrow at ${format(date, 'h:mm a')}`;
+  }
+  
+  // For this week, show day and time
+  if (isThisWeek(date)) {
+    return `${format(date, 'EEEE')} at ${format(date, 'h:mm a')}`;
+  }
+  
+  // Default: full date with time
+  return `${format(date, 'MMM d')} at ${format(date, 'h:mm a')}`;
+};
 
-  const getIcon = () => {
-    switch (activity.type) {
-      case 'call':
-        return <CallIcon />;
-      case 'email':
-        return <EmailIcon />;
-      case 'meeting':
-        return <EventIcon />;
-      case 'viewing':
-        return <VisibilityIcon />;
-      case 'offer':
-        return <DescriptionIcon />;
-      default:
-        return <EventIcon />;
-    }
-  };
-
-  const getStatusColor = () => {
-    return activity.completed ? 'success.main' : 'warning.main';
-  };
-
+// ActivityItem component with time display
+const ActivityItem = ({ activity }: { activity: Activity }): React.ReactElement => {
+  const statusColor = getStatusColor(activity.status);
+  const timeText = getTimeText(activity);
+  
   return (
     <ListItem 
-      alignItems="flex-start" 
+      alignItems="flex-start"
       sx={{ 
-        px: 2, 
-        py: 1.5, 
-        borderRadius: 2,
+        py: 2, 
+        px: 3,
         transition: 'background-color 0.2s',
         '&:hover': {
           bgcolor: 'action.hover',
@@ -232,52 +303,62 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
       }}
     >
       <ListItemAvatar>
-        <Avatar 
-          sx={{ 
-            ...getAccessibleAvatarStyle(getStatusColor()),
-            boxShadow: `0 4px 8px -2px ${getStatusColor()}50`
-          }}
-        >
-          {getIcon()}
+        <Avatar sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
+          {getActivityIcon(activity.type)}
         </Avatar>
       </ListItemAvatar>
-      
-      {/* Custom ListItemText implementation to avoid nesting issues */}
-      <Box sx={{ flex: '1 1 auto', minWidth: 0 }}>
-        {/* Primary text */}
-        <Typography variant="subtitle2" sx={{ fontWeight: 'medium', display: 'block' }}>
-          {activity.title}
-        </Typography>
-        
-        {/* Secondary text */}
-        <Typography variant="body2" color="text.secondary" component="span" sx={{ display: 'block' }}>
-          {activity.description}
-        </Typography>
-        
-        {/* Activity details */}
-        <Box 
-          sx={{ 
-            mt: 1, 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center' 
-          }}
-        >
-          <Chip 
-            label={activity.completed ? 'Completed' : 'Upcoming'} 
-            size="small"
-            color={activity.completed ? 'success' : 'warning'}
-            sx={{ 
-              fontWeight: 'bold',
-              borderRadius: 1,
-              boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-            }} 
-          />
-          <Typography variant="caption" color="text.secondary" component="span">
-            {isClient ? formatDate(activity.date) : ''}
-          </Typography>
-        </Box>
-      </Box>
+      <ListItemText
+        primary={
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+              {activity.title}
+            </Typography>
+            <Chip 
+              label={capitalize(activity.status)} 
+              size="small"
+              sx={{ 
+                bgcolor: alpha(statusColor, 0.1),
+                color: statusColor,
+                fontWeight: 500,
+                fontSize: '0.75rem',
+                height: 24
+              }}
+            />
+          </Box>
+        }
+        secondary={
+          <>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                mb: 1
+              }}
+            >
+              {activity.description}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+              <AccessTimeIcon sx={{ fontSize: '0.875rem', color: 'text.secondary', mr: 0.5 }} />
+              <Typography variant="caption" color="text.secondary">
+                {timeText}
+              </Typography>
+              {activity.contact && (
+                <>
+                  <Box sx={{ display: 'inline-block', mx: 1, width: 4, height: 4, borderRadius: '50%', bgcolor: 'text.disabled' }} />
+                  <PersonIcon sx={{ fontSize: '0.875rem', color: 'text.secondary', mr: 0.5 }} />
+                  <Typography variant="caption" color="text.secondary">
+                    {activity.contact}
+                  </Typography>
+                </>
+              )}
+            </Box>
+          </>
+        }
+      />
     </ListItem>
   );
 };
@@ -821,8 +902,73 @@ const CommissionGoalTracker = () => {
   );
 };
 
+// Filter activities by tab
+const filterActivitiesByTab = (activities: Activity[], tab: number): Activity[] => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  const nextWeek = new Date(today);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+  
+  switch (tab) {
+    case 0: // All
+      return activities;
+    case 1: // Today
+      return activities.filter(activity => {
+        const activityDate = new Date(activity.date);
+        activityDate.setHours(0, 0, 0, 0);
+        return activityDate.getTime() === today.getTime();
+      });
+    case 2: // Tomorrow
+      return activities.filter(activity => {
+        const activityDate = new Date(activity.date);
+        activityDate.setHours(0, 0, 0, 0);
+        return activityDate.getTime() === tomorrow.getTime();
+      });
+    case 3: // This Week
+      return activities.filter(activity => {
+        const activityDate = new Date(activity.date);
+        activityDate.setHours(0, 0, 0, 0);
+        return activityDate >= today && activityDate < nextWeek;
+      });
+    default:
+      return activities;
+  }
+};
+
+// Sort activities by date (closest upcoming first, then completed)
+const sortActivitiesByDate = (activities: Activity[]): Activity[] => {
+  return [...activities].sort((a, b) => {
+    // Upcoming activities (not completed) come first
+    if (!a.completed && b.completed) return -1;
+    if (a.completed && !b.completed) return 1;
+    
+    // For upcoming activities, sort by closest date
+    if (!a.completed && !b.completed) {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    }
+    
+    // For completed activities, sort by most recent
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+};
+
 // Main Dashboard Content
 const DashboardContent = () => {
+  const theme = useTheme();
+  const [activitiesTab, setActivitiesTab] = React.useState(0);
+  
+  const handleActivitiesTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActivitiesTab(newValue);
+  };
+  
+  // Get filtered and sorted activities
+  const filteredActivities = filterActivitiesByTab(mockActivities, activitiesTab);
+  const sortedActivities = sortActivitiesByDate(filteredActivities);
+  
   return (
     <>
       <Box 
@@ -943,12 +1089,14 @@ const DashboardContent = () => {
 
       {/* Main Content */}
       <Grid container spacing={3}>
-        {/* Recent Activities */}
+        {/* Activities (formerly Recent Activities) */}
         <Grid item xs={12} md={6}>
           <Paper 
             elevation={0} 
             sx={{ 
               height: '100%', 
+              display: 'flex',
+              flexDirection: 'column',
               borderRadius: 2,
               overflow: 'hidden',
               border: '1px solid',
@@ -963,9 +1111,12 @@ const DashboardContent = () => {
           >
             <CardHeader 
               title={
-                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  Recent Activities
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <CalendarTodayIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    Activities
+                  </Typography>
+                </Box>
               }
               action={
                 <ButtonWithIcon color="primary" size="small">
@@ -976,20 +1127,98 @@ const DashboardContent = () => {
                 px: 3, 
                 py: 2, 
                 bgcolor: 'background.paper',
-                borderBottom: '2px solid',
-                borderColor: 'primary.main'
+                borderBottom: '1px solid',
+                borderColor: 'divider'
               }}
             />
-            <CardContent sx={{ p: 0 }}>
-              <List sx={{ py: 0 }}>
-                {mockActivities.slice(0, 5).map((activity, index) => (
-                  <React.Fragment key={activity.id}>
-                    <ActivityItem activity={activity} />
-                    {index < mockActivities.slice(0, 5).length - 1 && <Divider component="li" />}
-                  </React.Fragment>
-                ))}
-              </List>
-            </CardContent>
+            
+            {/* Activity filter tabs */}
+            <Tabs
+              value={activitiesTab}
+              onChange={handleActivitiesTabChange}
+              variant="fullWidth"
+              aria-label="Activity filter tabs"
+              sx={{ 
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                '& .MuiTab-root': {
+                  textTransform: 'none',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  minHeight: 48
+                },
+                px: 2
+              }}
+            >
+              <Tab 
+                icon={<ListAltIcon fontSize="small" />} 
+                iconPosition="start" 
+                label="All" 
+                sx={{ py: 1 }}
+              />
+              <Tab 
+                icon={<TodayIcon fontSize="small" />} 
+                iconPosition="start" 
+                label="Today" 
+                sx={{ py: 1 }}
+              />
+              <Tab 
+                icon={<ScheduleIcon fontSize="small" />} 
+                iconPosition="start" 
+                label="Tomorrow" 
+                sx={{ py: 1 }}
+              />
+              <Tab 
+                icon={<DateRangeIcon fontSize="small" />} 
+                iconPosition="start" 
+                label="This Week" 
+                sx={{ py: 1 }}
+              />
+            </Tabs>
+            
+            {/* Scrollable container with fixed height */}
+            <Box sx={{ 
+              flexGrow: 1, 
+              display: 'flex', 
+              flexDirection: 'column',
+              minHeight: 0, // Critical for proper flex behavior
+              maxHeight: { xs: '400px', md: '450px' } // Fixed height to match Latest Properties
+            }}>
+              <Box 
+                sx={{ 
+                  flexGrow: 1,
+                  overflowY: 'auto',
+                  height: '100%',
+                  '&::-webkit-scrollbar': {
+                    width: '8px',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: 'rgba(0,0,0,0.05)',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: 'rgba(0,0,0,0.15)',
+                    borderRadius: '4px',
+                  }
+                }}
+              >
+                {sortedActivities.length > 0 ? (
+                  <List sx={{ py: 0 }}>
+                    {sortedActivities.map((activity, index) => (
+                      <React.Fragment key={activity.id}>
+                        <ActivityItem activity={activity} />
+                        {index < sortedActivities.length - 1 && <Divider component="li" variant="inset" />}
+                      </React.Fragment>
+                    ))}
+                  </List>
+                ) : (
+                  <Box sx={{ p: 4, textAlign: 'center' }}>
+                    <Typography variant="body1" color="text.secondary">
+                      No activities scheduled for this period.
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            </Box>
           </Paper>
         </Grid>
 

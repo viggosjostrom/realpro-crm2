@@ -51,11 +51,13 @@ export type Lead = {
 
 export type Activity = {
   id: string;
-  type: 'call' | 'email' | 'meeting' | 'viewing' | 'offer' | 'other';
+  type: 'appointment' | 'task' | 'call' | 'email' | 'meeting' | 'viewing' | 'offer' | 'contract' | 'follow-up' | 'evaluation' | 'reminder' | 'other';
   title: string;
   description?: string;
   date: Date;
   completed: boolean;
+  status: 'completed' | 'pending' | 'cancelled' | 'scheduled';
+  contact?: string; // Contact person name
   clientId?: string; // Reference to client
   propertyId?: string; // Reference to property
   leadId?: string; // Reference to lead
