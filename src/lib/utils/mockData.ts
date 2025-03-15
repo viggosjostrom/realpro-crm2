@@ -290,7 +290,7 @@ export const mockProperties: Property[] = [
     description: 'Elegant pre-war apartment with original details and a modern renovation. Located in the prestigious Östermalm district, this apartment offers a perfect combination of historical charm and contemporary comfort. Features include high ceilings, herringbone parquet floors, decorative moldings, and three large windows facing a quiet courtyard. The kitchen has been completely updated with high-end appliances and custom cabinetry. The property includes three spacious bedrooms, a formal dining room, and a renovated bathroom with heated marble floors.',
     status: 'sold',
     type: 'apartment',
-    images: ['/properties/dashboard-property-3.jpg'],
+    images: ['/properties/dashboard-property-7.jpg'],
     ownerId: '5',
     buyerId: '8',
     agentId: '1',
