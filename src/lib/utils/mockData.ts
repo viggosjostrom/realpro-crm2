@@ -376,47 +376,100 @@ export const mockLeads: Lead[] = [
 
 // Mock Activities
 export const mockActivities: Activity[] = [
-  // Adding 3 new activities for today
+  // Activities for our reference "today" (2023-06-15)
   {
     id: '101',
     type: 'meeting',
     title: 'Initial client consultation',
     description: 'Meet with new client to discuss their property needs and preferences',
-    date: new Date(), // Today's date
+    date: new Date('2023-06-15T10:00:00'), // Reference today at 10:00 AM
     completed: false,
     status: 'scheduled',
     contact: 'Sofia Bergström',
     leadId: '2',
-    createdAt: new Date(new Date().setDate(new Date().getDate() - 2)),
-    updatedAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+    createdAt: new Date('2023-06-13'), // 2 days before reference today
+    updatedAt: new Date('2023-06-14'), // 1 day before reference today
   },
   {
     id: '102',
     type: 'viewing',
     title: 'Property viewing at Götgatan 118',
     description: 'Showing the apartment to potential buyers interested in SoFo area',
-    date: new Date(new Date().setHours(new Date().getHours() + 3)), // Today, 3 hours from now
+    date: new Date('2023-06-15T15:00:00'), // Reference today at 3:00 PM
     completed: false,
     status: 'scheduled',
     contact: 'Gustav Svensson',
     propertyId: '6',
     leadId: '1',
-    createdAt: new Date(new Date().setDate(new Date().getDate() - 3)),
-    updatedAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+    createdAt: new Date('2023-06-12'), // 3 days before reference today
+    updatedAt: new Date('2023-06-14'), // 1 day before reference today
   },
   {
     id: '103',
     type: 'call',
     title: 'Follow-up with property owner',
     description: 'Discuss recent offers and market feedback for Hornsgatan property',
-    date: new Date(new Date().setHours(new Date().getHours() + 1)), // Today, 1 hour from now
+    date: new Date('2023-06-15T13:00:00'), // Reference today at 1:00 PM
     completed: false,
     status: 'scheduled',
     contact: 'Maria Eriksson',
     propertyId: '1',
     clientId: '2',
-    createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
-    updatedAt: new Date(new Date().setDate(new Date().getDate() - 1)),
+    createdAt: new Date('2023-06-14'), // 1 day before reference today
+    updatedAt: new Date('2023-06-14'), // 1 day before reference today
+  },
+
+  // Activities for our reference "tomorrow" (2023-06-16)
+  {
+    id: '104',
+    type: 'appointment',
+    title: 'Property evaluation meeting',
+    description: 'Meet with client to evaluate their property before listing',
+    date: new Date('2023-06-16T11:30:00'), // Reference tomorrow at 11:30 AM
+    completed: false,
+    status: 'scheduled',
+    contact: 'Lars Johansson',
+    clientId: '5',
+    createdAt: new Date('2023-06-14'),
+    updatedAt: new Date('2023-06-14'),
+  },
+  {
+    id: '105',
+    type: 'viewing',
+    title: 'Open house at Storgatan 45',
+    description: 'Hosting an open house for the newly listed penthouse apartment',
+    date: new Date('2023-06-16T14:00:00'), // Reference tomorrow at 2:00 PM
+    completed: false,
+    status: 'scheduled',
+    contact: 'Property viewing',
+    propertyId: '3',
+    createdAt: new Date('2023-06-13'),
+    updatedAt: new Date('2023-06-14'),
+  },
+  
+  // Activities for "this week" (rest of the week after our reference today)
+  {
+    id: '106',
+    type: 'task',
+    title: 'Prepare marketing materials',
+    description: 'Create brochures and online listings for new property',
+    date: new Date('2023-06-17T09:00:00'), // 2 days after reference today
+    completed: false,
+    status: 'pending',
+    propertyId: '9',
+    createdAt: new Date('2023-06-14'),
+    updatedAt: new Date('2023-06-14'),
+  },
+  {
+    id: '107',
+    type: 'meeting',
+    title: 'Team strategy meeting',
+    description: 'Weekly team meeting to discuss ongoing deals and market trends',
+    date: new Date('2023-06-19T13:00:00'), // 4 days after reference today (Monday)
+    completed: false,
+    status: 'scheduled',
+    createdAt: new Date('2023-06-12'),
+    updatedAt: new Date('2023-06-12'),
   },
 
   // Existing activities follow

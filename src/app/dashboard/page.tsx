@@ -60,7 +60,7 @@ import { mockDashboardStats, mockActivities, mockProperties, mockLeads } from '@
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils/formatters';
 import { Activity, Property } from '@/lib/types';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
-import { format, isToday, isTomorrow, isThisWeek } from 'date-fns';
+import { format } from 'date-fns';
 import { green, orange, red, blue, purple } from '@mui/material/colors';
 import capitalize from 'lodash/capitalize';
 
@@ -262,22 +262,55 @@ const getStatusColor = (status: ActivityStatus): string => {
   }
 };
 
+// Fixed reference date to use across the application
+const REFERENCE_TODAY = new Date('2023-06-15');
+
 // Function to format the date and time text
 const getTimeText = (activity: Activity): string => {
   const date = new Date(activity.date);
   
+  // Custom implementation of isToday using our fixed reference date
+  const isReferenceToday = (date: Date): boolean => {
+    const refDate = new Date(REFERENCE_TODAY);
+    refDate.setHours(0, 0, 0, 0);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate.getTime() === refDate.getTime();
+  };
+  
+  // Custom implementation of isTomorrow using our fixed reference date
+  const isReferenceTomorrow = (date: Date): boolean => {
+    const refDate = new Date(REFERENCE_TODAY);
+    refDate.setHours(0, 0, 0, 0);
+    refDate.setDate(refDate.getDate() + 1);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate.getTime() === refDate.getTime();
+  };
+  
+  // Custom implementation of isThisWeek using our fixed reference date
+  const isReferenceThisWeek = (date: Date): boolean => {
+    const refDate = new Date(REFERENCE_TODAY);
+    refDate.setHours(0, 0, 0, 0);
+    const nextWeek = new Date(refDate);
+    nextWeek.setDate(refDate.getDate() + 7);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate >= refDate && compareDate < nextWeek;
+  };
+  
   // For today, show only time
-  if (isToday(date)) {
+  if (isReferenceToday(date)) {
     return format(date, 'h:mm a');
   }
   
   // For tomorrow, show "Tomorrow at [time]"
-  if (isTomorrow(date)) {
+  if (isReferenceTomorrow(date)) {
     return `Tomorrow at ${format(date, 'h:mm a')}`;
   }
   
   // For this week, show day and time
-  if (isThisWeek(date)) {
+  if (isReferenceThisWeek(date)) {
     return `${format(date, 'EEEE')} at ${format(date, 'h:mm a')}`;
   }
   
@@ -922,14 +955,15 @@ const CommissionGoalTracker = () => {
 
 // Filter activities by tab
 const filterActivitiesByTab = (activities: Activity[], tab: number): Activity[] => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Use our fixed reference date
+  const referenceDate = new Date(REFERENCE_TODAY);
+  referenceDate.setHours(0, 0, 0, 0);
   
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrow = new Date(referenceDate);
+  tomorrow.setDate(referenceDate.getDate() + 1);
   
-  const nextWeek = new Date(today);
-  nextWeek.setDate(nextWeek.getDate() + 7);
+  const nextWeek = new Date(referenceDate);
+  nextWeek.setDate(referenceDate.getDate() + 7);
   
   switch (tab) {
     case 0: // All
@@ -938,7 +972,7 @@ const filterActivitiesByTab = (activities: Activity[], tab: number): Activity[] 
       return activities.filter(activity => {
         const activityDate = new Date(activity.date);
         activityDate.setHours(0, 0, 0, 0);
-        return activityDate.getTime() === today.getTime();
+        return activityDate.getTime() === referenceDate.getTime();
       });
     case 2: // Tomorrow
       return activities.filter(activity => {
@@ -950,7 +984,7 @@ const filterActivitiesByTab = (activities: Activity[], tab: number): Activity[] 
       return activities.filter(activity => {
         const activityDate = new Date(activity.date);
         activityDate.setHours(0, 0, 0, 0);
-        return activityDate >= today && activityDate < nextWeek;
+        return activityDate >= referenceDate && activityDate < nextWeek;
       });
     default:
       return activities;
