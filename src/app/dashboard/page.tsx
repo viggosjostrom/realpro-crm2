@@ -318,8 +318,165 @@ const getTimeText = (activity: Activity): string => {
   return `${format(date, 'MMM d')} at ${format(date, 'h:mm a')}`;
 };
 
-// ActivityItem component with time display
-const ActivityItem = ({ activity }: { activity: Activity }): React.ReactElement => {
+// Special ActivityItem component specifically for the dashboard
+// This version adds Today/Tomorrow indicators and removes the status chip
+const DashboardActivityItem = ({ activity }: { activity: Activity }): React.ReactElement => {
+  const timeText = getTimeText(activity);
+  
+  // Check if activity is today or tomorrow based on our reference date
+  const isReferenceToday = (date: Date): boolean => {
+    const refDate = new Date(REFERENCE_TODAY);
+    refDate.setHours(0, 0, 0, 0);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate.getTime() === refDate.getTime();
+  };
+  
+  const isReferenceTomorrow = (date: Date): boolean => {
+    const refDate = new Date(REFERENCE_TODAY);
+    refDate.setHours(0, 0, 0, 0);
+    refDate.setDate(refDate.getDate() + 1);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate.getTime() === refDate.getTime();
+  };
+  
+  const activityDate = new Date(activity.date);
+  const isToday = isReferenceToday(activityDate);
+  const isTomorrow = isReferenceTomorrow(activityDate);
+  
+  return (
+    <ListItem 
+      alignItems="flex-start"
+      sx={{ 
+        py: 2, 
+        px: 3,
+        transition: 'background-color 0.2s',
+        position: 'relative',
+        ...(isToday && {
+          bgcolor: alpha('#1a56db', 0.04),
+          borderLeft: '3px solid',
+          borderColor: 'primary.main',
+          pl: 2.7, // Adjusted to account for border
+        }),
+        '&:hover': {
+          bgcolor: isToday ? alpha('#1a56db', 0.08) : 'action.hover',
+        }
+      }}
+    >
+      <ListItemAvatar>
+        <Avatar sx={{ 
+          bgcolor: 'background.paper', 
+          border: '1px solid', 
+          borderColor: 'divider',
+          ...(isToday && { boxShadow: '0 0 0 2px rgba(26, 86, 219, 0.3)' })
+        }}>
+          {getActivityIcon(activity.type)}
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText
+        primary={
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+              {activity.title}
+            </Typography>
+            
+            {/* Replace status chip with Today/Tomorrow indicators */}
+            {isToday ? (
+              <Chip 
+                label="Today"
+                size="small"
+                color="primary"
+                sx={{ 
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
+                  height: 24,
+                  animation: 'pulse 2s infinite',
+                  '@keyframes pulse': {
+                    '0%': {
+                      boxShadow: '0 0 0 0 rgba(26, 86, 219, 0.4)'
+                    },
+                    '70%': {
+                      boxShadow: '0 0 0 6px rgba(26, 86, 219, 0)'
+                    },
+                    '100%': {
+                      boxShadow: '0 0 0 0 rgba(26, 86, 219, 0)'
+                    }
+                  }
+                }}
+              />
+            ) : isTomorrow ? (
+              <Chip 
+                label="Tomorrow"
+                size="small"
+                color="info"
+                sx={{ 
+                  fontWeight: 500,
+                  fontSize: '0.75rem',
+                  height: 24
+                }}
+              />
+            ) : null}
+          </Box>
+        }
+        secondary={
+          <>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              component="span"
+              sx={{
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                mb: 1
+              }}
+            >
+              {activity.description}
+            </Typography>
+            <Box 
+              component="span" 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mt: 1 
+              }}
+            >
+              <AccessTimeIcon sx={{ fontSize: '0.875rem', color: 'text.secondary', mr: 0.5 }} />
+              <Typography variant="caption" color="text.secondary" component="span">
+                {timeText}
+              </Typography>
+              {activity.contact && (
+                <>
+                  <Box 
+                    component="span" 
+                    sx={{ 
+                      display: 'inline-block', 
+                      mx: 1, 
+                      width: 4, 
+                      height: 4, 
+                      borderRadius: '50%', 
+                      bgcolor: 'text.disabled' 
+                    }} 
+                  />
+                  <PersonIcon sx={{ fontSize: '0.875rem', color: 'text.secondary', mr: 0.5 }} />
+                  <Typography variant="caption" color="text.secondary" component="span">
+                    {activity.contact}
+                  </Typography>
+                </>
+              )}
+            </Box>
+          </>
+        }
+      />
+    </ListItem>
+  );
+};
+
+// Keep the original ActivityItem component for use in other parts of the application
+// This is needed by ViewingsAndFollowups.tsx
+export const ActivityItem = ({ activity }: { activity: Activity }): React.ReactElement => {
   const statusColor = getStatusColor(activity.status);
   const timeText = getTimeText(activity);
   
@@ -1270,7 +1427,7 @@ const DashboardContent = () => {
                   <List sx={{ py: 0 }}>
                     {sortedActivities.map((activity, index) => (
                       <React.Fragment key={activity.id}>
-                        <ActivityItem activity={activity} />
+                        <DashboardActivityItem activity={activity} />
                         {index < sortedActivities.length - 1 && <Divider component="li" variant="inset" />}
                       </React.Fragment>
                     ))}
