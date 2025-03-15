@@ -984,14 +984,14 @@ const PriceDevelopmentCard = () => {
   const formatDataForPercentageChart = () => {
     const labels = timeSeriesData.houses.map((item) => 
       format(item.date, 'MMM d')
-    ).slice(-14); // Show only last 14 days for clarity
+    ); // Remove the slice to show all 30 days
     
     return {
       labels,
       datasets: [
         {
           label: 'Houses',
-          data: timeSeriesData.houses.map(item => item.value).slice(-14),
+          data: timeSeriesData.houses.map(item => item.value), // Remove the slice
           borderColor: theme.palette.primary.main,
           backgroundColor: alpha(theme.palette.primary.main, 0.1),
           borderWidth: 2,
@@ -1002,7 +1002,7 @@ const PriceDevelopmentCard = () => {
         },
         {
           label: 'Apartments',
-          data: timeSeriesData.apartments.map(item => item.value).slice(-14),
+          data: timeSeriesData.apartments.map(item => item.value), // Remove the slice
           borderColor: theme.palette.secondary.main,
           backgroundColor: alpha(theme.palette.secondary.main, 0.1),
           borderWidth: 2,
@@ -1061,7 +1061,7 @@ const PriceDevelopmentCard = () => {
         ticks: {
           maxRotation: 0,
           autoSkip: true,
-          maxTicksLimit: 5,
+          maxTicksLimit: 8,
           font: {
             size: 10
           }
@@ -1133,7 +1133,7 @@ const PriceDevelopmentCard = () => {
           {/* Chart on the left - increased to 11/12 columns */}
           <Grid item xs={11}>
             <Typography variant="caption" fontWeight="medium" sx={{ mb: 0.5, display: 'block' }}>
-              Price Change (%) - Last 14 Days
+              Price Change (%) - Last Month
             </Typography>
             <Box sx={{ height: 155 }}>
               <Line options={chartOptions} data={formatDataForPercentageChart()} />
@@ -1240,14 +1240,14 @@ const AveragePriceCard = () => {
   const formatDataForPriceChart = () => {
     const labels = timeSeriesData.houses.map((item) => 
       format(item.date, 'MMM d')
-    ).slice(-14); // Show only last 14 days for clarity
+    ); // Remove the slice to show all 30 days
     
     return {
       labels,
       datasets: [
         {
           label: 'Houses (SEK/m²)',
-          data: timeSeriesData.houses.map(item => item.value).slice(-14),
+          data: timeSeriesData.houses.map(item => item.value), // Remove the slice
           borderColor: theme.palette.primary.main,
           backgroundColor: alpha(theme.palette.primary.main, 0.1),
           borderWidth: 2,
@@ -1258,7 +1258,7 @@ const AveragePriceCard = () => {
         },
         {
           label: 'Apartments (SEK/m²)',
-          data: timeSeriesData.apartments.map(item => item.value).slice(-14),
+          data: timeSeriesData.apartments.map(item => item.value), // Remove the slice
           borderColor: theme.palette.secondary.main,
           backgroundColor: alpha(theme.palette.secondary.main, 0.1),
           borderWidth: 2,
@@ -1317,7 +1317,7 @@ const AveragePriceCard = () => {
         ticks: {
           maxRotation: 0,
           autoSkip: true,
-          maxTicksLimit: 5,
+          maxTicksLimit: 8,
           font: {
             size: 10
           }
@@ -1394,7 +1394,7 @@ const AveragePriceCard = () => {
           {/* Chart on the left - increased to 11/12 columns */}
           <Grid item xs={11}>
             <Typography variant="caption" fontWeight="medium" sx={{ mb: 0.5, display: 'block' }}>
-              Average Price Trend - Last 14 Days
+              Average Price Trend - Last Month
             </Typography>
             <Box sx={{ height: 155 }}>
               <Line options={chartOptions} data={formatDataForPriceChart()} />
