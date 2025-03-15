@@ -279,7 +279,7 @@ export default function Home() {
                 color="text.secondary" 
                 sx={{ mb: 4, mt: 4, fontSize: '1.1rem' }}
               >
-                Viggo Sjöström worked several years as a real estate agent in Sweden, gaining first-hand experience in the fast-paced industry. After years of working with CRM systems daily, he recognized the potential to improve and streamline workflows through technology. This passion led him to pursue a career in software development, focusing on creating intuitive and powerful tools for professionals. Today, he works as a full-stack developer at RealPRO CRM, combining his industry expertise with modern technology to build innovative solutions.
+                Viggo Sjöström worked several years as a real estate agent in Sweden, gaining first-hand experience in the fast-paced industry. After years of working with CRM systems daily, he recognized the potential to improve and streamline workflows through technology. This passion led him to pursue a career in software development, focusing on creating intuitive and powerful tools for professionals. Today, he works as a full-stack developer at RealPro CRM, combining his industry expertise with modern technology to build innovative solutions.
               </Typography>
               
               <Box 
@@ -322,7 +322,7 @@ export default function Home() {
                 color="text.secondary" 
                 sx={{ mt: 4, fontSize: '1.1rem' }}
               >
-                With a deep understanding of both real estate and software development, Viggo bridges the gap between industry needs and technical innovation. His goal is to develop CRM systems that enhance efficiency, improve client relationships, and provide real value to real estate professionals.
+                With a deep understanding of both real estate and software development, Viggo bridges the gap between industry needs and technical innovation. His goal is to develop CRM systems that enhance efficiency, improve client relationships, and provide real value.
               </Typography>
             </Grid>
           </Grid>

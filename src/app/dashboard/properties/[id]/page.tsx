@@ -22,6 +22,7 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { mockProperties, mockUsers } from '@/lib/utils/mockData';
 import { Property, User } from '@/lib/types';
+import Overview from '@/components/property/Overview';
 import PropertyDetails from '@/components/property/PropertyDetails';
 import SellersAndBuyers from '@/components/property/SellersAndBuyers';
 import ViewingsAndFollowups from '@/components/property/ViewingsAndFollowups';
@@ -228,9 +229,7 @@ export default function PropertyDetailsPage() {
             {/* Tab Content */}
             <Box sx={{ p: 3 }}>
               {tabValue === 0 && (
-                <Typography>
-                  Overview tab content will be implemented in the next step.
-                </Typography>
+                <Overview property={property} />
               )}
               {tabValue === 1 && (
                 <PropertyDetails property={property} />
