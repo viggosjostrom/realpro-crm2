@@ -1019,7 +1019,9 @@ const DashboardContent = () => {
   
   // Get filtered and sorted activities
   const filteredActivities = filterActivitiesByTab(mockActivities, activitiesTab);
-  const sortedActivities = sortActivitiesByDate(filteredActivities);
+  // Filter out completed activities to only show upcoming ones
+  const upcomingActivities = filteredActivities.filter(activity => !activity.completed);
+  const sortedActivities = sortActivitiesByDate(upcomingActivities);
   
   return (
     <>
