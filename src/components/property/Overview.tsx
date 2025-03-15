@@ -19,7 +19,8 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   IconButton,
-  Tooltip
+  Tooltip,
+  Button
 } from '@mui/material';
 import {
   CalendarToday as CalendarIcon,
@@ -257,44 +258,55 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.5 }}>
                       <PhoneIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
-                      <Typography variant="body2" sx={{ flex: 1 }}>{seller.phone}</Typography>
-                      <Box>
-                        <Tooltip title={`Call ${seller.phone}`} arrow placement="top">
-                          <IconButton 
-                            size="medium" 
-                            sx={{ 
-                              color: 'success.main',
-                              mr: 0.5,
-                              width: 36,
-                              height: 36,
-                              '&:hover': { 
-                                backgroundColor: 'success.lighter',
-                              }
-                            }}
-                          >
-                            <CallIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title={`Text ${seller.phone}`} arrow placement="top">
-                          <IconButton 
-                            size="medium" 
-                            sx={{ 
-                              color: 'info.main',
-                              width: 36,
-                              height: 36,
-                              '&:hover': { 
-                                backgroundColor: 'info.lighter',
-                              }
-                            }}
-                          >
-                            <SmsIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
+                      <Typography variant="body2">{seller.phone}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.2 }}>
                       <EmailIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
                       <Typography variant="body2">{seller.email}</Typography>
+                    </Box>
+                    
+                    <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                      <Tooltip title={`Call ${seller.phone || 'N/A'}`} arrow placement="top">
+                        <Button 
+                          variant="outlined" 
+                          size="small" 
+                          startIcon={<CallIcon />}
+                          sx={{ 
+                            color: 'success.main', 
+                            borderColor: 'success.main',
+                            '&:hover': { 
+                              backgroundColor: 'success.lighter', 
+                              borderColor: 'success.main' 
+                            }
+                          }}
+                        >
+                          Call
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title={`Text ${seller.phone || 'N/A'}`} arrow placement="top">
+                        <Button 
+                          variant="outlined" 
+                          size="small" 
+                          startIcon={<SmsIcon />}
+                          sx={{ 
+                            color: 'info.main', 
+                            borderColor: 'info.main',
+                            '&:hover': { 
+                              backgroundColor: 'info.lighter', 
+                              borderColor: 'info.main' 
+                            }
+                          }}
+                        >
+                          Text
+                        </Button>
+                      </Tooltip>
+                      <Button 
+                        variant="outlined" 
+                        size="small" 
+                        startIcon={<EmailIcon />}
+                      >
+                        Email
+                      </Button>
                     </Box>
                   </Box>
                 ) : (
@@ -329,44 +341,55 @@ const Overview: React.FC<OverviewProps> = ({ property }) => {
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.5 }}>
                       <PhoneIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
-                      <Typography variant="body2" sx={{ flex: 1 }}>{buyer.phone}</Typography>
-                      <Box>
-                        <Tooltip title={`Call ${buyer.phone}`} arrow placement="top">
-                          <IconButton 
-                            size="medium" 
-                            sx={{ 
-                              color: 'success.main',
-                              mr: 0.5,
-                              width: 36,
-                              height: 36,
-                              '&:hover': { 
-                                backgroundColor: 'success.lighter',
-                              }
-                            }}
-                          >
-                            <CallIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title={`Text ${buyer.phone}`} arrow placement="top">
-                          <IconButton 
-                            size="medium" 
-                            sx={{ 
-                              color: 'info.main',
-                              width: 36,
-                              height: 36,
-                              '&:hover': { 
-                                backgroundColor: 'info.lighter',
-                              }
-                            }}
-                          >
-                            <SmsIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
+                      <Typography variant="body2">{buyer.phone}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.2 }}>
                       <EmailIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
                       <Typography variant="body2">{buyer.email}</Typography>
+                    </Box>
+                    
+                    <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                      <Tooltip title={`Call ${buyer.phone || 'N/A'}`} arrow placement="top">
+                        <Button 
+                          variant="outlined" 
+                          size="small" 
+                          startIcon={<CallIcon />}
+                          sx={{ 
+                            color: 'success.main', 
+                            borderColor: 'success.main',
+                            '&:hover': { 
+                              backgroundColor: 'success.lighter', 
+                              borderColor: 'success.main' 
+                            }
+                          }}
+                        >
+                          Call
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title={`Text ${buyer.phone || 'N/A'}`} arrow placement="top">
+                        <Button 
+                          variant="outlined" 
+                          size="small" 
+                          startIcon={<SmsIcon />}
+                          sx={{ 
+                            color: 'info.main', 
+                            borderColor: 'info.main',
+                            '&:hover': { 
+                              backgroundColor: 'info.lighter', 
+                              borderColor: 'info.main' 
+                            }
+                          }}
+                        >
+                          Text
+                        </Button>
+                      </Tooltip>
+                      <Button 
+                        variant="outlined" 
+                        size="small" 
+                        startIcon={<EmailIcon />}
+                      >
+                        Email
+                      </Button>
                     </Box>
                   </Box>
                 ) : (
