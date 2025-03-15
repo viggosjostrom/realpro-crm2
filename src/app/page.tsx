@@ -76,9 +76,19 @@ export default function Home() {
   const textSecondaryColor = theme.palette.text.secondary;
   const dividerColor = theme.palette.divider;
 
-  // Force remounting on navigation by using a random key
+  // Handle navigation to dashboard safely
+  const handleDashboardNavigation = () => {
+    try {
+      // Use sessionStorage instead of localStorage
+      sessionStorage.setItem('fromLandingPage', 'true');
+    } catch {
+      // Silent error handling
+    }
+  };
+
+  // Remove the random key to prevent remounting issues
   return (
-    <Box key={`home-page-${Math.random()}`}>
+    <Box>
       {/* Hero Section */}
       <Box 
         sx={{ 
@@ -113,7 +123,7 @@ export default function Home() {
                   size="large"
                   component={Link}
                   href="/dashboard"
-                  onClick={() => localStorage.setItem('fromLandingPage', 'true')}
+                  onClick={handleDashboardNavigation}
                   sx={{ 
                     bgcolor: 'white', 
                     color: 'primary.main',
@@ -565,7 +575,7 @@ export default function Home() {
             size="large"
             component={Link}
             href="/dashboard"
-            onClick={() => localStorage.setItem('fromLandingPage', 'true')}
+            onClick={handleDashboardNavigation}
             sx={{ 
               bgcolor: 'white', 
               color: 'primary.main',

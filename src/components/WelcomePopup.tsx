@@ -14,14 +14,29 @@ const WelcomePopup: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // Check if user navigated from landing page
-    const fromLandingPage = localStorage.getItem('fromLandingPage') === 'true';
-    
-    if (fromLandingPage) {
-      setOpen(true);
-      // Clear the flag so it doesn't show again on refresh
-      localStorage.removeItem('fromLandingPage');
+    // Use sessionStorage instead of localStorage to prevent issues across browser sessions
+    // This ensures the flag is cleared when the browser is closed
+    try {
+      const fromLandingPage = sessionStorage.getItem('fromLandingPage') === 'true';
+      
+      if (fromLandingPage) {
+        setOpen(true);
+        // Clear the flag immediately to prevent potential loops
+        sessionStorage.removeItem('fromLandingPage');
+      }
+    } catch {
+      // Handle any storage access errors silently
+      console.error('Storage access error occurred');
     }
+
+    // Cleanup function to ensure we remove the flag if component unmounts
+    return () => {
+      try {
+        sessionStorage.removeItem('fromLandingPage');
+      } catch {
+        // Silent error handling
+      }
+    };
   }, []);
 
   const handleClose = () => {
@@ -69,7 +84,7 @@ const WelcomePopup: React.FC = () => {
     >
       <DialogContent sx={{ pt: 4, position: 'relative', zIndex: 1 }}>
         <Typography variant="h5" component="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'white' }}>
-          Welcome to the RealPro CRM showcase Demo!
+          Welcome to the RealPro showcase Demo!
         </Typography>
         
         <Typography variant="body1" paragraph sx={{ mt: 2, color: 'white' }}>
