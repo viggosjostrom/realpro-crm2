@@ -28,7 +28,8 @@ import {
   Select,
   MenuItem,
   FormControl,
-  SelectChangeEvent
+  SelectChangeEvent,
+  ButtonBase
 } from '@mui/material';
 import {
   Home as HomeIcon,
@@ -63,7 +64,7 @@ import {
   Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { mockDashboardStats, mockActivities, mockProperties, mockLeads, mockMarketStats } from '@/lib/utils/mockData';
-import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils/formatters';
+import { formatCurrency, formatDate } from '@/lib/utils/formatters';
 import { Activity, Property } from '@/lib/types';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
 import { format } from 'date-fns';
@@ -1786,7 +1787,7 @@ const DashboardContent = () => {
                       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     }
                   }}
-                  onClick={() => router.push('/dashboard/leads')}
+                  onClick={() => {/* No navigation */}}
                 >
                   View All
                 </ButtonWithIcon>
@@ -1805,6 +1806,7 @@ const DashboardContent = () => {
                   <Grid item xs={12} sm={6} key={lead.id}>
                     <Card 
                       elevation={0} 
+                      component={ButtonBase}
                       sx={{ 
                         height: '100%',
                         borderRadius: 2,
@@ -1812,12 +1814,17 @@ const DashboardContent = () => {
                         borderColor: 'divider',
                         overflow: 'hidden',
                         transition: 'all 0.2s ease',
+                        display: 'block', // Make ButtonBase behave like a block element
+                        textAlign: 'left', // Keep text left-aligned inside card
+                        width: '100%', // Ensure card takes full width
                         '&:hover': {
                           transform: 'translateY(-4px)',
                           boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
                           borderColor: '#9333ea40',
+                          cursor: 'pointer'
                         }
                       }}
+                      onClick={() => {/* No navigation */}}
                     >
                       <CardContent sx={{ p: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -1847,7 +1854,28 @@ const DashboardContent = () => {
                           </Box>
                         </Box>
                         
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        {lead.phone && (
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <PhoneInTalkIcon fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
+                            <Typography variant="body2" color="text.secondary">
+                              {lead.phone}
+                            </Typography>
+                          </Box>
+                        )}
+                        
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                          <InfoIcon fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
+                          <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+                            Source: {lead.source}
+                          </Typography>
+                        </Box>
+                        
+                        {/* Notes section with status chip */}
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mb: 1 }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ flexGrow: 1, pr: 2 }}>
+                            {lead.notes ? lead.notes : 'No additional information available'}
+                          </Typography>
+                          
                           <Chip 
                             label={lead.status.charAt(0).toUpperCase() + lead.status.slice(1)} 
                             size="small"
@@ -1863,11 +1891,9 @@ const DashboardContent = () => {
                               fontWeight: 'bold',
                               borderRadius: 1,
                               boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                              flexShrink: 0
                             }} 
                           />
-                          <Typography variant="caption" color="text.secondary">
-                            {lead.lastContactedAt ? formatRelativeTime(lead.lastContactedAt) : 'New'}
-                          </Typography>
                         </Box>
                       </CardContent>
                     </Card>
