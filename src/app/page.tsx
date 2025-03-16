@@ -76,9 +76,19 @@ export default function Home() {
   const textSecondaryColor = theme.palette.text.secondary;
   const dividerColor = theme.palette.divider;
 
-  // Force remounting on navigation by using a random key
+  // Handle navigation to dashboard safely
+  const handleDashboardNavigation = () => {
+    try {
+      // Use sessionStorage instead of localStorage
+      sessionStorage.setItem('fromLandingPage', 'true');
+    } catch {
+      // Silent error handling
+    }
+  };
+
+  // Remove the random key to prevent remounting issues
   return (
-    <Box key={`home-page-${Math.random()}`}>
+    <Box>
       {/* Hero Section */}
       <Box 
         sx={{ 
@@ -113,6 +123,7 @@ export default function Home() {
                   size="large"
                   component={Link}
                   href="/dashboard"
+                  onClick={handleDashboardNavigation}
                   sx={{ 
                     bgcolor: 'white', 
                     color: 'primary.main',
@@ -183,7 +194,7 @@ export default function Home() {
       </Box>
 
       {/* Features Section */}
-      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'white' }}>
         <Box sx={{ textAlign: 'center', mb: 8 }}>
           <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', mb: 2 }}>
             Designed for Swedish Real Estate Professionals
@@ -330,7 +341,7 @@ export default function Home() {
       </Box>
 
       {/* Showcase Section */}
-      <Box sx={{ bgcolor: 'grey.50', py: { xs: 8, md: 12 } }}>
+      <Box sx={{ bgcolor: 'white', py: { xs: 8, md: 12 } }}>
         <Container maxWidth="lg">
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={12} md={6}>
@@ -564,6 +575,7 @@ export default function Home() {
             size="large"
             component={Link}
             href="/dashboard"
+            onClick={handleDashboardNavigation}
             sx={{ 
               bgcolor: 'white', 
               color: 'primary.main',
@@ -581,7 +593,7 @@ export default function Home() {
       </Box>
 
       {/* Footer */}
-      <Box sx={{ bgcolor: 'background.paper', py: 6 }}>
+      <Box sx={{ bgcolor: 'white', py: 6 }}>
         <Container maxWidth="lg">
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
