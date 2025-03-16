@@ -194,7 +194,7 @@ export default function Home() {
       </Box>
 
       {/* Features Section */}
-      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'white' }}>
         <Box sx={{ textAlign: 'center', mb: 8 }}>
           <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', mb: 2 }}>
             Designed for Swedish Real Estate Professionals
@@ -341,7 +341,7 @@ export default function Home() {
       </Box>
 
       {/* Showcase Section */}
-      <Box sx={{ bgcolor: 'grey.50', py: { xs: 8, md: 12 } }}>
+      <Box sx={{ bgcolor: 'white', py: { xs: 8, md: 12 } }}>
         <Container maxWidth="lg">
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={12} md={6}>
@@ -593,7 +593,7 @@ export default function Home() {
       </Box>
 
       {/* Footer */}
-      <Box sx={{ bgcolor: 'background.paper', py: 6 }}>
+      <Box sx={{ bgcolor: 'white', py: 6 }}>
         <Container maxWidth="lg">
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>

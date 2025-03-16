@@ -10,6 +10,7 @@ import createCache from '@emotion/cache';
 // Create a theme instance with enhanced accessibility
 const theme = createTheme({
   palette: {
+    mode: 'light', // Explicitly set mode to light to disable dark mode
     primary: {
       main: '#1a56db', // Darker blue for better contrast (4.5:1 ratio)
       light: '#3b82f6',
@@ -52,7 +53,7 @@ const theme = createTheme({
       disabled: '#6b7280', // Meets 3:1 minimum for large text
     },
     background: {
-      default: '#f9fafb',
+      default: '#ffffff',
       paper: '#ffffff',
     },
     divider: 'rgba(0, 0, 0, 0.12)',
