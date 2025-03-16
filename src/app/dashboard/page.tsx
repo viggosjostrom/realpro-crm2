@@ -82,6 +82,7 @@ import {
   ChartData
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { useRouter } from 'next/navigation';
 
 // Register Chart.js components
 ChartJS.register(
@@ -459,10 +460,15 @@ const ButtonWithIcon = ({ children, icon, ...props }: {
 const PropertyCard = ({ property }: { property: Property }) => {
   const [isClient, setIsClient] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const router = useRouter();
   
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const handleCardClick = () => {
+    router.push(`/dashboard/properties/${property.id}`);
+  };
 
   const getStatusColor = () => {
     switch (property.status) {
@@ -507,8 +513,10 @@ const PropertyCard = ({ property }: { property: Property }) => {
         '&:hover': {
           transform: 'translateY(-4px)',
           boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+          cursor: 'pointer'
         }
       }}
+      onClick={handleCardClick}
     >
       <Box 
         sx={{ 
@@ -1474,6 +1482,7 @@ const AveragePriceCard = () => {
 const DashboardContent = () => {
   const theme = useTheme();
   const [activitiesTab, setActivitiesTab] = React.useState(0);
+  const router = useRouter();
   
   const handleActivitiesTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActivitiesTab(newValue);
@@ -1576,6 +1585,7 @@ const DashboardContent = () => {
                       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     }
                   }}
+                  onClick={() => router.push('/dashboard/activities')}
                 >
                   View All
                 </ButtonWithIcon>
@@ -1711,6 +1721,7 @@ const DashboardContent = () => {
                       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     }
                   }}
+                  onClick={() => router.push('/dashboard/properties')}
                 >
                   View All
                 </ButtonWithIcon>
@@ -1775,6 +1786,7 @@ const DashboardContent = () => {
                       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     }
                   }}
+                  onClick={() => router.push('/dashboard/leads')}
                 >
                   View All
                 </ButtonWithIcon>
