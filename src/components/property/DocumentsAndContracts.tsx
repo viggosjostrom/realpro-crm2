@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import {
   Box,
   Typography,
-  Paper,
   Grid,
   Card,
   CardContent,

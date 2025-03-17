@@ -3,7 +3,6 @@ import {
   Box,
   Typography,
   Grid,
-  Paper,
   Divider,
   Chip,
   Table,
@@ -16,8 +15,6 @@ import {
   CardMedia,
   Button,
   TextField,
-  IconButton,
-  CardHeader,
   alpha
 } from '@mui/material';
 import {
@@ -30,7 +27,6 @@ import {
   Info as InfoIcon,
   Apartment as ApartmentIcon,
   Edit as EditIcon,
-  Save as SaveIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
 import { Property } from '@/lib/types';
@@ -121,7 +117,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
   };
 
   // Handle input changes for editable property fields
-  const handlePropertyChange = (field: keyof Property, value: any) => {
+  const handlePropertyChange = (field: keyof Property, value: string | number | boolean | Date) => {
     setEditableProperty(prev => ({
       ...prev,
       [field]: value
@@ -129,7 +125,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
   };
 
   // Handle input changes for additional details
-  const handleDetailsChange = (field: keyof typeof additionalDetails, value: any) => {
+  const handleDetailsChange = (field: keyof typeof additionalDetails, value: string | number | boolean) => {
     setEditableDetails(prev => ({
       ...prev,
       [field]: value

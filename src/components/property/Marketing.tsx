@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Box,
   Typography,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -36,7 +35,11 @@ import {
   TrendingUp as TrendingUpIcon,
   Launch as LaunchIcon,
   Add as AddIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
+  Mouse as MouseIcon,
+  PersonAdd as PersonAddIcon,
+  Apps as AppsIcon
 } from '@mui/icons-material';
 import { Property } from '@/lib/types';
 
@@ -296,70 +299,213 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
         </Box>
         
         {/* Performance Metrics Cards */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card 
-              sx={{ 
-                boxShadow: 2, 
-                borderRadius: 2,
-                background: (theme) => alpha(theme.palette.background.paper, 0.98),
-              }}
-            >
-              <CardContent>
-                <Typography variant="h6" component="h3" color="primary">{totalViews.toLocaleString()}</Typography>
-                <Typography variant="body2" color="text.secondary">Total Views</Typography>
-              </CardContent>
-            </Card>
+        <Box sx={{ mb: 3 }}>
+          <Grid container spacing={1.5}>
+            <Grid item xs={6} sm={3} md={1.5} lg={1.25}>
+              <Card 
+                sx={{ 
+                  borderRadius: 2,
+                  background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.05)} 0%, ${alpha(theme.palette.primary.main, 0.15)} 100%)`,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  height: '100%',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => `0 4px 20px 0 ${alpha(theme.palette.primary.main, 0.25)}`,
+                  },
+                }}
+              >
+                <Box sx={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  right: 0, 
+                  p: 0.5, 
+                  bgcolor: 'primary.main', 
+                  borderBottomLeftRadius: 8,
+                  zIndex: 1
+                }}>
+                  <VisibilityIcon sx={{ color: 'white', fontSize: '0.9rem', display: 'block' }} />
+                </Box>
+                <CardContent sx={{ p: 1, pt: 1.5, pb: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, textTransform: 'uppercase', fontWeight: 500, letterSpacing: '0.5px', fontSize: '0.65rem' }}>
+                    Views
+                  </Typography>
+                  <Typography variant="h6" component="div" color="primary.main" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                    {totalViews.toLocaleString()}
+                  </Typography>
+                  {/* Spacer to align with other cards */}
+                  <Box sx={{ height: 22 }} /> {/* This height approximates the space taken by the progress bars and indicators in other cards */}
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={6} sm={3} md={1.5} lg={1.25}>
+              <Card 
+                sx={{ 
+                  borderRadius: 2,
+                  background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.info.light, 0.05)} 0%, ${alpha(theme.palette.info.main, 0.15)} 100%)`,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  height: '100%',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => `0 4px 20px 0 ${alpha(theme.palette.info.main, 0.25)}`,
+                  },
+                }}
+              >
+                <Box sx={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  right: 0, 
+                  p: 0.5, 
+                  bgcolor: 'info.main', 
+                  borderBottomLeftRadius: 8,
+                  zIndex: 1
+                }}>
+                  <MouseIcon sx={{ color: 'white', fontSize: '0.9rem', display: 'block' }} />
+                </Box>
+                <CardContent sx={{ p: 1, pt: 1.5, pb: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, textTransform: 'uppercase', fontWeight: 500, letterSpacing: '0.5px', fontSize: '0.65rem' }}>
+                    Clicks
+                  </Typography>
+                  <Typography variant="h6" component="div" color="info.main" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                    {totalClicks.toLocaleString()}
+                  </Typography>
+                  <Box sx={{ 
+                    mt: 0.75, 
+                    height: 3, 
+                    borderRadius: 1.5, 
+                    bgcolor: (theme) => alpha(theme.palette.info.main, 0.1),
+                    overflow: 'hidden'
+                  }}>
+                    <Box sx={{ 
+                      height: '100%', 
+                      width: `${Math.min(clickThroughRate * 2, 100)}%`, 
+                      bgcolor: 'info.main',
+                      borderRadius: 1.5
+                    }} />
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.25, fontSize: '0.65rem', display: 'flex', alignItems: 'center' }}>
+                    CTR {clickThroughRate.toFixed(1)}%
+                    {clickThroughRate > 5 && (
+                      <TrendingUpIcon sx={{ color: 'success.main', ml: 0.5, fontSize: '0.7rem' }} />
+                    )}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={6} sm={3} md={1.5} lg={1.25}>
+              <Card 
+                sx={{ 
+                  borderRadius: 2,
+                  background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.success.light, 0.05)} 0%, ${alpha(theme.palette.success.main, 0.15)} 100%)`,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  height: '100%',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => `0 4px 20px 0 ${alpha(theme.palette.success.main, 0.25)}`,
+                  },
+                }}
+              >
+                <Box sx={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  right: 0, 
+                  p: 0.5, 
+                  bgcolor: 'success.main', 
+                  borderBottomLeftRadius: 8,
+                  zIndex: 1
+                }}>
+                  <PersonAddIcon sx={{ color: 'white', fontSize: '0.9rem', display: 'block' }} />
+                </Box>
+                <CardContent sx={{ p: 1, pt: 1.5, pb: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, textTransform: 'uppercase', fontWeight: 500, letterSpacing: '0.5px', fontSize: '0.65rem' }}>
+                    Potential Leads
+                  </Typography>
+                  <Typography variant="h6" component="div" color="success.main" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                    {totalLeads.toLocaleString()}
+                  </Typography>
+                  <Box sx={{ 
+                    mt: 0.75, 
+                    height: 3, 
+                    borderRadius: 1.5, 
+                    bgcolor: (theme) => alpha(theme.palette.success.main, 0.1),
+                    overflow: 'hidden'
+                  }}>
+                    <Box sx={{ 
+                      height: '100%', 
+                      width: `${Math.min(conversionRate * 5, 100)}%`, 
+                      bgcolor: 'success.main',
+                      borderRadius: 1.5
+                    }} />
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.25, fontSize: '0.65rem', display: 'flex', alignItems: 'center' }}>
+                    Conv {conversionRate.toFixed(1)}%
+                    {conversionRate > 3 && (
+                      <TrendingUpIcon sx={{ color: 'success.main', ml: 0.5, fontSize: '0.7rem' }} />
+                    )}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={6} sm={3} md={1.5} lg={1.25}>
+              <Card 
+                sx={{ 
+                  borderRadius: 2,
+                  background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.warning.light, 0.05)} 0%, ${alpha(theme.palette.warning.main, 0.15)} 100%)`,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  height: '100%',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => `0 4px 20px 0 ${alpha(theme.palette.warning.main, 0.25)}`,
+                  },
+                }}
+              >
+                <Box sx={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  right: 0, 
+                  p: 0.5, 
+                  bgcolor: 'warning.main', 
+                  borderBottomLeftRadius: 8,
+                  zIndex: 1
+                }}>
+                  <AppsIcon sx={{ color: 'white', fontSize: '0.9rem', display: 'block' }} />
+                </Box>
+                <CardContent sx={{ p: 1, pt: 1.5, pb: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, textTransform: 'uppercase', fontWeight: 500, letterSpacing: '0.5px', fontSize: '0.65rem' }}>
+                    Platforms
+                  </Typography>
+                  <Typography variant="h6" component="div" color="warning.main" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                    {platforms.filter(p => p.status === 'active').length}
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                    {Array.from({ length: Math.min(platforms.length, 5) }).map((_, i) => (
+                      <Box
+                        key={i}
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          mr: 0.5,
+                          bgcolor: i < platforms.filter(p => p.status === 'active').length ? 'warning.main' : (theme) => alpha(theme.palette.warning.main, 0.2)
+                        }}
+                      />
+                    ))}
+                    <Typography variant="caption" sx={{ ml: 0.5, fontSize: '0.65rem', color: 'text.secondary' }}>
+                      of {platforms.length}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card 
-              sx={{ 
-                boxShadow: 2, 
-                borderRadius: 2,
-                background: (theme) => alpha(theme.palette.background.paper, 0.98),
-              }}
-            >
-              <CardContent>
-                <Typography variant="h6" component="h3" color="primary">{totalClicks.toLocaleString()}</Typography>
-                <Typography variant="body2" color="text.secondary">Total Clicks</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  CTR: {clickThroughRate.toFixed(2)}%
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card 
-              sx={{ 
-                boxShadow: 2, 
-                borderRadius: 2,
-                background: (theme) => alpha(theme.palette.background.paper, 0.98),
-              }}
-            >
-              <CardContent>
-                <Typography variant="h6" component="h3" color="primary">{totalLeads.toLocaleString()}</Typography>
-                <Typography variant="body2" color="text.secondary">Total Leads</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Conversion: {conversionRate.toFixed(2)}%
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card 
-              sx={{ 
-                boxShadow: 2, 
-                borderRadius: 2,
-                background: (theme) => alpha(theme.palette.background.paper, 0.98),
-              }}
-            >
-              <CardContent>
-                <Typography variant="h6" component="h3" color="primary">{platforms.filter(p => p.status === 'active').length}</Typography>
-                <Typography variant="body2" color="text.secondary">Active Platforms</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+        </Box>
         
         {/* Filter Controls */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

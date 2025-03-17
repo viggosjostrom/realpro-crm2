@@ -17,9 +17,7 @@ import {
   Divider,
   Chip,
   Button,
-  Tooltip,
   ButtonProps,
-  CircularProgress,
   LinearProgress,
   Tabs,
   Tab,
@@ -39,7 +37,6 @@ import {
   Description as DescriptionIcon,
   ArrowForward as ArrowForwardIcon,
   TrendingUp as TrendingUpIcon,
-  Add as AddIcon,
   EmojiEvents as EmojiEventsIcon,
   CalendarToday as CalendarTodayIcon,
   Today as TodayIcon,
@@ -972,7 +969,6 @@ const CommissionGoalTracker = () => {
 const PriceDevelopmentCard = () => {
   const theme = useTheme();
   const [region, setRegion] = useState<Region>('Sweden');
-  const data = mockMarketStats.priceDevelopment[region];
   const timeSeriesData = mockMarketStats.percentageChangeTimeSeries[region];
   
   // Get the most recent values from the time series
@@ -1224,7 +1220,6 @@ const PriceDevelopmentCard = () => {
 const AveragePriceCard = () => {
   const theme = useTheme();
   const [region, setRegion] = useState<Region>('Sweden');
-  const data = mockMarketStats.averagePricePerSqm[region];
   const timeSeriesData = mockMarketStats.priceDevelopmentTimeSeries[region];
   
   // Get the most recent values from the time series
