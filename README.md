@@ -54,29 +54,39 @@ A modern, user-friendly CRM system designed specifically for real estate agents 
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-### Demo Credentials
-
-For demo purposes, you can use the following credentials:
-
-- **Email**: demo@realpro.se
-- **Password**: password123
-
 ## Project Structure
 
 ```
 src/
 ├── app/                  # Next.js app directory
 │   ├── auth/             # Authentication pages
+│   │   └── login/        # Login page
 │   ├── dashboard/        # Dashboard and feature pages
+│   │   ├── properties/   # Property management pages
+│   │   ├── clients/      # Client management pages
+│   │   ├── leads/        # Lead management pages
+│   │   └── activities/   # Activity tracking pages
+│   ├── globals.css       # Global styles
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing page
 ├── components/           # React components
-│   ├── clients/          # Client-related components
-│   ├── dashboard/        # Dashboard components
 │   ├── layout/           # Layout components
-│   ├── leads/            # Lead-related components
-│   ├── properties/       # Property-related components
-│   └── ui/               # Reusable UI components
+│   │   ├── Header.tsx
+│   │   ├── Sidebar.tsx
+│   │   └── DashboardLayout.tsx
+│   ├── property/         # Property-related components
+│   │   ├── Overview.tsx
+│   │   ├── PropertyDetails.tsx
+│   │   ├── SellersAndBuyers.tsx
+│   │   ├── Marketing.tsx
+│   │   ├── ViewingsAndFollowups.tsx
+│   │   ├── OffersAndTransactions.tsx
+│   │   └── DocumentsAndContracts.tsx
+│   ├── ClientOnly.tsx
+│   ├── HydrationErrorBoundary.tsx
+│   ├── ThemeRegistry.tsx
+│   └── WelcomePopup.tsx
+├── styles/               # CSS and styling files
 └── lib/                  # Utilities and helpers
     ├── types/            # TypeScript type definitions
     └── utils/            # Utility functions
