@@ -89,20 +89,20 @@ const WelcomePopup: React.FC = () => {
           Welcome to the RealPro showcase Demo!
         </Typography>
         
-        <Typography variant="body1" paragraph sx={{ mt: 2, color: 'white' }}>
-          You&apos;re now logged in as Johan, the demo user, and ready to explore RealPRO CRM! 
+        <Typography variant="body1" paragraph align="center" sx={{ mt: 2, color: 'white' }}>
+          You&apos;re now logged in as Johan, the demo user, and ready to explore RealPro CRM! 
           This showcase is designed to give you a hands-on feel for how real estate professionals 
           can manage properties, clients, and transactions with ease.
         </Typography>
         
-        <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
-          <Typography variant="body1" sx={{ fontWeight: 'medium', color: 'white' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', my: 2, justifyContent: 'center' }}>
+          <Typography variant="body1" align="center" sx={{ fontWeight: 'medium', color: 'white' }}>
             Feel free to navigate around, check out the property board, explore listings, and test different features.
           </Typography>
         </Box>
         
-        <Typography variant="body1" paragraph sx={{ color: 'white' }}>
-          If you have any questions or feedback, we&apos;d love to hear from you. Enjoy the demo!
+        <Typography variant="body1" paragraph align="center" sx={{ color: 'white' }}>
+          If you have any questions or feedback, I would love to hear from you. Enjoy the demo!
         </Typography>
       </DialogContent>
       
