@@ -22,10 +22,14 @@ import {
   Assignment as AssignmentIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
-  Task as TaskIcon
+  Task as TaskIcon,
+  Receipt as ReceiptIcon
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { Property, Activity } from '@/lib/types';
+import { mockOffers } from '@/lib/utils/mockData';
+import ClientViewings from './ClientViewings';
+import ClientOffers from './ClientOffers';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -52,12 +56,21 @@ const TabPanel = (props: TabPanelProps) => {
 interface ClientTabsProps {
   clientProperties: Property[];
   clientActivities: Activity[];
+  clientId: string;
   formatDate: (date: Date) => string;
 }
 
-const ClientTabs: React.FC<ClientTabsProps> = ({ clientProperties, clientActivities, formatDate }) => {
+const ClientTabs: React.FC<ClientTabsProps> = ({ 
+  clientProperties, 
+  clientActivities, 
+  clientId,
+  formatDate 
+}) => {
   const router = useRouter();
   const [tabValue, setTabValue] = useState(0);
+  
+  // Find client offers
+  const clientOffers = mockOffers.filter(offer => offer.buyerId === clientId);
   
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -69,10 +82,13 @@ const ClientTabs: React.FC<ClientTabsProps> = ({ clientProperties, clientActivit
         value={tabValue} 
         onChange={handleTabChange}
         sx={{ borderBottom: 1, borderColor: 'divider' }}
+        variant="scrollable"
+        scrollButtons="auto"
       >
         <Tab label="Properties" icon={<HomeIcon />} iconPosition="start" />
         <Tab label="Activities" icon={<EventAvailableIcon />} iconPosition="start" />
         <Tab label="Viewings" icon={<TodayIcon />} iconPosition="start" />
+        <Tab label="Offers" icon={<ReceiptIcon />} iconPosition="start" />
         <Tab label="Documents" icon={<AssignmentIcon />} iconPosition="start" />
       </Tabs>
       
@@ -178,14 +194,14 @@ const ClientTabs: React.FC<ClientTabsProps> = ({ clientProperties, clientActivit
       </TabPanel>
       
       <TabPanel value={tabValue} index={2}>
-        <Box sx={{ textAlign: 'center', py: 5 }}>
-          <Typography variant="body1">
-            Viewing history will be displayed here.
-          </Typography>
-        </Box>
+        <ClientViewings clientViewings={clientActivities} formatDate={formatDate} />
       </TabPanel>
       
       <TabPanel value={tabValue} index={3}>
+        <ClientOffers clientOffers={clientOffers} formatDate={formatDate} />
+      </TabPanel>
+      
+      <TabPanel value={tabValue} index={4}>
         <Box sx={{ textAlign: 'center', py: 5 }}>
           <Typography variant="body1">
             Client documents will be displayed here.

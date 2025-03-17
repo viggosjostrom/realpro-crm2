@@ -59,6 +59,7 @@ export default function ClientDetailPage() {
       <ClientTabs 
         clientProperties={clientProperties}
         clientActivities={clientActivities}
+        clientId={client.id}
         formatDate={formatDate}
       />
     </Box>
