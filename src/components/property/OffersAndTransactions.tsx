@@ -24,7 +24,8 @@ import {
   Tab,
   Tabs,
   Link,
-  Avatar
+  Avatar,
+  alpha
 } from '@mui/material';
 import {
   AttachMoney as MoneyIcon,
@@ -162,7 +163,7 @@ const OffersAndTransactions: React.FC<OffersAndTransactionsProps> = ({ property 
   const renderOffersTable = () => {
     if (propertyOffers.length === 0) {
       return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Box sx={{ textAlign: 'center', py: 3 }}>
           <Typography variant="body1" color="text.secondary">
             No offers have been received for this property yet.
           </Typography>
@@ -250,7 +251,11 @@ const OffersAndTransactions: React.FC<OffersAndTransactionsProps> = ({ property 
     
     if (negotiatingOffers.length === 0) {
       return (
-        <Card variant="outlined" sx={{ mb: 3 }}>
+        <Card sx={{ 
+          boxShadow: 2, 
+          borderRadius: 2,
+          mb: 3 
+        }}>
           <CardContent>
             <Typography variant="h6" component="h3" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <MoneyIcon color="primary" sx={{ mr: 1 }} />
@@ -265,7 +270,11 @@ const OffersAndTransactions: React.FC<OffersAndTransactionsProps> = ({ property 
     }
 
     return (
-      <Card variant="outlined" sx={{ mb: 3 }}>
+      <Card sx={{ 
+        boxShadow: 2, 
+        borderRadius: 2,
+        mb: 3 
+      }}>
         <CardContent>
           <Typography variant="h6" component="h3" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <MoneyIcon color="primary" sx={{ mr: 1 }} />
@@ -341,7 +350,11 @@ const OffersAndTransactions: React.FC<OffersAndTransactionsProps> = ({ property 
     
     if (!acceptedOffer && property.status !== 'sold') {
       return (
-        <Card variant="outlined" sx={{ mb: 3 }}>
+        <Card sx={{ 
+          boxShadow: 2, 
+          borderRadius: 2,
+          mb: 3 
+        }}>
           <CardContent>
             <Typography variant="h6" component="h3" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <CheckIcon color="primary" sx={{ mr: 1 }} />
@@ -367,7 +380,11 @@ const OffersAndTransactions: React.FC<OffersAndTransactionsProps> = ({ property 
     if (!offerToShow) return null;
 
     return (
-      <Card variant="outlined" sx={{ mb: 3 }}>
+      <Card sx={{ 
+        boxShadow: 2, 
+        borderRadius: 2,
+        mb: 3 
+      }}>
         <CardContent>
           <Typography variant="h6" component="h3" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <CheckIcon color="primary" sx={{ mr: 1 }} />
@@ -444,7 +461,10 @@ const OffersAndTransactions: React.FC<OffersAndTransactionsProps> = ({ property 
     }
 
     return (
-      <Card variant="outlined">
+      <Card sx={{ 
+        boxShadow: 2, 
+        borderRadius: 2
+      }}>
         <CardContent>
           <Typography variant="h6" component="h3" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <ShowChartIcon color="primary" sx={{ mr: 1 }} />
@@ -492,73 +512,121 @@ const OffersAndTransactions: React.FC<OffersAndTransactionsProps> = ({ property 
   };
 
   return (
-    <Box>
-      <Paper sx={{ mb: 3 }}>
-        <Tabs 
-          value={tabValue} 
-          onChange={handleTabChange}
-          sx={{ 
-            borderBottom: 1, 
-            borderColor: 'divider',
-            '& .MuiTab-root': {
-              textTransform: 'none',
-              fontWeight: 'medium',
-              fontSize: '0.95rem'
-            }
-          }}
-        >
-          <Tab label="Offers" />
-          <Tab label="Transaction Details" />
-        </Tabs>
-        
-        <Box sx={{ p: 3 }}>
-          {/* Offers Tab */}
-          {tabValue === 0 && (
-            <>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <MoneyIcon color="primary" sx={{ mr: 1 }} />
+    <Card 
+      sx={{ 
+        bgcolor: '#f5f7fa',
+        boxShadow: 1,
+        borderRadius: 2,
+        p: 3,
+        mb: 3 
+      }}
+    >
+      <Box sx={{ 
+        '& .detail-card': {
+          boxShadow: 3,
+          borderRadius: 2,
+          overflow: 'hidden',
+          transition: 'box-shadow 0.3s ease-in-out',
+          '&:hover': {
+            boxShadow: 5,
+          },
+          mb: 3,
+          background: (theme) => alpha(theme.palette.background.paper, 0.98),
+        },
+        '& .card-header': {
+          p: 2,
+          pb: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        },
+        '& .content-area': {
+          p: 2,
+        },
+      }}>
+        <Card className="detail-card">
+          <Tabs 
+            value={tabValue} 
+            onChange={handleTabChange}
+            sx={{ 
+              borderBottom: 1, 
+              borderColor: 'divider',
+              '& .MuiTab-root': {
+                textTransform: 'none',
+                fontWeight: 'medium',
+                fontSize: '0.95rem'
+              },
+              px: 2,
+              pt: 1
+            }}
+          >
+            <Tab label="Offers" />
+            <Tab label="Transaction Details" />
+          </Tabs>
+          
+          <Box className="content-area">
+            {/* Offers Tab */}
+            {tabValue === 0 && (
+              <>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <MoneyIcon color="primary" sx={{ mr: 1 }} />
+                    <Typography variant="h6" component="h2">
+                      Offers Received
+                    </Typography>
+                  </Box>
+                  <Button 
+                    variant="contained" 
+                    startIcon={<AddIcon />}
+                    onClick={handleOpenAddOfferDialog}
+                    sx={{ textTransform: 'none' }}
+                  >
+                    Add New Offer
+                  </Button>
+                </Box>
+                
+                {/* Offers Table */}
+                <Card sx={{ 
+                  boxShadow: 2, 
+                  borderRadius: 2, 
+                  mb: 3,
+                  overflow: 'hidden'
+                }}>
+                  <CardContent>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>
+                        All Offers
+                      </Typography>
+                    </Box>
+                    {renderOffersTable()}
+                  </CardContent>
+                </Card>
+                
+                {/* Price Negotiations Card */}
+                {renderPriceNegotiations()}
+              </>
+            )}
+            
+            {/* Transaction Details Tab */}
+            {tabValue === 1 && (
+              <>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <AssignmentIcon color="primary" sx={{ mr: 1 }} />
                   <Typography variant="h6" component="h2">
-                    Offers Received
+                    Transaction Details
                   </Typography>
                 </Box>
-                <Button 
-                  variant="contained" 
-                  startIcon={<AddIcon />}
-                  onClick={handleOpenAddOfferDialog}
-                  sx={{ textTransform: 'none' }}
-                >
-                  Add New Offer
-                </Button>
-              </Box>
-              
-              {/* Offers Table */}
-              {renderOffersTable()}
-              
-              {/* Price Negotiations Card */}
-              {renderPriceNegotiations()}
-            </>
-          )}
-          
-          {/* Transaction Details Tab */}
-          {tabValue === 1 && (
-            <>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <AssignmentIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="h6" component="h2">
-                  Transaction Details
-                </Typography>
-              </Box>
-              
-              {/* Accepted Offer & Contract Details Card */}
-              {renderAcceptedOffer()}
-              
-              {/* Sale Statistics Card */}
-              {renderSaleStatistics()}
-            </>
-          )}
-        </Box>
-      </Paper>
+                
+                {/* Accepted Offer & Contract Details Card */}
+                {renderAcceptedOffer()}
+                
+                {/* Sale Statistics Card */}
+                {renderSaleStatistics()}
+              </>
+            )}
+          </Box>
+        </Card>
+      </Box>
       
       {/* Add Offer Dialog */}
       <Dialog open={openAddOfferDialog} onClose={handleCloseAddOfferDialog} maxWidth="sm" fullWidth>
@@ -633,7 +701,7 @@ const OffersAndTransactions: React.FC<OffersAndTransactionsProps> = ({ property 
           <Button variant="contained" onClick={handleCloseAddOfferDialog}>Add Offer</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Card>
   );
 };
 
