@@ -30,6 +30,7 @@ import { Property, Activity } from '@/lib/types';
 import { mockOffers } from '@/lib/utils/mockData';
 import ClientViewings from './ClientViewings';
 import ClientOffers from './ClientOffers';
+import ClientDocuments from './ClientDocuments';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -202,11 +203,7 @@ const ClientTabs: React.FC<ClientTabsProps> = ({
       </TabPanel>
       
       <TabPanel value={tabValue} index={4}>
-        <Box sx={{ textAlign: 'center', py: 5 }}>
-          <Typography variant="body1">
-            Client documents will be displayed here.
-          </Typography>
-        </Box>
+        <ClientDocuments clientId={clientId} formatDate={formatDate} />
       </TabPanel>
     </Paper>
   );

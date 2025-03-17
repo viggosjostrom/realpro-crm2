@@ -6,6 +6,7 @@ export { default as ClientInfo } from './ClientInfo';
 export { default as ClientTabs } from './ClientTabs';
 export { default as ClientViewings } from './ClientViewings';
 export { default as ClientOffers } from './ClientOffers';
+export { default as ClientDocuments } from './ClientDocuments';
 export { default as AddClientDialog } from './AddClientDialog';
 
 export * from './clientUtils'; 
