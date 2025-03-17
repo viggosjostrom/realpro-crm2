@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -13,7 +13,10 @@ import {
   TableRow,
   Card,
   CardContent,
-  CardMedia
+  CardMedia,
+  Button,
+  TextField,
+  IconButton
 } from '@mui/material';
 import {
   Home as HomeIcon,
@@ -23,7 +26,10 @@ import {
   MeetingRoom as RoomsIcon,
   LocationOn as LocationIcon,
   Info as InfoIcon,
-  Apartment as ApartmentIcon
+  Apartment as ApartmentIcon,
+  Edit as EditIcon,
+  Save as SaveIcon,
+  Cancel as CancelIcon
 } from '@mui/icons-material';
 import { Property } from '@/lib/types';
 
@@ -84,6 +90,50 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
     plotSize: property.type !== 'apartment' ? 750 : null, // plot size in sqm
   };
 
+  // Track which sections are in edit mode
+  const [editSections, setEditSections] = useState({
+    propertyInfo: false,
+    buildingDetails: false,
+    featuresAmenities: false, 
+    propertyDescription: false,
+    plotInfo: false
+  });
+
+  // Create editable versions of the data
+  const [editableProperty, setEditableProperty] = useState({ ...property });
+  const [editableDetails, setEditableDetails] = useState({ ...additionalDetails });
+
+  // Toggle edit mode for a section
+  const toggleEditMode = (section: keyof typeof editSections) => {
+    setEditSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+
+    // If we're exiting edit mode, reset to original values
+    // (since we're not saving in this demo)
+    if (editSections[section]) {
+      setEditableProperty({ ...property });
+      setEditableDetails({ ...additionalDetails });
+    }
+  };
+
+  // Handle input changes for editable property fields
+  const handlePropertyChange = (field: keyof Property, value: any) => {
+    setEditableProperty(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Handle input changes for additional details
+  const handleDetailsChange = (field: keyof typeof additionalDetails, value: any) => {
+    setEditableDetails(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   return (
     <Box>
       {/* Main Property Details Section */}
@@ -91,11 +141,22 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
         {/* Left Column - Property Information */}
         <Grid item xs={12} md={8}>
           <Paper sx={{ p: 3, mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <HomeIcon color="primary" sx={{ mr: 1 }} />
-              <Typography variant="h6" component="h2">
-                Property Information
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <HomeIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6" component="h2">
+                  Property Information
+                </Typography>
+              </Box>
+              <Button 
+                startIcon={editSections.propertyInfo ? <CancelIcon /> : <EditIcon />}
+                variant={editSections.propertyInfo ? "outlined" : "contained"}
+                color={editSections.propertyInfo ? "error" : "primary"}
+                size="small"
+                onClick={() => toggleEditMode('propertyInfo')}
+              >
+                {editSections.propertyInfo ? 'Cancel' : 'Edit'}
+              </Button>
             </Box>
             <Divider sx={{ mb: 2 }} />
             
@@ -109,7 +170,17 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <ApartmentIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {getPropertyTypeLabel(property.type)}
+                        {editSections.propertyInfo ? (
+                          <TextField
+                            size="small"
+                            value={getPropertyTypeLabel(editableProperty.type)}
+                            onChange={(e) => handlePropertyChange('type', e.target.value.toLowerCase())}
+                            variant="outlined"
+                            fullWidth
+                          />
+                        ) : (
+                          getPropertyTypeLabel(property.type)
+                        )}
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -120,7 +191,34 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <LocationIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {property.address}, {property.postalCode} {property.city}
+                        {editSections.propertyInfo ? (
+                          <Box sx={{ display: 'flex', gap: 1, width: '100%' }}>
+                            <TextField
+                              size="small"
+                              value={editableProperty.address}
+                              onChange={(e) => handlePropertyChange('address', e.target.value)}
+                              variant="outlined"
+                              label="Address"
+                              fullWidth
+                            />
+                            <TextField
+                              size="small"
+                              value={editableProperty.postalCode}
+                              onChange={(e) => handlePropertyChange('postalCode', e.target.value)}
+                              variant="outlined"
+                              label="Postal Code"
+                            />
+                            <TextField
+                              size="small"
+                              value={editableProperty.city}
+                              onChange={(e) => handlePropertyChange('city', e.target.value)}
+                              variant="outlined"
+                              label="City"
+                            />
+                          </Box>
+                        ) : (
+                          `${property.address}, ${property.postalCode} ${property.city}`
+                        )}
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -131,7 +229,18 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <SizeIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {property.size} m²
+                        {editSections.propertyInfo ? (
+                          <TextField
+                            size="small"
+                            value={editableProperty.size}
+                            onChange={(e) => handlePropertyChange('size', Number(e.target.value))}
+                            variant="outlined"
+                            type="number"
+                            InputProps={{ endAdornment: <Typography variant="body2">m²</Typography> }}
+                          />
+                        ) : (
+                          `${property.size} m²`
+                        )}
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -142,7 +251,18 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <RoomsIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {property.rooms} rooms
+                        {editSections.propertyInfo ? (
+                          <TextField
+                            size="small"
+                            value={editableProperty.rooms}
+                            onChange={(e) => handlePropertyChange('rooms', Number(e.target.value))}
+                            variant="outlined"
+                            type="number"
+                            InputProps={{ endAdornment: <Typography variant="body2">rooms</Typography> }}
+                          />
+                        ) : (
+                          `${property.rooms} rooms`
+                        )}
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -153,7 +273,18 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <MoneyIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {formatPrice(property.price)}
+                        {editSections.propertyInfo ? (
+                          <TextField
+                            size="small"
+                            value={editableProperty.price}
+                            onChange={(e) => handlePropertyChange('price', Number(e.target.value))}
+                            variant="outlined"
+                            type="number"
+                            InputProps={{ startAdornment: <Typography variant="body2">SEK </Typography> }}
+                          />
+                        ) : (
+                          formatPrice(property.price)
+                        )}
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -164,7 +295,17 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <CalendarIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {formatDate(property.listedAt)}
+                        {editSections.propertyInfo ? (
+                          <TextField
+                            size="small"
+                            value={property.listedAt ? new Date(property.listedAt).toISOString().split('T')[0] : ''}
+                            onChange={(e) => handlePropertyChange('listedAt', new Date(e.target.value))}
+                            variant="outlined"
+                            type="date"
+                          />
+                        ) : (
+                          formatDate(property.listedAt)
+                        )}
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -176,7 +317,17 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <CalendarIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                          {formatDate(property.soldAt)}
+                          {editSections.propertyInfo ? (
+                            <TextField
+                              size="small"
+                              value={property.soldAt ? new Date(property.soldAt).toISOString().split('T')[0] : ''}
+                              onChange={(e) => handlePropertyChange('soldAt', new Date(e.target.value))}
+                              variant="outlined"
+                              type="date"
+                            />
+                          ) : (
+                            formatDate(property.soldAt)
+                          )}
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -189,7 +340,18 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <MoneyIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                          {new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(additionalDetails.monthlyFee)}
+                          {editSections.propertyInfo ? (
+                            <TextField
+                              size="small"
+                              value={editableDetails.monthlyFee}
+                              onChange={(e) => handleDetailsChange('monthlyFee', Number(e.target.value))}
+                              variant="outlined"
+                              type="number"
+                              InputProps={{ startAdornment: <Typography variant="body2">SEK </Typography> }}
+                            />
+                          ) : (
+                            new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(additionalDetails.monthlyFee)
+                          )}
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -202,7 +364,18 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <MoneyIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                          {new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(additionalDetails.propertyTax)}
+                          {editSections.propertyInfo ? (
+                            <TextField
+                              size="small"
+                              value={editableDetails.propertyTax}
+                              onChange={(e) => handleDetailsChange('propertyTax', Number(e.target.value))}
+                              variant="outlined"
+                              type="number"
+                              InputProps={{ startAdornment: <Typography variant="body2">SEK </Typography> }}
+                            />
+                          ) : (
+                            new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(additionalDetails.propertyTax)
+                          )}
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -214,11 +387,22 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
 
           {/* Building Details */}
           <Paper sx={{ p: 3, mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <ApartmentIcon color="primary" sx={{ mr: 1 }} />
-              <Typography variant="h6" component="h2">
-                Building Details
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <ApartmentIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6" component="h2">
+                  Building Details
+                </Typography>
+              </Box>
+              <Button 
+                startIcon={editSections.buildingDetails ? <CancelIcon /> : <EditIcon />}
+                variant={editSections.buildingDetails ? "outlined" : "contained"}
+                color={editSections.buildingDetails ? "error" : "primary"}
+                size="small"
+                onClick={() => toggleEditMode('buildingDetails')}
+              >
+                {editSections.buildingDetails ? 'Cancel' : 'Edit'}
+              </Button>
             </Box>
             <Divider sx={{ mb: 2 }} />
             
@@ -229,14 +413,38 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                     <TableCell component="th" scope="row" sx={{ width: '40%', fontWeight: 'bold' }}>
                       Year Built
                     </TableCell>
-                    <TableCell>{additionalDetails.yearBuilt}</TableCell>
+                    <TableCell>
+                      {editSections.buildingDetails ? (
+                        <TextField
+                          size="small"
+                          value={editableDetails.yearBuilt}
+                          onChange={(e) => handleDetailsChange('yearBuilt', Number(e.target.value))}
+                          variant="outlined"
+                          type="number"
+                        />
+                      ) : (
+                        additionalDetails.yearBuilt
+                      )}
+                    </TableCell>
                   </TableRow>
                   {additionalDetails.renovationYear && (
                     <TableRow>
                       <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                         Last Renovation
                       </TableCell>
-                      <TableCell>{additionalDetails.renovationYear}</TableCell>
+                      <TableCell>
+                        {editSections.buildingDetails ? (
+                          <TextField
+                            size="small"
+                            value={editableDetails.renovationYear}
+                            onChange={(e) => handleDetailsChange('renovationYear', Number(e.target.value))}
+                            variant="outlined"
+                            type="number"
+                          />
+                        ) : (
+                          additionalDetails.renovationYear
+                        )}
+                      </TableCell>
                     </TableRow>
                   )}
                   {property.type === 'apartment' && (
@@ -245,13 +453,53 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                           Floor
                         </TableCell>
-                        <TableCell>{additionalDetails.floor} of {additionalDetails.totalFloors}</TableCell>
+                        <TableCell>
+                          {editSections.buildingDetails ? (
+                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                              <TextField
+                                size="small"
+                                value={editableDetails.floor}
+                                onChange={(e) => handleDetailsChange('floor', Number(e.target.value))}
+                                variant="outlined"
+                                type="number"
+                              />
+                              <Typography variant="body2">of</Typography>
+                              <TextField
+                                size="small"
+                                value={editableDetails.totalFloors}
+                                onChange={(e) => handleDetailsChange('totalFloors', Number(e.target.value))}
+                                variant="outlined"
+                                type="number"
+                              />
+                            </Box>
+                          ) : (
+                            `${additionalDetails.floor} of ${additionalDetails.totalFloors}`
+                          )}
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                           Elevator
                         </TableCell>
-                        <TableCell>{additionalDetails.elevator ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>
+                          {editSections.buildingDetails ? (
+                            <TextField
+                              select
+                              size="small"
+                              value={editableDetails.elevator ? 'Yes' : 'No'}
+                              onChange={(e) => handleDetailsChange('elevator', e.target.value === 'Yes')}
+                              variant="outlined"
+                              SelectProps={{
+                                native: true,
+                              }}
+                            >
+                              <option value="Yes">Yes</option>
+                              <option value="No">No</option>
+                            </TextField>
+                          ) : (
+                            additionalDetails.elevator ? 'Yes' : 'No'
+                          )}
+                        </TableCell>
                       </TableRow>
                     </>
                   )}
@@ -260,38 +508,104 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                       Energy Rating
                     </TableCell>
                     <TableCell>
-                      <Chip 
-                        label={additionalDetails.energyRating} 
-                        size="small" 
-                        color={additionalDetails.energyRating === 'A' || additionalDetails.energyRating === 'B' ? 'success' : 'default'}
-                      />
+                      {editSections.buildingDetails ? (
+                        <TextField
+                          select
+                          size="small"
+                          value={editableDetails.energyRating}
+                          onChange={(e) => handleDetailsChange('energyRating', e.target.value)}
+                          variant="outlined"
+                          SelectProps={{
+                            native: true,
+                          }}
+                        >
+                          <option value="A">A</option>
+                          <option value="B">B</option>
+                          <option value="C">C</option>
+                          <option value="D">D</option>
+                          <option value="E">E</option>
+                          <option value="F">F</option>
+                        </TextField>
+                      ) : (
+                        <Chip 
+                          label={additionalDetails.energyRating} 
+                          size="small" 
+                          color={additionalDetails.energyRating === 'A' || additionalDetails.energyRating === 'B' ? 'success' : 'default'}
+                        />
+                      )}
                     </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                       Heating System
                     </TableCell>
-                    <TableCell>{additionalDetails.heatingSystem}</TableCell>
+                    <TableCell>
+                      {editSections.buildingDetails ? (
+                        <TextField
+                          size="small"
+                          value={editableDetails.heatingSystem}
+                          onChange={(e) => handleDetailsChange('heatingSystem', e.target.value)}
+                          variant="outlined"
+                        />
+                      ) : (
+                        additionalDetails.heatingSystem
+                      )}
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                       Construction Material
                     </TableCell>
-                    <TableCell>{additionalDetails.constructionMaterial}</TableCell>
+                    <TableCell>
+                      {editSections.buildingDetails ? (
+                        <TextField
+                          size="small"
+                          value={editableDetails.constructionMaterial}
+                          onChange={(e) => handleDetailsChange('constructionMaterial', e.target.value)}
+                          variant="outlined"
+                        />
+                      ) : (
+                        additionalDetails.constructionMaterial
+                      )}
+                    </TableCell>
                   </TableRow>
                   {property.type !== 'apartment' && additionalDetails.roof && (
                     <TableRow>
                       <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                         Roof
                       </TableCell>
-                      <TableCell>{additionalDetails.roof}</TableCell>
+                      <TableCell>
+                        {editSections.buildingDetails ? (
+                          <TextField
+                            size="small"
+                            value={editableDetails.roof}
+                            onChange={(e) => handleDetailsChange('roof', e.target.value)}
+                            variant="outlined"
+                            fullWidth
+                          />
+                        ) : (
+                          additionalDetails.roof
+                        )}
+                      </TableCell>
                     </TableRow>
                   )}
                   <TableRow>
                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                       Windows
                     </TableCell>
-                    <TableCell>{additionalDetails.windows}</TableCell>
+                    <TableCell>
+                      {editSections.buildingDetails ? (
+                        <TextField
+                          size="small"
+                          value={editableDetails.windows}
+                          onChange={(e) => handleDetailsChange('windows', e.target.value)}
+                          variant="outlined"
+                          fullWidth
+                        />
+                      ) : (
+                        additionalDetails.windows
+                      )}
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -300,11 +614,22 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
 
           {/* Features and Amenities */}
           <Paper sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <InfoIcon color="primary" sx={{ mr: 1 }} />
-              <Typography variant="h6" component="h2">
-                Features and Amenities
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <InfoIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6" component="h2">
+                  Features and Amenities
+                </Typography>
+              </Box>
+              <Button 
+                startIcon={editSections.featuresAmenities ? <CancelIcon /> : <EditIcon />}
+                variant={editSections.featuresAmenities ? "outlined" : "contained"}
+                color={editSections.featuresAmenities ? "error" : "primary"}
+                size="small"
+                onClick={() => toggleEditMode('featuresAmenities')}
+              >
+                {editSections.featuresAmenities ? 'Cancel' : 'Edit'}
+              </Button>
             </Box>
             <Divider sx={{ mb: 2 }} />
             
@@ -317,21 +642,75 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                         <TableCell component="th" scope="row" sx={{ width: '50%', fontWeight: 'bold' }}>
                           Balcony
                         </TableCell>
-                        <TableCell>{additionalDetails.balcony ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>
+                          {editSections.featuresAmenities ? (
+                            <TextField
+                              select
+                              size="small"
+                              value={editableDetails.balcony ? 'Yes' : 'No'}
+                              onChange={(e) => handleDetailsChange('balcony', e.target.value === 'Yes')}
+                              variant="outlined"
+                              SelectProps={{
+                                native: true,
+                              }}
+                            >
+                              <option value="Yes">Yes</option>
+                              <option value="No">No</option>
+                            </TextField>
+                          ) : (
+                            additionalDetails.balcony ? 'Yes' : 'No'
+                          )}
+                        </TableCell>
                       </TableRow>
                       {property.type !== 'apartment' && (
                         <TableRow>
                           <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                             Garage
                           </TableCell>
-                          <TableCell>{additionalDetails.garage ? 'Yes' : 'No'}</TableCell>
+                          <TableCell>
+                            {editSections.featuresAmenities ? (
+                              <TextField
+                                select
+                                size="small"
+                                value={editableDetails.garage ? 'Yes' : 'No'}
+                                onChange={(e) => handleDetailsChange('garage', e.target.value === 'Yes')}
+                                variant="outlined"
+                                SelectProps={{
+                                  native: true,
+                                }}
+                              >
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                              </TextField>
+                            ) : (
+                              additionalDetails.garage ? 'Yes' : 'No'
+                            )}
+                          </TableCell>
                         </TableRow>
                       )}
                       <TableRow>
                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                           Parking
                         </TableCell>
-                        <TableCell>{additionalDetails.parking ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>
+                          {editSections.featuresAmenities ? (
+                            <TextField
+                              select
+                              size="small"
+                              value={editableDetails.parking ? 'Yes' : 'No'}
+                              onChange={(e) => handleDetailsChange('parking', e.target.value === 'Yes')}
+                              variant="outlined"
+                              SelectProps={{
+                                native: true,
+                              }}
+                            >
+                              <option value="Yes">Yes</option>
+                              <option value="No">No</option>
+                            </TextField>
+                          ) : (
+                            additionalDetails.parking ? 'Yes' : 'No'
+                          )}
+                        </TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -345,20 +724,57 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                         <TableCell component="th" scope="row" sx={{ width: '50%', fontWeight: 'bold' }}>
                           Internet Connection
                         </TableCell>
-                        <TableCell>{additionalDetails.internetConnection}</TableCell>
+                        <TableCell>
+                          {editSections.featuresAmenities ? (
+                            <TextField
+                              size="small"
+                              value={editableDetails.internetConnection}
+                              onChange={(e) => handleDetailsChange('internetConnection', e.target.value)}
+                              variant="outlined"
+                              fullWidth
+                            />
+                          ) : (
+                            additionalDetails.internetConnection
+                          )}
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                           TV Connection
                         </TableCell>
-                        <TableCell>{additionalDetails.tvConnection}</TableCell>
+                        <TableCell>
+                          {editSections.featuresAmenities ? (
+                            <TextField
+                              size="small"
+                              value={editableDetails.tvConnection}
+                              onChange={(e) => handleDetailsChange('tvConnection', e.target.value)}
+                              variant="outlined"
+                              fullWidth
+                            />
+                          ) : (
+                            additionalDetails.tvConnection
+                          )}
+                        </TableCell>
                       </TableRow>
                       {property.type !== 'apartment' && additionalDetails.garden && (
                         <TableRow>
                           <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                             Garden Size
                           </TableCell>
-                          <TableCell>{additionalDetails.garden} m²</TableCell>
+                          <TableCell>
+                            {editSections.featuresAmenities ? (
+                              <TextField
+                                size="small"
+                                value={editableDetails.garden}
+                                onChange={(e) => handleDetailsChange('garden', Number(e.target.value))}
+                                variant="outlined"
+                                type="number"
+                                InputProps={{ endAdornment: <Typography variant="body2">m²</Typography> }}
+                              />
+                            ) : (
+                              `${additionalDetails.garden} m²`
+                            )}
+                          </TableCell>
                         </TableRow>
                       )}
                     </TableBody>
@@ -388,21 +804,54 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
 
           {/* Property Description */}
           <Paper sx={{ p: 3, mb: 3 }}>
-            <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-              Property Description
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Typography variant="h6" component="h2">
+                Property Description
+              </Typography>
+              <Button 
+                startIcon={editSections.propertyDescription ? <CancelIcon /> : <EditIcon />}
+                variant={editSections.propertyDescription ? "outlined" : "contained"}
+                color={editSections.propertyDescription ? "error" : "primary"}
+                size="small"
+                onClick={() => toggleEditMode('propertyDescription')}
+              >
+                {editSections.propertyDescription ? 'Cancel' : 'Edit'}
+              </Button>
+            </Box>
             <Divider sx={{ mb: 2 }} />
-            <Typography variant="body1" paragraph>
-              {property.description || 'No description available.'}
-            </Typography>
+            {editSections.propertyDescription ? (
+              <TextField
+                multiline
+                fullWidth
+                rows={4}
+                value={editableProperty.description || ''}
+                onChange={(e) => handlePropertyChange('description', e.target.value)}
+                variant="outlined"
+              />
+            ) : (
+              <Typography variant="body1" paragraph>
+                {property.description || 'No description available.'}
+              </Typography>
+            )}
           </Paper>
 
           {/* Plot Information (for houses, villas, etc.) */}
           {property.type !== 'apartment' && additionalDetails.plotSize && (
             <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-                Plot Information
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="h6" component="h2">
+                  Plot Information
+                </Typography>
+                <Button 
+                  startIcon={editSections.plotInfo ? <CancelIcon /> : <EditIcon />}
+                  variant={editSections.plotInfo ? "outlined" : "contained"}
+                  color={editSections.plotInfo ? "error" : "primary"}
+                  size="small"
+                  onClick={() => toggleEditMode('plotInfo')}
+                >
+                  {editSections.plotInfo ? 'Cancel' : 'Edit'}
+                </Button>
+              </Box>
               <Divider sx={{ mb: 2 }} />
               <TableContainer>
                 <Table>
@@ -411,13 +860,39 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
                       <TableCell component="th" scope="row" sx={{ width: '50%', fontWeight: 'bold' }}>
                         Plot Size
                       </TableCell>
-                      <TableCell>{additionalDetails.plotSize} m²</TableCell>
+                      <TableCell>
+                        {editSections.plotInfo ? (
+                          <TextField
+                            size="small"
+                            value={editableDetails.plotSize}
+                            onChange={(e) => handleDetailsChange('plotSize', Number(e.target.value))}
+                            variant="outlined"
+                            type="number"
+                            InputProps={{ endAdornment: <Typography variant="body2">m²</Typography> }}
+                          />
+                        ) : (
+                          `${additionalDetails.plotSize} m²`
+                        )}
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                         Garden Size
                       </TableCell>
-                      <TableCell>{additionalDetails.garden} m²</TableCell>
+                      <TableCell>
+                        {editSections.plotInfo ? (
+                          <TextField
+                            size="small"
+                            value={editableDetails.garden}
+                            onChange={(e) => handleDetailsChange('garden', Number(e.target.value))}
+                            variant="outlined"
+                            type="number"
+                            InputProps={{ endAdornment: <Typography variant="body2">m²</Typography> }}
+                          />
+                        ) : (
+                          `${additionalDetails.garden} m²`
+                        )}
+                      </TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
