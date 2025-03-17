@@ -133,7 +133,7 @@ export default function Home() {
                     }
                   }}
                 >
-                  Get Started
+                  Start Demo
                 </Button>
                 <Button 
                   variant="outlined" 
@@ -587,7 +587,7 @@ export default function Home() {
               }
             }}
           >
-            Start Your Free Trial
+            Try Out The Demo
           </Button>
         </Container>
       </Box>
