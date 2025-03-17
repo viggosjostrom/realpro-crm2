@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
   Grid,
-  Paper,
   Divider,
   Chip,
   Table,
@@ -13,7 +12,10 @@ import {
   TableRow,
   Card,
   CardContent,
-  CardMedia
+  CardMedia,
+  Button,
+  TextField,
+  alpha
 } from '@mui/material';
 import {
   Home as HomeIcon,
@@ -23,7 +25,9 @@ import {
   MeetingRoom as RoomsIcon,
   LocationOn as LocationIcon,
   Info as InfoIcon,
-  Apartment as ApartmentIcon
+  Apartment as ApartmentIcon,
+  Edit as EditIcon,
+  Cancel as CancelIcon
 } from '@mui/icons-material';
 import { Property } from '@/lib/types';
 
@@ -84,349 +88,858 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
     plotSize: property.type !== 'apartment' ? 750 : null, // plot size in sqm
   };
 
+  // Track which sections are in edit mode
+  const [editSections, setEditSections] = useState({
+    propertyInfo: false,
+    buildingDetails: false,
+    featuresAmenities: false, 
+    propertyDescription: false,
+    plotInfo: false
+  });
+
+  // Create editable versions of the data
+  const [editableProperty, setEditableProperty] = useState({ ...property });
+  const [editableDetails, setEditableDetails] = useState({ ...additionalDetails });
+
+  // Toggle edit mode for a section
+  const toggleEditMode = (section: keyof typeof editSections) => {
+    setEditSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+
+    // If we're exiting edit mode, reset to original values
+    // (since we're not saving in this demo)
+    if (editSections[section]) {
+      setEditableProperty({ ...property });
+      setEditableDetails({ ...additionalDetails });
+    }
+  };
+
+  // Handle input changes for editable property fields
+  const handlePropertyChange = (field: keyof Property, value: string | number | boolean | Date) => {
+    setEditableProperty(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Handle input changes for additional details
+  const handleDetailsChange = (field: keyof typeof additionalDetails, value: string | number | boolean) => {
+    setEditableDetails(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   return (
-    <Box>
-      {/* Main Property Details Section */}
-      <Grid container spacing={3}>
-        {/* Left Column - Property Information */}
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <HomeIcon color="primary" sx={{ mr: 1 }} />
-              <Typography variant="h6" component="h2">
-                Property Information
-              </Typography>
-            </Box>
-            <Divider sx={{ mb: 2 }} />
-            
-            <TableContainer>
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ width: '40%', fontWeight: 'bold' }}>
-                      Property Type
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <ApartmentIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {getPropertyTypeLabel(property.type)}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                      Address
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <LocationIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {property.address}, {property.postalCode} {property.city}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                      Size
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <SizeIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {property.size} m²
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                      Rooms
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <RoomsIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {property.rooms} rooms
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                      Price
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <MoneyIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {formatPrice(property.price)}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                      Listed Date
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <CalendarIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                        {formatDate(property.listedAt)}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                  {property.status === 'sold' && (
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                        Sold Date
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <CalendarIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                          {formatDate(property.soldAt)}
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  {property.type === 'apartment' && additionalDetails.monthlyFee && (
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                        Monthly Fee
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <MoneyIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                          {new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(additionalDetails.monthlyFee)}
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  {property.type !== 'apartment' && additionalDetails.propertyTax && (
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                        Property Tax (Annual)
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <MoneyIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                          {new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(additionalDetails.propertyTax)}
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-
-          {/* Building Details */}
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <ApartmentIcon color="primary" sx={{ mr: 1 }} />
-              <Typography variant="h6" component="h2">
-                Building Details
-              </Typography>
-            </Box>
-            <Divider sx={{ mb: 2 }} />
-            
-            <TableContainer>
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ width: '40%', fontWeight: 'bold' }}>
-                      Year Built
-                    </TableCell>
-                    <TableCell>{additionalDetails.yearBuilt}</TableCell>
-                  </TableRow>
-                  {additionalDetails.renovationYear && (
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                        Last Renovation
-                      </TableCell>
-                      <TableCell>{additionalDetails.renovationYear}</TableCell>
-                    </TableRow>
-                  )}
-                  {property.type === 'apartment' && (
-                    <>
-                      <TableRow>
-                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                          Floor
-                        </TableCell>
-                        <TableCell>{additionalDetails.floor} of {additionalDetails.totalFloors}</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                          Elevator
-                        </TableCell>
-                        <TableCell>{additionalDetails.elevator ? 'Yes' : 'No'}</TableCell>
-                      </TableRow>
-                    </>
-                  )}
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                      Energy Rating
-                    </TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={additionalDetails.energyRating} 
-                        size="small" 
-                        color={additionalDetails.energyRating === 'A' || additionalDetails.energyRating === 'B' ? 'success' : 'default'}
-                      />
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                      Heating System
-                    </TableCell>
-                    <TableCell>{additionalDetails.heatingSystem}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                      Construction Material
-                    </TableCell>
-                    <TableCell>{additionalDetails.constructionMaterial}</TableCell>
-                  </TableRow>
-                  {property.type !== 'apartment' && additionalDetails.roof && (
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                        Roof
-                      </TableCell>
-                      <TableCell>{additionalDetails.roof}</TableCell>
-                    </TableRow>
-                  )}
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                      Windows
-                    </TableCell>
-                    <TableCell>{additionalDetails.windows}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-
-          {/* Features and Amenities */}
-          <Paper sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <InfoIcon color="primary" sx={{ mr: 1 }} />
-              <Typography variant="h6" component="h2">
-                Features and Amenities
-              </Typography>
-            </Box>
-            <Divider sx={{ mb: 2 }} />
-            
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+    <Card 
+      sx={{ 
+        bgcolor: '#f5f7fa',
+        boxShadow: 1,
+        borderRadius: 2,
+        p: 3,
+        mb: 3 
+      }}
+    >
+      <Box sx={{ 
+        '& .detail-card': {
+          boxShadow: 3,
+          borderRadius: 2,
+          overflow: 'hidden',
+          transition: 'box-shadow 0.3s ease-in-out',
+          '&:hover': {
+            boxShadow: 5,
+          },
+          mb: 3,
+          background: (theme) => alpha(theme.palette.background.paper, 0.98),
+        },
+        '& .card-header': {
+          p: 2,
+          pb: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        },
+        '& .content-area': {
+          p: 2,
+        },
+      }}>
+        {/* Main Property Details Section */}
+        <Grid container spacing={3}>
+          {/* Left Column - Property Information */}
+          <Grid item xs={12} md={8}>
+            <Card className="detail-card">
+              <Box className="card-header">
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <HomeIcon color="primary" sx={{ mr: 1 }} />
+                  <Typography variant="h6" component="h2">
+                    Property Information
+                  </Typography>
+                </Box>
+                <Button 
+                  startIcon={editSections.propertyInfo ? <CancelIcon /> : <EditIcon />}
+                  variant={editSections.propertyInfo ? "outlined" : "contained"}
+                  color={editSections.propertyInfo ? "error" : "primary"}
+                  size="small"
+                  onClick={() => toggleEditMode('propertyInfo')}
+                >
+                  {editSections.propertyInfo ? 'Cancel' : 'Edit'}
+                </Button>
+              </Box>
+              <Divider sx={{ mt: 2 }} />
+              <Box className="content-area">
                 <TableContainer>
                   <Table>
                     <TableBody>
                       <TableRow>
-                        <TableCell component="th" scope="row" sx={{ width: '50%', fontWeight: 'bold' }}>
-                          Balcony
+                        <TableCell component="th" scope="row" sx={{ width: '40%', fontWeight: 'bold' }}>
+                          Property Type
                         </TableCell>
-                        <TableCell>{additionalDetails.balcony ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <ApartmentIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                            {editSections.propertyInfo ? (
+                              <TextField
+                                size="small"
+                                value={getPropertyTypeLabel(editableProperty.type)}
+                                onChange={(e) => handlePropertyChange('type', e.target.value.toLowerCase())}
+                                variant="outlined"
+                                fullWidth
+                              />
+                            ) : (
+                              getPropertyTypeLabel(property.type)
+                            )}
+                          </Box>
+                        </TableCell>
                       </TableRow>
-                      {property.type !== 'apartment' && (
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Address
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <LocationIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                            {editSections.propertyInfo ? (
+                              <Box sx={{ display: 'flex', gap: 1, width: '100%' }}>
+                                <TextField
+                                  size="small"
+                                  value={editableProperty.address}
+                                  onChange={(e) => handlePropertyChange('address', e.target.value)}
+                                  variant="outlined"
+                                  label="Address"
+                                  fullWidth
+                                />
+                                <TextField
+                                  size="small"
+                                  value={editableProperty.postalCode}
+                                  onChange={(e) => handlePropertyChange('postalCode', e.target.value)}
+                                  variant="outlined"
+                                  label="Postal Code"
+                                />
+                                <TextField
+                                  size="small"
+                                  value={editableProperty.city}
+                                  onChange={(e) => handlePropertyChange('city', e.target.value)}
+                                  variant="outlined"
+                                  label="City"
+                                />
+                              </Box>
+                            ) : (
+                              `${property.address}, ${property.postalCode} ${property.city}`
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Size
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <SizeIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                            {editSections.propertyInfo ? (
+                              <TextField
+                                size="small"
+                                value={editableProperty.size}
+                                onChange={(e) => handlePropertyChange('size', Number(e.target.value))}
+                                variant="outlined"
+                                type="number"
+                                InputProps={{ endAdornment: <Typography variant="body2">m²</Typography> }}
+                              />
+                            ) : (
+                              `${property.size} m²`
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Rooms
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <RoomsIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                            {editSections.propertyInfo ? (
+                              <TextField
+                                size="small"
+                                value={editableProperty.rooms}
+                                onChange={(e) => handlePropertyChange('rooms', Number(e.target.value))}
+                                variant="outlined"
+                                type="number"
+                                InputProps={{ endAdornment: <Typography variant="body2">rooms</Typography> }}
+                              />
+                            ) : (
+                              `${property.rooms} rooms`
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Price
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <MoneyIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                            {editSections.propertyInfo ? (
+                              <TextField
+                                size="small"
+                                value={editableProperty.price}
+                                onChange={(e) => handlePropertyChange('price', Number(e.target.value))}
+                                variant="outlined"
+                                type="number"
+                                InputProps={{ startAdornment: <Typography variant="body2">SEK </Typography> }}
+                              />
+                            ) : (
+                              formatPrice(property.price)
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Listed Date
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <CalendarIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                            {editSections.propertyInfo ? (
+                              <TextField
+                                size="small"
+                                value={property.listedAt ? new Date(property.listedAt).toISOString().split('T')[0] : ''}
+                                onChange={(e) => handlePropertyChange('listedAt', new Date(e.target.value))}
+                                variant="outlined"
+                                type="date"
+                              />
+                            ) : (
+                              formatDate(property.listedAt)
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                      {property.status === 'sold' && (
                         <TableRow>
                           <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                            Garage
+                            Sold Date
                           </TableCell>
-                          <TableCell>{additionalDetails.garage ? 'Yes' : 'No'}</TableCell>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <CalendarIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                              {editSections.propertyInfo ? (
+                                <TextField
+                                  size="small"
+                                  value={property.soldAt ? new Date(property.soldAt).toISOString().split('T')[0] : ''}
+                                  onChange={(e) => handlePropertyChange('soldAt', new Date(e.target.value))}
+                                  variant="outlined"
+                                  type="date"
+                                />
+                              ) : (
+                                formatDate(property.soldAt)
+                              )}
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {property.type === 'apartment' && additionalDetails.monthlyFee && (
+                        <TableRow>
+                          <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                            Monthly Fee
+                          </TableCell>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <MoneyIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                              {editSections.propertyInfo ? (
+                                <TextField
+                                  size="small"
+                                  value={editableDetails.monthlyFee}
+                                  onChange={(e) => handleDetailsChange('monthlyFee', Number(e.target.value))}
+                                  variant="outlined"
+                                  type="number"
+                                  InputProps={{ startAdornment: <Typography variant="body2">SEK </Typography> }}
+                                />
+                              ) : (
+                                new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(additionalDetails.monthlyFee)
+                              )}
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {property.type !== 'apartment' && additionalDetails.propertyTax && (
+                        <TableRow>
+                          <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                            Property Tax (Annual)
+                          </TableCell>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <MoneyIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                              {editSections.propertyInfo ? (
+                                <TextField
+                                  size="small"
+                                  value={editableDetails.propertyTax}
+                                  onChange={(e) => handleDetailsChange('propertyTax', Number(e.target.value))}
+                                  variant="outlined"
+                                  type="number"
+                                  InputProps={{ startAdornment: <Typography variant="body2">SEK </Typography> }}
+                                />
+                              ) : (
+                                new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(additionalDetails.propertyTax)
+                              )}
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            </Card>
+
+            {/* Building Details */}
+            <Card className="detail-card">
+              <Box className="card-header">
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <ApartmentIcon color="primary" sx={{ mr: 1 }} />
+                  <Typography variant="h6" component="h2">
+                    Building Details
+                  </Typography>
+                </Box>
+                <Button 
+                  startIcon={editSections.buildingDetails ? <CancelIcon /> : <EditIcon />}
+                  variant={editSections.buildingDetails ? "outlined" : "contained"}
+                  color={editSections.buildingDetails ? "error" : "primary"}
+                  size="small"
+                  onClick={() => toggleEditMode('buildingDetails')}
+                >
+                  {editSections.buildingDetails ? 'Cancel' : 'Edit'}
+                </Button>
+              </Box>
+              <Divider sx={{ mt: 2 }} />
+              <Box className="content-area">
+                <TableContainer>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ width: '40%', fontWeight: 'bold' }}>
+                          Year Built
+                        </TableCell>
+                        <TableCell>
+                          {editSections.buildingDetails ? (
+                            <TextField
+                              size="small"
+                              value={editableDetails.yearBuilt}
+                              onChange={(e) => handleDetailsChange('yearBuilt', Number(e.target.value))}
+                              variant="outlined"
+                              type="number"
+                            />
+                          ) : (
+                            additionalDetails.yearBuilt
+                          )}
+                        </TableCell>
+                      </TableRow>
+                      {additionalDetails.renovationYear && (
+                        <TableRow>
+                          <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                            Last Renovation
+                          </TableCell>
+                          <TableCell>
+                            {editSections.buildingDetails ? (
+                              <TextField
+                                size="small"
+                                value={editableDetails.renovationYear}
+                                onChange={(e) => handleDetailsChange('renovationYear', Number(e.target.value))}
+                                variant="outlined"
+                                type="number"
+                              />
+                            ) : (
+                              additionalDetails.renovationYear
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {property.type === 'apartment' && (
+                        <>
+                          <TableRow>
+                            <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                              Floor
+                            </TableCell>
+                            <TableCell>
+                              {editSections.buildingDetails ? (
+                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                  <TextField
+                                    size="small"
+                                    value={editableDetails.floor}
+                                    onChange={(e) => handleDetailsChange('floor', Number(e.target.value))}
+                                    variant="outlined"
+                                    type="number"
+                                  />
+                                  <Typography variant="body2">of</Typography>
+                                  <TextField
+                                    size="small"
+                                    value={editableDetails.totalFloors}
+                                    onChange={(e) => handleDetailsChange('totalFloors', Number(e.target.value))}
+                                    variant="outlined"
+                                    type="number"
+                                  />
+                                </Box>
+                              ) : (
+                                `${additionalDetails.floor} of ${additionalDetails.totalFloors}`
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                              Elevator
+                            </TableCell>
+                            <TableCell>
+                              {editSections.buildingDetails ? (
+                                <TextField
+                                  select
+                                  size="small"
+                                  value={editableDetails.elevator ? 'Yes' : 'No'}
+                                  onChange={(e) => handleDetailsChange('elevator', e.target.value === 'Yes')}
+                                  variant="outlined"
+                                  SelectProps={{
+                                    native: true,
+                                  }}
+                                >
+                                  <option value="Yes">Yes</option>
+                                  <option value="No">No</option>
+                                </TextField>
+                              ) : (
+                                additionalDetails.elevator ? 'Yes' : 'No'
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        </>
+                      )}
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Energy Rating
+                        </TableCell>
+                        <TableCell>
+                          {editSections.buildingDetails ? (
+                            <TextField
+                              select
+                              size="small"
+                              value={editableDetails.energyRating}
+                              onChange={(e) => handleDetailsChange('energyRating', e.target.value)}
+                              variant="outlined"
+                              SelectProps={{
+                                native: true,
+                              }}
+                            >
+                              <option value="A">A</option>
+                              <option value="B">B</option>
+                              <option value="C">C</option>
+                              <option value="D">D</option>
+                              <option value="E">E</option>
+                              <option value="F">F</option>
+                            </TextField>
+                          ) : (
+                            <Chip 
+                              label={additionalDetails.energyRating} 
+                              size="small" 
+                              color={additionalDetails.energyRating === 'A' || additionalDetails.energyRating === 'B' ? 'success' : 'default'}
+                            />
+                          )}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Heating System
+                        </TableCell>
+                        <TableCell>
+                          {editSections.buildingDetails ? (
+                            <TextField
+                              size="small"
+                              value={editableDetails.heatingSystem}
+                              onChange={(e) => handleDetailsChange('heatingSystem', e.target.value)}
+                              variant="outlined"
+                            />
+                          ) : (
+                            additionalDetails.heatingSystem
+                          )}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Construction Material
+                        </TableCell>
+                        <TableCell>
+                          {editSections.buildingDetails ? (
+                            <TextField
+                              size="small"
+                              value={editableDetails.constructionMaterial}
+                              onChange={(e) => handleDetailsChange('constructionMaterial', e.target.value)}
+                              variant="outlined"
+                            />
+                          ) : (
+                            additionalDetails.constructionMaterial
+                          )}
+                        </TableCell>
+                      </TableRow>
+                      {property.type !== 'apartment' && additionalDetails.roof && (
+                        <TableRow>
+                          <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                            Roof
+                          </TableCell>
+                          <TableCell>
+                            {editSections.buildingDetails ? (
+                              <TextField
+                                size="small"
+                                value={editableDetails.roof}
+                                onChange={(e) => handleDetailsChange('roof', e.target.value)}
+                                variant="outlined"
+                                fullWidth
+                              />
+                            ) : (
+                              additionalDetails.roof
+                            )}
+                          </TableCell>
                         </TableRow>
                       )}
                       <TableRow>
                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                          Parking
+                          Windows
                         </TableCell>
-                        <TableCell>{additionalDetails.parking ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>
+                          {editSections.buildingDetails ? (
+                            <TextField
+                              size="small"
+                              value={editableDetails.windows}
+                              onChange={(e) => handleDetailsChange('windows', e.target.value)}
+                              variant="outlined"
+                              fullWidth
+                            />
+                          ) : (
+                            additionalDetails.windows
+                          )}
+                        </TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
                 </TableContainer>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TableContainer>
-                  <Table>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell component="th" scope="row" sx={{ width: '50%', fontWeight: 'bold' }}>
-                          Internet Connection
-                        </TableCell>
-                        <TableCell>{additionalDetails.internetConnection}</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                          TV Connection
-                        </TableCell>
-                        <TableCell>{additionalDetails.tvConnection}</TableCell>
-                      </TableRow>
-                      {property.type !== 'apartment' && additionalDetails.garden && (
+              </Box>
+            </Card>
+
+            {/* Features and Amenities */}
+            <Card className="detail-card">
+              <Box className="card-header">
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <InfoIcon color="primary" sx={{ mr: 1 }} />
+                  <Typography variant="h6" component="h2">
+                    Features and Amenities
+                  </Typography>
+                </Box>
+                <Button 
+                  startIcon={editSections.featuresAmenities ? <CancelIcon /> : <EditIcon />}
+                  variant={editSections.featuresAmenities ? "outlined" : "contained"}
+                  color={editSections.featuresAmenities ? "error" : "primary"}
+                  size="small"
+                  onClick={() => toggleEditMode('featuresAmenities')}
+                >
+                  {editSections.featuresAmenities ? 'Cancel' : 'Edit'}
+                </Button>
+              </Box>
+              <Divider sx={{ mt: 2 }} />
+              <Box className="content-area">
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TableContainer>
+                      <Table>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell component="th" scope="row" sx={{ width: '50%', fontWeight: 'bold' }}>
+                              Balcony
+                            </TableCell>
+                            <TableCell>
+                              {editSections.featuresAmenities ? (
+                                <TextField
+                                  select
+                                  size="small"
+                                  value={editableDetails.balcony ? 'Yes' : 'No'}
+                                  onChange={(e) => handleDetailsChange('balcony', e.target.value === 'Yes')}
+                                  variant="outlined"
+                                  SelectProps={{
+                                    native: true,
+                                  }}
+                                >
+                                  <option value="Yes">Yes</option>
+                                  <option value="No">No</option>
+                                </TextField>
+                              ) : (
+                                additionalDetails.balcony ? 'Yes' : 'No'
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          {property.type !== 'apartment' && (
+                            <TableRow>
+                              <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                                Garage
+                              </TableCell>
+                              <TableCell>
+                                {editSections.featuresAmenities ? (
+                                  <TextField
+                                    select
+                                    size="small"
+                                    value={editableDetails.garage ? 'Yes' : 'No'}
+                                    onChange={(e) => handleDetailsChange('garage', e.target.value === 'Yes')}
+                                    variant="outlined"
+                                    SelectProps={{
+                                      native: true,
+                                    }}
+                                  >
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                  </TextField>
+                                ) : (
+                                  additionalDetails.garage ? 'Yes' : 'No'
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          <TableRow>
+                            <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                              Parking
+                            </TableCell>
+                            <TableCell>
+                              {editSections.featuresAmenities ? (
+                                <TextField
+                                  select
+                                  size="small"
+                                  value={editableDetails.parking ? 'Yes' : 'No'}
+                                  onChange={(e) => handleDetailsChange('parking', e.target.value === 'Yes')}
+                                  variant="outlined"
+                                  SelectProps={{
+                                    native: true,
+                                  }}
+                                >
+                                  <option value="Yes">Yes</option>
+                                  <option value="No">No</option>
+                                </TextField>
+                              ) : (
+                                additionalDetails.parking ? 'Yes' : 'No'
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TableContainer>
+                      <Table>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell component="th" scope="row" sx={{ width: '50%', fontWeight: 'bold' }}>
+                              Internet Connection
+                            </TableCell>
+                            <TableCell>
+                              {editSections.featuresAmenities ? (
+                                <TextField
+                                  size="small"
+                                  value={editableDetails.internetConnection}
+                                  onChange={(e) => handleDetailsChange('internetConnection', e.target.value)}
+                                  variant="outlined"
+                                  fullWidth
+                                />
+                              ) : (
+                                additionalDetails.internetConnection
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                              TV Connection
+                            </TableCell>
+                            <TableCell>
+                              {editSections.featuresAmenities ? (
+                                <TextField
+                                  size="small"
+                                  value={editableDetails.tvConnection}
+                                  onChange={(e) => handleDetailsChange('tvConnection', e.target.value)}
+                                  variant="outlined"
+                                  fullWidth
+                                />
+                              ) : (
+                                additionalDetails.tvConnection
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          {property.type !== 'apartment' && additionalDetails.garden && (
+                            <TableRow>
+                              <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                                Garden Size
+                              </TableCell>
+                              <TableCell>
+                                {editSections.featuresAmenities ? (
+                                  <TextField
+                                    size="small"
+                                    value={editableDetails.garden}
+                                    onChange={(e) => handleDetailsChange('garden', Number(e.target.value))}
+                                    variant="outlined"
+                                    type="number"
+                                    InputProps={{ endAdornment: <Typography variant="body2">m²</Typography> }}
+                                  />
+                                ) : (
+                                  `${additionalDetails.garden} m²`
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Card>
+          </Grid>
+
+          {/* Right Column - Property Images and Description */}
+          <Grid item xs={12} md={4}>
+            {/* Property Images */}
+            <Card className="detail-card">
+              <CardMedia
+                component="img"
+                height="250"
+                image={property.images[0] || '/properties/property-placeholder.jpg'}
+                alt={property.address}
+                sx={{ borderBottom: '1px solid', borderColor: 'divider' }}
+              />
+              <CardContent>
+                <Typography variant="body2" color="text.secondary">
+                  Main property image
+                </Typography>
+              </CardContent>
+            </Card>
+
+            {/* Property Description */}
+            <Card className="detail-card">
+              <Box className="card-header">
+                <Typography variant="h6" component="h2">
+                  Property Description
+                </Typography>
+                <Button 
+                  startIcon={editSections.propertyDescription ? <CancelIcon /> : <EditIcon />}
+                  variant={editSections.propertyDescription ? "outlined" : "contained"}
+                  color={editSections.propertyDescription ? "error" : "primary"}
+                  size="small"
+                  onClick={() => toggleEditMode('propertyDescription')}
+                >
+                  {editSections.propertyDescription ? 'Cancel' : 'Edit'}
+                </Button>
+              </Box>
+              <Divider sx={{ mt: 2 }} />
+              <Box className="content-area">
+                {editSections.propertyDescription ? (
+                  <TextField
+                    multiline
+                    fullWidth
+                    rows={4}
+                    value={editableProperty.description || ''}
+                    onChange={(e) => handlePropertyChange('description', e.target.value)}
+                    variant="outlined"
+                  />
+                ) : (
+                  <Typography variant="body1" paragraph>
+                    {property.description || 'No description available.'}
+                  </Typography>
+                )}
+              </Box>
+            </Card>
+
+            {/* Plot Information (for houses, villas, etc.) */}
+            {property.type !== 'apartment' && additionalDetails.plotSize && (
+              <Card className="detail-card">
+                <Box className="card-header">
+                  <Typography variant="h6" component="h2">
+                    Plot Information
+                  </Typography>
+                  <Button 
+                    startIcon={editSections.plotInfo ? <CancelIcon /> : <EditIcon />}
+                    variant={editSections.plotInfo ? "outlined" : "contained"}
+                    color={editSections.plotInfo ? "error" : "primary"}
+                    size="small"
+                    onClick={() => toggleEditMode('plotInfo')}
+                  >
+                    {editSections.plotInfo ? 'Cancel' : 'Edit'}
+                  </Button>
+                </Box>
+                <Divider sx={{ mt: 2 }} />
+                <Box className="content-area">
+                  <TableContainer>
+                    <Table>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell component="th" scope="row" sx={{ width: '50%', fontWeight: 'bold' }}>
+                            Plot Size
+                          </TableCell>
+                          <TableCell>
+                            {editSections.plotInfo ? (
+                              <TextField
+                                size="small"
+                                value={editableDetails.plotSize}
+                                onChange={(e) => handleDetailsChange('plotSize', Number(e.target.value))}
+                                variant="outlined"
+                                type="number"
+                                InputProps={{ endAdornment: <Typography variant="body2">m²</Typography> }}
+                              />
+                            ) : (
+                              `${additionalDetails.plotSize} m²`
+                            )}
+                          </TableCell>
+                        </TableRow>
                         <TableRow>
                           <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                             Garden Size
                           </TableCell>
-                          <TableCell>{additionalDetails.garden} m²</TableCell>
+                          <TableCell>
+                            {editSections.plotInfo ? (
+                              <TextField
+                                size="small"
+                                value={editableDetails.garden}
+                                onChange={(e) => handleDetailsChange('garden', Number(e.target.value))}
+                                variant="outlined"
+                                type="number"
+                                InputProps={{ endAdornment: <Typography variant="body2">m²</Typography> }}
+                              />
+                            ) : (
+                              `${additionalDetails.garden} m²`
+                            )}
+                          </TableCell>
                         </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Grid>
-            </Grid>
-          </Paper>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Box>
+              </Card>
+            )}
+          </Grid>
         </Grid>
-
-        {/* Right Column - Property Images and Description */}
-        <Grid item xs={12} md={4}>
-          {/* Property Images */}
-          <Card sx={{ mb: 3 }}>
-            <CardMedia
-              component="img"
-              height="250"
-              image={property.images[0] || '/properties/property-placeholder.jpg'}
-              alt={property.address}
-            />
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">
-                Main property image
-              </Typography>
-            </CardContent>
-          </Card>
-
-          {/* Property Description */}
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-              Property Description
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Typography variant="body1" paragraph>
-              {property.description || 'No description available.'}
-            </Typography>
-          </Paper>
-
-          {/* Plot Information (for houses, villas, etc.) */}
-          {property.type !== 'apartment' && additionalDetails.plotSize && (
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-                Plot Information
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <TableContainer>
-                <Table>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ width: '50%', fontWeight: 'bold' }}>
-                        Plot Size
-                      </TableCell>
-                      <TableCell>{additionalDetails.plotSize} m²</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                        Garden Size
-                      </TableCell>
-                      <TableCell>{additionalDetails.garden} m²</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          )}
-        </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </Card>
   );
 };
 

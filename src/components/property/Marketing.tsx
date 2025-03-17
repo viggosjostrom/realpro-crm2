@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Box,
   Typography,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -26,7 +25,8 @@ import {
   Card,
   CardContent,
   LinearProgress,
-  Divider
+  Divider,
+  alpha
 } from '@mui/material';
 import {
   Campaign as CampaignIcon,
@@ -35,7 +35,11 @@ import {
   TrendingUp as TrendingUpIcon,
   Launch as LaunchIcon,
   Add as AddIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
+  Mouse as MouseIcon,
+  PersonAdd as PersonAddIcon,
+  Apps as AppsIcon
 } from '@mui/icons-material';
 import { Property } from '@/lib/types';
 
@@ -259,7 +263,15 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
   return (
     <Box>
       {/* Header Section */}
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Card 
+        sx={{ 
+          bgcolor: '#f5f7fa',
+          boxShadow: 3,
+          borderRadius: 2,
+          p: 3, 
+          mb: 3 
+        }}
+      >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <CampaignIcon color="primary" sx={{ mr: 1 }} />
@@ -287,46 +299,213 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
         </Box>
         
         {/* Performance Metrics Cards */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6" component="h3" color="primary">{totalViews.toLocaleString()}</Typography>
-                <Typography variant="body2" color="text.secondary">Total Views</Typography>
-              </CardContent>
-            </Card>
+        <Box sx={{ mb: 3 }}>
+          <Grid container spacing={1.5}>
+            <Grid item xs={6} sm={3} md={1.5} lg={1.25}>
+              <Card 
+                sx={{ 
+                  borderRadius: 2,
+                  background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.05)} 0%, ${alpha(theme.palette.primary.main, 0.15)} 100%)`,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  height: '100%',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => `0 4px 20px 0 ${alpha(theme.palette.primary.main, 0.25)}`,
+                  },
+                }}
+              >
+                <Box sx={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  right: 0, 
+                  p: 0.5, 
+                  bgcolor: 'primary.main', 
+                  borderBottomLeftRadius: 8,
+                  zIndex: 1
+                }}>
+                  <VisibilityIcon sx={{ color: 'white', fontSize: '0.9rem', display: 'block' }} />
+                </Box>
+                <CardContent sx={{ p: 1, pt: 1.5, pb: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, textTransform: 'uppercase', fontWeight: 500, letterSpacing: '0.5px', fontSize: '0.65rem' }}>
+                    Views
+                  </Typography>
+                  <Typography variant="h6" component="div" color="primary.main" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                    {totalViews.toLocaleString()}
+                  </Typography>
+                  {/* Spacer to align with other cards */}
+                  <Box sx={{ height: 22 }} /> {/* This height approximates the space taken by the progress bars and indicators in other cards */}
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={6} sm={3} md={1.5} lg={1.25}>
+              <Card 
+                sx={{ 
+                  borderRadius: 2,
+                  background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.info.light, 0.05)} 0%, ${alpha(theme.palette.info.main, 0.15)} 100%)`,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  height: '100%',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => `0 4px 20px 0 ${alpha(theme.palette.info.main, 0.25)}`,
+                  },
+                }}
+              >
+                <Box sx={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  right: 0, 
+                  p: 0.5, 
+                  bgcolor: 'info.main', 
+                  borderBottomLeftRadius: 8,
+                  zIndex: 1
+                }}>
+                  <MouseIcon sx={{ color: 'white', fontSize: '0.9rem', display: 'block' }} />
+                </Box>
+                <CardContent sx={{ p: 1, pt: 1.5, pb: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, textTransform: 'uppercase', fontWeight: 500, letterSpacing: '0.5px', fontSize: '0.65rem' }}>
+                    Clicks
+                  </Typography>
+                  <Typography variant="h6" component="div" color="info.main" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                    {totalClicks.toLocaleString()}
+                  </Typography>
+                  <Box sx={{ 
+                    mt: 0.75, 
+                    height: 3, 
+                    borderRadius: 1.5, 
+                    bgcolor: (theme) => alpha(theme.palette.info.main, 0.1),
+                    overflow: 'hidden'
+                  }}>
+                    <Box sx={{ 
+                      height: '100%', 
+                      width: `${Math.min(clickThroughRate * 2, 100)}%`, 
+                      bgcolor: 'info.main',
+                      borderRadius: 1.5
+                    }} />
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.25, fontSize: '0.65rem', display: 'flex', alignItems: 'center' }}>
+                    CTR {clickThroughRate.toFixed(1)}%
+                    {clickThroughRate > 5 && (
+                      <TrendingUpIcon sx={{ color: 'success.main', ml: 0.5, fontSize: '0.7rem' }} />
+                    )}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={6} sm={3} md={1.5} lg={1.25}>
+              <Card 
+                sx={{ 
+                  borderRadius: 2,
+                  background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.success.light, 0.05)} 0%, ${alpha(theme.palette.success.main, 0.15)} 100%)`,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  height: '100%',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => `0 4px 20px 0 ${alpha(theme.palette.success.main, 0.25)}`,
+                  },
+                }}
+              >
+                <Box sx={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  right: 0, 
+                  p: 0.5, 
+                  bgcolor: 'success.main', 
+                  borderBottomLeftRadius: 8,
+                  zIndex: 1
+                }}>
+                  <PersonAddIcon sx={{ color: 'white', fontSize: '0.9rem', display: 'block' }} />
+                </Box>
+                <CardContent sx={{ p: 1, pt: 1.5, pb: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, textTransform: 'uppercase', fontWeight: 500, letterSpacing: '0.5px', fontSize: '0.65rem' }}>
+                    Potential Leads
+                  </Typography>
+                  <Typography variant="h6" component="div" color="success.main" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                    {totalLeads.toLocaleString()}
+                  </Typography>
+                  <Box sx={{ 
+                    mt: 0.75, 
+                    height: 3, 
+                    borderRadius: 1.5, 
+                    bgcolor: (theme) => alpha(theme.palette.success.main, 0.1),
+                    overflow: 'hidden'
+                  }}>
+                    <Box sx={{ 
+                      height: '100%', 
+                      width: `${Math.min(conversionRate * 5, 100)}%`, 
+                      bgcolor: 'success.main',
+                      borderRadius: 1.5
+                    }} />
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.25, fontSize: '0.65rem', display: 'flex', alignItems: 'center' }}>
+                    Conv {conversionRate.toFixed(1)}%
+                    {conversionRate > 3 && (
+                      <TrendingUpIcon sx={{ color: 'success.main', ml: 0.5, fontSize: '0.7rem' }} />
+                    )}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={6} sm={3} md={1.5} lg={1.25}>
+              <Card 
+                sx={{ 
+                  borderRadius: 2,
+                  background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.warning.light, 0.05)} 0%, ${alpha(theme.palette.warning.main, 0.15)} 100%)`,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  height: '100%',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => `0 4px 20px 0 ${alpha(theme.palette.warning.main, 0.25)}`,
+                  },
+                }}
+              >
+                <Box sx={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  right: 0, 
+                  p: 0.5, 
+                  bgcolor: 'warning.main', 
+                  borderBottomLeftRadius: 8,
+                  zIndex: 1
+                }}>
+                  <AppsIcon sx={{ color: 'white', fontSize: '0.9rem', display: 'block' }} />
+                </Box>
+                <CardContent sx={{ p: 1, pt: 1.5, pb: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, textTransform: 'uppercase', fontWeight: 500, letterSpacing: '0.5px', fontSize: '0.65rem' }}>
+                    Platforms
+                  </Typography>
+                  <Typography variant="h6" component="div" color="warning.main" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                    {platforms.filter(p => p.status === 'active').length}
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                    {Array.from({ length: Math.min(platforms.length, 5) }).map((_, i) => (
+                      <Box
+                        key={i}
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          mr: 0.5,
+                          bgcolor: i < platforms.filter(p => p.status === 'active').length ? 'warning.main' : (theme) => alpha(theme.palette.warning.main, 0.2)
+                        }}
+                      />
+                    ))}
+                    <Typography variant="caption" sx={{ ml: 0.5, fontSize: '0.65rem', color: 'text.secondary' }}>
+                      of {platforms.length}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6" component="h3" color="primary">{totalClicks.toLocaleString()}</Typography>
-                <Typography variant="body2" color="text.secondary">Total Clicks</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  CTR: {clickThroughRate.toFixed(2)}%
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6" component="h3" color="primary">{totalLeads.toLocaleString()}</Typography>
-                <Typography variant="body2" color="text.secondary">Total Leads</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Conversion: {conversionRate.toFixed(2)}%
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6" component="h3" color="primary">{platforms.filter(p => p.status === 'active').length}</Typography>
-                <Typography variant="body2" color="text.secondary">Active Platforms</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+        </Box>
         
         {/* Filter Controls */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -351,108 +530,125 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
         </Box>
         
         {/* Marketing Platforms Table */}
-        <TableContainer component={Paper} variant="outlined">
-          <Table size="medium">
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>Platform</strong></TableCell>
-                <TableCell><strong>Status</strong></TableCell>
-                <TableCell><strong>Published</strong></TableCell>
-                <TableCell><strong>Expires</strong></TableCell>
-                <TableCell><strong>Performance</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredPlatforms.map((platform) => (
-                <TableRow key={platform.id} hover>
-                  <TableCell>
-                    <Typography variant="body1">{platform.name}</Typography>
-                    {platform.url && (
-                      <Typography variant="caption" color="text.secondary">
-                        ID: {platform.id}
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={getStatusLabel(platform.status)} 
-                      size="small" 
-                      sx={{ 
-                        backgroundColor: getStatusColor(platform.status), 
-                        color: 'white',
-                        fontWeight: 'medium'
-                      }} 
-                    />
-                  </TableCell>
-                  <TableCell>{formatDate(platform.publishedDate)}</TableCell>
-                  <TableCell>{platform.expiryDate ? formatDate(platform.expiryDate) : 'No Expiry'}</TableCell>
-                  <TableCell>
-                    <Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="caption">Views</Typography>
-                        <Typography variant="caption">{platform.views.toLocaleString()}</Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="caption">Clicks</Typography>
-                        <Typography variant="caption">{platform.clicks.toLocaleString()}</Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="caption">Leads</Typography>
-                        <Typography variant="caption">{platform.leads.toLocaleString()}</Typography>
-                      </Box>
-                      {platform.views > 0 && (
-                        <LinearProgress 
-                          variant="determinate" 
-                          value={(platform.clicks / platform.views) * 100}
-                          sx={{ mt: 1, height: 4, borderRadius: 1 }}
-                        />
+        <Card 
+          sx={{ 
+            boxShadow: 2, 
+            borderRadius: 2,
+            overflow: 'hidden',
+            background: (theme) => alpha(theme.palette.background.paper, 0.98),
+          }}
+        >
+          <TableContainer>
+            <Table size="medium">
+              <TableHead>
+                <TableRow>
+                  <TableCell><strong>Platform</strong></TableCell>
+                  <TableCell><strong>Status</strong></TableCell>
+                  <TableCell><strong>Published</strong></TableCell>
+                  <TableCell><strong>Expires</strong></TableCell>
+                  <TableCell><strong>Performance</strong></TableCell>
+                  <TableCell><strong>Actions</strong></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredPlatforms.map((platform) => (
+                  <TableRow key={platform.id} hover>
+                    <TableCell>
+                      <Typography variant="body1">{platform.name}</Typography>
+                      {platform.url && (
+                        <Typography variant="caption" color="text.secondary">
+                          ID: {platform.id}
+                        </Typography>
                       )}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex' }}>
-                      {platform.status === 'active' && platform.url && (
-                        <Tooltip title="View Listing">
-                          <IconButton size="small">
-                            <LaunchIcon fontSize="small" />
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={getStatusLabel(platform.status)} 
+                        size="small" 
+                        sx={{ 
+                          backgroundColor: getStatusColor(platform.status), 
+                          color: 'white',
+                          fontWeight: 'medium'
+                        }} 
+                      />
+                    </TableCell>
+                    <TableCell>{formatDate(platform.publishedDate)}</TableCell>
+                    <TableCell>{platform.expiryDate ? formatDate(platform.expiryDate) : 'No Expiry'}</TableCell>
+                    <TableCell>
+                      <Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant="caption">Views</Typography>
+                          <Typography variant="caption">{platform.views.toLocaleString()}</Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant="caption">Clicks</Typography>
+                          <Typography variant="caption">{platform.clicks.toLocaleString()}</Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant="caption">Leads</Typography>
+                          <Typography variant="caption">{platform.leads.toLocaleString()}</Typography>
+                        </Box>
+                        {platform.views > 0 && (
+                          <LinearProgress 
+                            variant="determinate" 
+                            value={(platform.clicks / platform.views) * 100}
+                            sx={{ mt: 1, height: 4, borderRadius: 1 }}
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex' }}>
+                        {platform.status === 'active' && platform.url && (
+                          <Tooltip title="View Listing">
+                            <IconButton size="small">
+                              <LaunchIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        <Tooltip title="Edit Platform">
+                          <IconButton size="small" onClick={() => handleEditPlatform(platform)}>
+                            <EditIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
-                      )}
-                      <Tooltip title="Edit Platform">
-                        <IconButton size="small" onClick={() => handleEditPlatform(platform)}>
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Refresh Listing">
-                        <IconButton 
-                          size="small"
-                          onClick={() => handleRefreshPlatform(platform.id)}
-                          disabled={platform.status === 'not_published'}
-                        >
-                          <RefreshIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Request Boost">
-                        <IconButton 
-                          size="small"
-                          onClick={() => handleRequestBoost(platform.id)}
-                          disabled={platform.status !== 'active'}
-                        >
-                          <TrendingUpIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+                        <Tooltip title="Refresh Listing">
+                          <IconButton 
+                            size="small"
+                            onClick={() => handleRefreshPlatform(platform.id)}
+                            disabled={platform.status === 'not_published'}
+                          >
+                            <RefreshIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Request Boost">
+                          <IconButton 
+                            size="small"
+                            onClick={() => handleRequestBoost(platform.id)}
+                            disabled={platform.status !== 'active'}
+                          >
+                            <TrendingUpIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Card>
+      </Card>
       
       {/* Performance by Platform */}
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Card 
+        sx={{ 
+          bgcolor: '#f5f7fa',
+          boxShadow: 3,
+          borderRadius: 2,
+          p: 3, 
+          mb: 3 
+        }}
+      >
         <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
           Performance by Platform
         </Typography>
@@ -463,7 +659,17 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
             .sort((a, b) => b.views - a.views)
             .map((platform) => (
               <Grid item xs={12} md={6} key={platform.id}>
-                <Card variant="outlined">
+                <Card 
+                  sx={{ 
+                    boxShadow: 2, 
+                    borderRadius: 2,
+                    transition: 'box-shadow 0.3s ease-in-out',
+                    '&:hover': {
+                      boxShadow: 4,
+                    },
+                    background: (theme) => alpha(theme.palette.background.paper, 0.98),
+                  }}
+                >
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                       <Typography variant="subtitle1" component="h3">{platform.name}</Typography>
@@ -541,13 +747,21 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
         </Grid>
         
         {platforms.filter(platform => platform.views > 0).length === 0 && (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
+          <Card
+            sx={{ 
+              boxShadow: 2, 
+              borderRadius: 2,
+              textAlign: 'center',
+              py: 4,
+              background: (theme) => alpha(theme.palette.background.paper, 0.98),
+            }}
+          >
             <Typography variant="body1" color="text.secondary">
               No performance data available yet.
             </Typography>
-          </Box>
+          </Card>
         )}
-      </Paper>
+      </Card>
       
       {/* Edit Platform Dialog */}
       <Dialog 

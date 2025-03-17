@@ -17,9 +17,7 @@ import {
   Divider,
   Chip,
   Button,
-  Tooltip,
   ButtonProps,
-  CircularProgress,
   LinearProgress,
   Tabs,
   Tab,
@@ -39,7 +37,6 @@ import {
   Description as DescriptionIcon,
   ArrowForward as ArrowForwardIcon,
   TrendingUp as TrendingUpIcon,
-  Add as AddIcon,
   EmojiEvents as EmojiEventsIcon,
   CalendarToday as CalendarTodayIcon,
   Today as TodayIcon,
@@ -84,6 +81,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { useRouter } from 'next/navigation';
+import ClientOnly from '@/components/ClientOnly';
 
 // Register Chart.js components
 ChartJS.register(
@@ -96,25 +94,6 @@ ChartJS.register(
   Legend,
   Filler
 );
-
-// Client-only wrapper component
-const ClientOnly = ({ children }: { children: React.ReactNode }) => {
-  const [isClient, setIsClient] = useState(false);
-  
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-  
-  if (!isClient) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-  
-  return <>{children}</>;
-};
 
 // Region selector type
 type Region = 'Sweden' | 'Stockholm Urban Area' | 'Stockholm County';
@@ -312,11 +291,16 @@ const DashboardActivityItem = ({ activity }: { activity: Activity }): React.Reac
   return (
     <ListItem 
       alignItems="flex-start"
+      component={ButtonBase}
+      onClick={() => {/* No navigation, just clickable for show */}}
       sx={{ 
         py: 2, 
         px: 3,
-        transition: 'background-color 0.2s',
+        transition: 'all 0.2s ease',
         position: 'relative',
+        textAlign: 'left',
+        display: 'flex',
+        width: '100%',
         ...(isToday && {
           bgcolor: alpha('#1a56db', 0.04),
           borderLeft: '3px solid',
@@ -325,6 +309,9 @@ const DashboardActivityItem = ({ activity }: { activity: Activity }): React.Reac
         }),
         '&:hover': {
           bgcolor: isToday ? alpha('#1a56db', 0.08) : 'action.hover',
+          transform: 'translateY(-4px)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          cursor: 'pointer'
         }
       }}
     >
@@ -982,8 +969,11 @@ const CommissionGoalTracker = () => {
 const PriceDevelopmentCard = () => {
   const theme = useTheme();
   const [region, setRegion] = useState<Region>('Sweden');
-  const data = mockMarketStats.priceDevelopment[region];
   const timeSeriesData = mockMarketStats.percentageChangeTimeSeries[region];
+  
+  // Get the most recent values from the time series
+  const mostRecentHouseValue = timeSeriesData.houses[timeSeriesData.houses.length - 1].value;
+  const mostRecentApartmentValue = timeSeriesData.apartments[timeSeriesData.apartments.length - 1].value;
   
   const handleRegionChange = (event: SelectChangeEvent) => {
     setRegion(event.target.value as Region);
@@ -1115,120 +1105,112 @@ const PriceDevelopmentCard = () => {
         title={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <PriceChangeIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Price Development
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mr: 1 }}>
+                Price Development
+              </Typography>
+              <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                - Price Change (%) - Last Month
+              </Typography>
+            </Box>
           </Box>
         }
         action={
-          <FormControl size="small" sx={{ m: 0, minWidth: 140 }}>
-            <Select
-              value={region}
-              onChange={handleRegionChange}
-              displayEmpty
-              variant="outlined"
-              sx={{ fontSize: '0.875rem' }}
-            >
-              <MenuItem value="Sweden">Sweden</MenuItem>
-              <MenuItem value="Stockholm Urban Area">Stockholm Urban</MenuItem>
-              <MenuItem value="Stockholm County">Stockholm County</MenuItem>
-            </Select>
-          </FormControl>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {/* Houses indicator - ultra compact */}
+            <Box sx={{ 
+              p: 0.5, 
+              mr: 1,
+              width: 82,
+              bgcolor: alpha(theme.palette.primary.main, 0.05),
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: alpha(theme.palette.primary.main, 0.1)
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
+                <HouseIcon sx={{ fontSize: '0.6rem', color: theme.palette.primary.main, mr: 0.25 }} />
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
+                  Houses
+                </Typography>
+              </Box>
+              <Typography 
+                color={mostRecentHouseValue >= 0 ? "success.main" : "error.main"}
+                sx={{ 
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontSize: '0.75rem',
+                  mt: 0.25
+                }}
+              >
+                {mostRecentHouseValue > 0 && "+"}
+                {mostRecentHouseValue.toFixed(1)}%
+                <TrendingUpIcon sx={{ 
+                  ml: 0.25, 
+                  fontSize: '0.7rem',
+                  transform: mostRecentHouseValue < 0 ? 'rotate(180deg)' : 'none'
+                }} />
+              </Typography>
+            </Box>
+            
+            {/* Apartments indicator - ultra compact */}
+            <Box sx={{ 
+              p: 0.5, 
+              mr: 2,
+              width: 82,
+              bgcolor: alpha(theme.palette.secondary.main, 0.05),
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: alpha(theme.palette.secondary.main, 0.1)
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
+                <ApartmentIcon sx={{ fontSize: '0.6rem', color: theme.palette.secondary.main, mr: 0.25 }} />
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
+                  Apartment
+                </Typography>
+              </Box>
+              <Typography 
+                color={mostRecentApartmentValue >= 0 ? "success.main" : "error.main"}
+                sx={{ 
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontSize: '0.75rem',
+                  mt: 0.25
+                }}
+              >
+                {mostRecentApartmentValue > 0 && "+"}
+                {mostRecentApartmentValue.toFixed(1)}%
+                <TrendingUpIcon sx={{ 
+                  ml: 0.25, 
+                  fontSize: '0.7rem',
+                  transform: mostRecentApartmentValue < 0 ? 'rotate(180deg)' : 'none'
+                }} />
+              </Typography>
+            </Box>
+            
+            <FormControl size="small" sx={{ m: 0, minWidth: 140 }}>
+              <Select
+                value={region}
+                onChange={handleRegionChange}
+                displayEmpty
+                variant="outlined"
+                sx={{ fontSize: '0.875rem' }}
+              >
+                <MenuItem value="Sweden">Sweden</MenuItem>
+                <MenuItem value="Stockholm Urban Area">Stockholm Urban</MenuItem>
+                <MenuItem value="Stockholm County">Stockholm County</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         }
         sx={{ pb: 0 }}
       />
       <CardContent sx={{ pt: 1, pb: 2, px: { xs: 2, md: 3 } }}>
-        <Grid container spacing={0.5}>
-          {/* Chart on the left - increased to 11/12 columns */}
-          <Grid item xs={11}>
-            <Typography variant="caption" fontWeight="medium" sx={{ mb: 0.5, display: 'block' }}>
-              Price Change (%) - Last Month
-            </Typography>
-            <Box sx={{ height: 155 }}>
-              <Line options={chartOptions} data={formatDataForPercentageChart()} />
-            </Box>
-          </Grid>
-          
-          {/* Price indicators on the right - reduced to 1/12 columns */}
-          <Grid item xs={1} sx={{ pl: 0 }}>
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              height: '100%', 
-              justifyContent: 'center', 
-              gap: 0.5,
-              minWidth: '60px' // Prevent indicators from becoming too small
-            }}>
-              {/* Houses indicator - ultra compact */}
-              <Box sx={{ 
-                p: 0.5, 
-                bgcolor: alpha(theme.palette.primary.main, 0.05),
-                borderRadius: 1,
-                border: '1px solid',
-                borderColor: alpha(theme.palette.primary.main, 0.1)
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
-                  <HouseIcon sx={{ fontSize: '0.6rem', color: theme.palette.primary.main, mr: 0.25 }} />
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
-                    Houses
-                  </Typography>
-                </Box>
-                <Typography 
-                  color={data.houses >= 0 ? "success.main" : "error.main"}
-                  sx={{ 
-                    fontWeight: 'bold',
-                    display: 'flex',
-                    alignItems: 'center',
-                    fontSize: '0.75rem',
-                    mt: 0.25
-                  }}
-                >
-                  {data.houses > 0 && "+"}
-                  {data.houses.toFixed(1)}%
-                  <TrendingUpIcon sx={{ 
-                    ml: 0.25, 
-                    fontSize: '0.7rem',
-                    transform: data.houses < 0 ? 'rotate(180deg)' : 'none'
-                  }} />
-                </Typography>
-              </Box>
-              
-              {/* Apartments indicator - ultra compact */}
-              <Box sx={{ 
-                p: 0.5, 
-                bgcolor: alpha(theme.palette.secondary.main, 0.05),
-                borderRadius: 1,
-                border: '1px solid',
-                borderColor: alpha(theme.palette.secondary.main, 0.1)
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
-                  <ApartmentIcon sx={{ fontSize: '0.6rem', color: theme.palette.secondary.main, mr: 0.25 }} />
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
-                    Apartment
-                  </Typography>
-                </Box>
-                <Typography 
-                  color={data.apartments >= 0 ? "success.main" : "error.main"}
-                  sx={{ 
-                    fontWeight: 'bold',
-                    display: 'flex',
-                    alignItems: 'center',
-                    fontSize: '0.75rem',
-                    mt: 0.25
-                  }}
-                >
-                  {data.apartments > 0 && "+"}
-                  {data.apartments.toFixed(1)}%
-                  <TrendingUpIcon sx={{ 
-                    ml: 0.25, 
-                    fontSize: '0.7rem',
-                    transform: data.apartments < 0 ? 'rotate(180deg)' : 'none'
-                  }} />
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
+        {/* Full width chart */}
+        <Box sx={{ height: 155 }}>
+          <Line options={chartOptions} data={formatDataForPercentageChart()} />
+        </Box>
       </CardContent>
     </Card>
   );
@@ -1238,8 +1220,11 @@ const PriceDevelopmentCard = () => {
 const AveragePriceCard = () => {
   const theme = useTheme();
   const [region, setRegion] = useState<Region>('Sweden');
-  const data = mockMarketStats.averagePricePerSqm[region];
   const timeSeriesData = mockMarketStats.priceDevelopmentTimeSeries[region];
+  
+  // Get the most recent values from the time series
+  const mostRecentHouseValue = timeSeriesData.houses[timeSeriesData.houses.length - 1].value;
+  const mostRecentApartmentValue = timeSeriesData.apartments[timeSeriesData.apartments.length - 1].value;
   
   const handleRegionChange = (event: SelectChangeEvent) => {
     setRegion(event.target.value as Region);
@@ -1376,104 +1361,96 @@ const AveragePriceCard = () => {
         title={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <SquareFootIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Average Price (SEK/m²)
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mr: 1 }}>
+                Average Price (SEK/m²)
+              </Typography>
+              <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                - Average Price Trend - Last Month
+              </Typography>
+            </Box>
           </Box>
         }
         action={
-          <FormControl size="small" sx={{ m: 0, minWidth: 140 }}>
-            <Select
-              value={region}
-              onChange={handleRegionChange}
-              displayEmpty
-              variant="outlined"
-              sx={{ fontSize: '0.875rem' }}
-            >
-              <MenuItem value="Sweden">Sweden</MenuItem>
-              <MenuItem value="Stockholm Urban Area">Stockholm Urban</MenuItem>
-              <MenuItem value="Stockholm County">Stockholm County</MenuItem>
-            </Select>
-          </FormControl>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {/* Houses indicator - ultra compact */}
+            <Box sx={{ 
+              p: 0.5, 
+              mr: 1,
+              width: 82,
+              bgcolor: alpha(theme.palette.primary.main, 0.05),
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: alpha(theme.palette.primary.main, 0.1)
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
+                <HouseIcon sx={{ fontSize: '0.6rem', color: theme.palette.primary.main, mr: 0.25 }} />
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
+                  Houses
+                </Typography>
+              </Box>
+              <Typography 
+                color="text.primary"
+                sx={{ 
+                  fontWeight: 'bold',
+                  fontSize: '0.75rem',
+                  mt: 0.25
+                }}
+              >
+                {formatCurrency(mostRecentHouseValue)}
+              </Typography>
+            </Box>
+            
+            {/* Apartments indicator - ultra compact */}
+            <Box sx={{ 
+              p: 0.5, 
+              mr: 2,
+              width: 82,
+              bgcolor: alpha(theme.palette.secondary.main, 0.05),
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: alpha(theme.palette.secondary.main, 0.1)
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
+                <ApartmentIcon sx={{ fontSize: '0.6rem', color: theme.palette.secondary.main, mr: 0.25 }} />
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
+                  Apartment
+                </Typography>
+              </Box>
+              <Typography 
+                color="text.primary"
+                sx={{ 
+                  fontWeight: 'bold',
+                  fontSize: '0.75rem',
+                  mt: 0.25
+                }}
+              >
+                {formatCurrency(mostRecentApartmentValue)}
+              </Typography>
+            </Box>
+            
+            <FormControl size="small" sx={{ m: 0, minWidth: 140 }}>
+              <Select
+                value={region}
+                onChange={handleRegionChange}
+                displayEmpty
+                variant="outlined"
+                sx={{ fontSize: '0.875rem' }}
+              >
+                <MenuItem value="Sweden">Sweden</MenuItem>
+                <MenuItem value="Stockholm Urban Area">Stockholm Urban</MenuItem>
+                <MenuItem value="Stockholm County">Stockholm County</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         }
         sx={{ pb: 0 }}
       />
       <CardContent sx={{ pt: 1, pb: 2, px: { xs: 2, md: 3 } }}>
-        <Grid container spacing={0.5}>
-          {/* Chart on the left - increased to 11/12 columns */}
-          <Grid item xs={11}>
-            <Typography variant="caption" fontWeight="medium" sx={{ mb: 0.5, display: 'block' }}>
-              Average Price Trend - Last Month
-            </Typography>
-            <Box sx={{ height: 155 }}>
-              <Line options={chartOptions} data={formatDataForPriceChart()} />
-            </Box>
-          </Grid>
-          
-          {/* Price indicators on the right - reduced to 1/12 columns */}
-          <Grid item xs={1} sx={{ pl: 0 }}>
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              height: '100%', 
-              justifyContent: 'center', 
-              gap: 0.5,
-              minWidth: '60px' // Prevent indicators from becoming too small
-            }}>
-              {/* Houses indicator - ultra compact */}
-              <Box sx={{ 
-                p: 0.5, 
-                bgcolor: alpha(theme.palette.primary.main, 0.05),
-                borderRadius: 1,
-                border: '1px solid',
-                borderColor: alpha(theme.palette.primary.main, 0.1)
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
-                  <HouseIcon sx={{ fontSize: '0.6rem', color: theme.palette.primary.main, mr: 0.25 }} />
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
-                    Houses
-                  </Typography>
-                </Box>
-                <Typography 
-                  color="text.primary"
-                  sx={{ 
-                    fontWeight: 'bold',
-                    fontSize: '0.75rem',
-                    mt: 0.25
-                  }}
-                >
-                  {formatCurrency(data.houses)}
-                </Typography>
-              </Box>
-              
-              {/* Apartments indicator - ultra compact */}
-              <Box sx={{ 
-                p: 0.5, 
-                bgcolor: alpha(theme.palette.secondary.main, 0.05),
-                borderRadius: 1,
-                border: '1px solid',
-                borderColor: alpha(theme.palette.secondary.main, 0.1)
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
-                  <ApartmentIcon sx={{ fontSize: '0.6rem', color: theme.palette.secondary.main, mr: 0.25 }} />
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
-                    Apartment
-                  </Typography>
-                </Box>
-                <Typography 
-                  color="text.primary"
-                  sx={{ 
-                    fontWeight: 'bold',
-                    fontSize: '0.75rem',
-                    mt: 0.25
-                  }}
-                >
-                  {formatCurrency(data.apartments)}
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
+        {/* Full width chart */}
+        <Box sx={{ height: 155 }}>
+          <Line options={chartOptions} data={formatDataForPriceChart()} />
+        </Box>
       </CardContent>
     </Card>
   );
@@ -1497,46 +1474,6 @@ const DashboardContent = () => {
   
   return (
     <>
-      <Box 
-        sx={{ 
-          mb: 4, 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          pb: 2,
-          borderBottom: '1px solid',
-          borderColor: 'divider'
-        }}
-      >
-        <Box>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-            Dashboard
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Welcome back, Johan! Here&apos;s what&apos;s happening with your properties today.
-          </Typography>
-        </Box>
-        <Box>
-          <Tooltip title="Add new property">
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              sx={{ 
-                borderRadius: 8,
-                textTransform: 'none',
-                fontWeight: 500,
-                boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-                px: 3,
-                py: 1
-              }}
-            >
-              Add Property
-            </Button>
-          </Tooltip>
-        </Box>
-      </Box>
-
       {/* New Stats Grid with just two cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} md={6}>

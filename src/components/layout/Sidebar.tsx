@@ -27,7 +27,7 @@ import {
   Logout as LogoutIcon
 } from '@mui/icons-material';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
 import { mockUsers } from '@/lib/utils/mockData';
 // Import both CSS files to ensure they're loaded
@@ -59,6 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const pathname = usePathname();
+  const router = useRouter();
 
   // Get accessible avatar styles
   const avatarStyles = getAccessibleAvatarStyle(theme.palette.primary.main);
@@ -67,6 +68,22 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (toggleMinimized) {
       toggleMinimized();
     }
+  };
+
+  // Handle logout with state cleanup
+  const handleLogout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // Clear any session storage items that might cause issues
+    try {
+      sessionStorage.clear();
+      localStorage.clear();
+    } catch (error) {
+      console.error('Error clearing storage:', error);
+    }
+    
+    // Navigate to home page
+    router.push('/');
   };
 
   const menuItems = [
@@ -221,8 +238,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {!minimized && (
           <Tooltip title="Logout">
             <IconButton 
-              component="a" 
-              href="/" 
+              onClick={handleLogout}
               size="small" 
               color="primary"
               aria-label="Logout"
