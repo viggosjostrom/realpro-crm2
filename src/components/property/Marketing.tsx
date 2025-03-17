@@ -26,7 +26,8 @@ import {
   Card,
   CardContent,
   LinearProgress,
-  Divider
+  Divider,
+  alpha
 } from '@mui/material';
 import {
   Campaign as CampaignIcon,
@@ -259,7 +260,15 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
   return (
     <Box>
       {/* Header Section */}
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Card 
+        sx={{ 
+          bgcolor: '#f5f7fa',
+          boxShadow: 3,
+          borderRadius: 2,
+          p: 3, 
+          mb: 3 
+        }}
+      >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <CampaignIcon color="primary" sx={{ mr: 1 }} />
@@ -289,7 +298,13 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
         {/* Performance Metrics Cards */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
+            <Card 
+              sx={{ 
+                boxShadow: 2, 
+                borderRadius: 2,
+                background: (theme) => alpha(theme.palette.background.paper, 0.98),
+              }}
+            >
               <CardContent>
                 <Typography variant="h6" component="h3" color="primary">{totalViews.toLocaleString()}</Typography>
                 <Typography variant="body2" color="text.secondary">Total Views</Typography>
@@ -297,7 +312,13 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
+            <Card 
+              sx={{ 
+                boxShadow: 2, 
+                borderRadius: 2,
+                background: (theme) => alpha(theme.palette.background.paper, 0.98),
+              }}
+            >
               <CardContent>
                 <Typography variant="h6" component="h3" color="primary">{totalClicks.toLocaleString()}</Typography>
                 <Typography variant="body2" color="text.secondary">Total Clicks</Typography>
@@ -308,7 +329,13 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
+            <Card 
+              sx={{ 
+                boxShadow: 2, 
+                borderRadius: 2,
+                background: (theme) => alpha(theme.palette.background.paper, 0.98),
+              }}
+            >
               <CardContent>
                 <Typography variant="h6" component="h3" color="primary">{totalLeads.toLocaleString()}</Typography>
                 <Typography variant="body2" color="text.secondary">Total Leads</Typography>
@@ -319,7 +346,13 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card variant="outlined">
+            <Card 
+              sx={{ 
+                boxShadow: 2, 
+                borderRadius: 2,
+                background: (theme) => alpha(theme.palette.background.paper, 0.98),
+              }}
+            >
               <CardContent>
                 <Typography variant="h6" component="h3" color="primary">{platforms.filter(p => p.status === 'active').length}</Typography>
                 <Typography variant="body2" color="text.secondary">Active Platforms</Typography>
@@ -351,108 +384,125 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
         </Box>
         
         {/* Marketing Platforms Table */}
-        <TableContainer component={Paper} variant="outlined">
-          <Table size="medium">
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>Platform</strong></TableCell>
-                <TableCell><strong>Status</strong></TableCell>
-                <TableCell><strong>Published</strong></TableCell>
-                <TableCell><strong>Expires</strong></TableCell>
-                <TableCell><strong>Performance</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredPlatforms.map((platform) => (
-                <TableRow key={platform.id} hover>
-                  <TableCell>
-                    <Typography variant="body1">{platform.name}</Typography>
-                    {platform.url && (
-                      <Typography variant="caption" color="text.secondary">
-                        ID: {platform.id}
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={getStatusLabel(platform.status)} 
-                      size="small" 
-                      sx={{ 
-                        backgroundColor: getStatusColor(platform.status), 
-                        color: 'white',
-                        fontWeight: 'medium'
-                      }} 
-                    />
-                  </TableCell>
-                  <TableCell>{formatDate(platform.publishedDate)}</TableCell>
-                  <TableCell>{platform.expiryDate ? formatDate(platform.expiryDate) : 'No Expiry'}</TableCell>
-                  <TableCell>
-                    <Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="caption">Views</Typography>
-                        <Typography variant="caption">{platform.views.toLocaleString()}</Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="caption">Clicks</Typography>
-                        <Typography variant="caption">{platform.clicks.toLocaleString()}</Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="caption">Leads</Typography>
-                        <Typography variant="caption">{platform.leads.toLocaleString()}</Typography>
-                      </Box>
-                      {platform.views > 0 && (
-                        <LinearProgress 
-                          variant="determinate" 
-                          value={(platform.clicks / platform.views) * 100}
-                          sx={{ mt: 1, height: 4, borderRadius: 1 }}
-                        />
+        <Card 
+          sx={{ 
+            boxShadow: 2, 
+            borderRadius: 2,
+            overflow: 'hidden',
+            background: (theme) => alpha(theme.palette.background.paper, 0.98),
+          }}
+        >
+          <TableContainer>
+            <Table size="medium">
+              <TableHead>
+                <TableRow>
+                  <TableCell><strong>Platform</strong></TableCell>
+                  <TableCell><strong>Status</strong></TableCell>
+                  <TableCell><strong>Published</strong></TableCell>
+                  <TableCell><strong>Expires</strong></TableCell>
+                  <TableCell><strong>Performance</strong></TableCell>
+                  <TableCell><strong>Actions</strong></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredPlatforms.map((platform) => (
+                  <TableRow key={platform.id} hover>
+                    <TableCell>
+                      <Typography variant="body1">{platform.name}</Typography>
+                      {platform.url && (
+                        <Typography variant="caption" color="text.secondary">
+                          ID: {platform.id}
+                        </Typography>
                       )}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex' }}>
-                      {platform.status === 'active' && platform.url && (
-                        <Tooltip title="View Listing">
-                          <IconButton size="small">
-                            <LaunchIcon fontSize="small" />
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={getStatusLabel(platform.status)} 
+                        size="small" 
+                        sx={{ 
+                          backgroundColor: getStatusColor(platform.status), 
+                          color: 'white',
+                          fontWeight: 'medium'
+                        }} 
+                      />
+                    </TableCell>
+                    <TableCell>{formatDate(platform.publishedDate)}</TableCell>
+                    <TableCell>{platform.expiryDate ? formatDate(platform.expiryDate) : 'No Expiry'}</TableCell>
+                    <TableCell>
+                      <Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant="caption">Views</Typography>
+                          <Typography variant="caption">{platform.views.toLocaleString()}</Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant="caption">Clicks</Typography>
+                          <Typography variant="caption">{platform.clicks.toLocaleString()}</Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant="caption">Leads</Typography>
+                          <Typography variant="caption">{platform.leads.toLocaleString()}</Typography>
+                        </Box>
+                        {platform.views > 0 && (
+                          <LinearProgress 
+                            variant="determinate" 
+                            value={(platform.clicks / platform.views) * 100}
+                            sx={{ mt: 1, height: 4, borderRadius: 1 }}
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex' }}>
+                        {platform.status === 'active' && platform.url && (
+                          <Tooltip title="View Listing">
+                            <IconButton size="small">
+                              <LaunchIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        <Tooltip title="Edit Platform">
+                          <IconButton size="small" onClick={() => handleEditPlatform(platform)}>
+                            <EditIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
-                      )}
-                      <Tooltip title="Edit Platform">
-                        <IconButton size="small" onClick={() => handleEditPlatform(platform)}>
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Refresh Listing">
-                        <IconButton 
-                          size="small"
-                          onClick={() => handleRefreshPlatform(platform.id)}
-                          disabled={platform.status === 'not_published'}
-                        >
-                          <RefreshIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Request Boost">
-                        <IconButton 
-                          size="small"
-                          onClick={() => handleRequestBoost(platform.id)}
-                          disabled={platform.status !== 'active'}
-                        >
-                          <TrendingUpIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+                        <Tooltip title="Refresh Listing">
+                          <IconButton 
+                            size="small"
+                            onClick={() => handleRefreshPlatform(platform.id)}
+                            disabled={platform.status === 'not_published'}
+                          >
+                            <RefreshIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Request Boost">
+                          <IconButton 
+                            size="small"
+                            onClick={() => handleRequestBoost(platform.id)}
+                            disabled={platform.status !== 'active'}
+                          >
+                            <TrendingUpIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Card>
+      </Card>
       
       {/* Performance by Platform */}
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Card 
+        sx={{ 
+          bgcolor: '#f5f7fa',
+          boxShadow: 3,
+          borderRadius: 2,
+          p: 3, 
+          mb: 3 
+        }}
+      >
         <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
           Performance by Platform
         </Typography>
@@ -463,7 +513,17 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
             .sort((a, b) => b.views - a.views)
             .map((platform) => (
               <Grid item xs={12} md={6} key={platform.id}>
-                <Card variant="outlined">
+                <Card 
+                  sx={{ 
+                    boxShadow: 2, 
+                    borderRadius: 2,
+                    transition: 'box-shadow 0.3s ease-in-out',
+                    '&:hover': {
+                      boxShadow: 4,
+                    },
+                    background: (theme) => alpha(theme.palette.background.paper, 0.98),
+                  }}
+                >
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                       <Typography variant="subtitle1" component="h3">{platform.name}</Typography>
@@ -541,13 +601,21 @@ const Marketing: React.FC<MarketingProps> = ({ property }) => {
         </Grid>
         
         {platforms.filter(platform => platform.views > 0).length === 0 && (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
+          <Card
+            sx={{ 
+              boxShadow: 2, 
+              borderRadius: 2,
+              textAlign: 'center',
+              py: 4,
+              background: (theme) => alpha(theme.palette.background.paper, 0.98),
+            }}
+          >
             <Typography variant="body1" color="text.secondary">
               No performance data available yet.
             </Typography>
-          </Box>
+          </Card>
         )}
-      </Paper>
+      </Card>
       
       {/* Edit Platform Dialog */}
       <Dialog 

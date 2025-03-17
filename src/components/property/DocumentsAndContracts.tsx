@@ -32,7 +32,8 @@ import {
   ListItemText,
   Checkbox,
   Divider,
-  Avatar
+  Avatar,
+  alpha
 } from '@mui/material';
 import {
   Description as DescriptionIcon,
@@ -287,7 +288,7 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
   const renderDocumentTable = () => {
     if (sortedDocuments.length === 0) {
       return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Box sx={{ textAlign: 'center', py: 3 }}>
           <Typography variant="body1" color="text.secondary">
             No documents found for the selected filters.
           </Typography>
@@ -296,7 +297,7 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
     }
     
     return (
-      <TableContainer component={Paper} variant="outlined">
+      <TableContainer>
         <Table size="medium">
           <TableHead>
             <TableRow>
@@ -391,7 +392,7 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
     
     if (documentTypes.length === 0) {
       return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Box sx={{ textAlign: 'center', py: 3 }}>
           <Typography variant="body1" color="text.secondary">
             No documents found for this property.
           </Typography>
@@ -403,7 +404,18 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
       <Grid container spacing={3}>
         {documentTypes.map((type) => (
           <Grid item xs={12} md={6} key={type}>
-            <Card variant="outlined" sx={{ height: '100%' }}>
+            <Card 
+              sx={{ 
+                height: '100%',
+                boxShadow: 2, 
+                borderRadius: 2,
+                transition: 'box-shadow 0.3s ease-in-out',
+                '&:hover': {
+                  boxShadow: 4,
+                },
+                background: (theme) => alpha(theme.palette.background.paper, 0.98),
+              }}
+            >
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Chip 
@@ -463,7 +475,15 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
   
   return (
     <Box>
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Card 
+        sx={{ 
+          bgcolor: '#f5f7fa',
+          boxShadow: 3,
+          borderRadius: 2,
+          p: 3, 
+          mb: 3 
+        }}
+      >
         {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -496,6 +516,12 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
                     <SearchIcon />
                   </InputAdornment>
                 ),
+                sx: {
+                  bgcolor: 'white',
+                  '&:hover': {
+                    bgcolor: 'white',
+                  },
+                }
               }}
               size="small"
             />
@@ -509,7 +535,7 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
                   multiple
                   value={selectedTypes}
                   onChange={handleFilterChange}
-                  input={<OutlinedInput label="Filter by Type" />}
+                  input={<OutlinedInput label="Filter by Type" sx={{ bgcolor: 'white' }} />}
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {(selected as string[]).map((value) => (
@@ -526,8 +552,18 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
                       ))}
                     </Box>
                   )}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        bgcolor: 'background.paper',
+                        boxShadow: 3,
+                        borderRadius: 1,
+                        maxHeight: 300
+                      }
+                    }
+                  }}
                 >
-                  {['contract', 'offer_letter', 'agreement', 'loan_approval', 'inspection', 'insurance', 'tax', 'other'].map((type) => (
+                  {['contract', 'offer_letter', 'agreement', 'loan_approval', 'inspection', 'insurance', 'tax', 'other'].map((type: string) => (
                     <MenuItem key={type} value={type}>
                       <Checkbox checked={selectedTypes.indexOf(type) > -1} />
                       <ListItemText primary={getDocumentTypeLabel(type as DocumentType)} />
@@ -542,6 +578,7 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
                 onClick={handleSortMenuOpen}
                 aria-haspopup="true"
                 aria-expanded={Boolean(sortMenuAnchor)}
+                sx={{ bgcolor: 'white' }}
               >
                 Sort
               </Button>
@@ -549,6 +586,14 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
                 anchorEl={sortMenuAnchor}
                 open={Boolean(sortMenuAnchor)}
                 onClose={handleSortMenuClose}
+                PaperProps={{
+                  sx: {
+                    bgcolor: 'background.paper',
+                    boxShadow: 3,
+                    borderRadius: 1,
+                    minWidth: 180
+                  }
+                }}
               >
                 <MenuItem onClick={() => handleSortSelect('newest')} selected={sortBy === 'newest'}>
                   Newest First
@@ -574,17 +619,34 @@ const DocumentsAndContracts: React.FC<DocumentsAndContractsProps> = ({ property 
         </Grid>
         
         {/* Document List */}
-        <Box>
+        <Card 
+          sx={{ 
+            boxShadow: 2, 
+            borderRadius: 2,
+            overflow: 'hidden',
+            mb: 2,
+            background: (theme) => alpha(theme.palette.background.paper, 0.98),
+          }}
+        >
           {/* List View */}
           {renderDocumentTable()}
-        </Box>
-      </Paper>
+        </Card>
+      </Card>
       
       {/* Category Cards */}
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Documents by Category
-      </Typography>
-      {renderDocumentCategories()}
+      <Card 
+        sx={{ 
+          bgcolor: '#f5f7fa',
+          boxShadow: 3,
+          borderRadius: 2,
+          p: 3
+        }}
+      >
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Documents by Category
+        </Typography>
+        {renderDocumentCategories()}
+      </Card>
       
       {/* Upload Dialog */}
       <Dialog 
