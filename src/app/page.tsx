@@ -86,6 +86,14 @@ export default function Home() {
     }
   };
 
+  // Handle scrolling to the developer section
+  const scrollToDeveloperSection = () => {
+    const developerSection = document.getElementById('developer-section');
+    if (developerSection) {
+      developerSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   // Remove the random key to prevent remounting issues
   return (
     <Box>
@@ -138,6 +146,7 @@ export default function Home() {
                 <Button 
                   variant="outlined" 
                   size="large"
+                  onClick={scrollToDeveloperSection}
                   sx={{ 
                     color: 'white', 
                     borderColor: 'white',
@@ -242,7 +251,7 @@ export default function Home() {
       </Container>
 
       {/* Meet the Developer Section */}
-      <Box sx={{ bgcolor: 'white', py: { xs: 8, md: 12 } }}>
+      <Box id="developer-section" sx={{ bgcolor: 'white', py: { xs: 8, md: 12 } }}>
         <Container maxWidth="lg">
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={12} md={6}>
