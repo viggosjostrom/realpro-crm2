@@ -1105,9 +1105,14 @@ const PriceDevelopmentCard = () => {
         title={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <PriceChangeIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Price Development
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mr: 1 }}>
+                Price Development
+              </Typography>
+              <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                - Price Change (%) - Last Month
+              </Typography>
+            </Box>
           </Box>
         }
         action={
@@ -1131,9 +1136,6 @@ const PriceDevelopmentCard = () => {
         <Grid container spacing={0.5}>
           {/* Chart on the left - increased to 11/12 columns */}
           <Grid item xs={11}>
-            <Typography variant="caption" fontWeight="medium" sx={{ mb: 0.5, display: 'block' }}>
-              Price Change (%) - Last Month
-            </Typography>
             <Box sx={{ height: 155 }}>
               <Line options={chartOptions} data={formatDataForPercentageChart()} />
             </Box>
@@ -1366,9 +1368,14 @@ const AveragePriceCard = () => {
         title={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <SquareFootIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Average Price (SEK/m²)
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mr: 1 }}>
+                Average Price (SEK/m²)
+              </Typography>
+              <Typography variant="caption" fontWeight="medium" color="text.secondary">
+                - Average Price Trend - Last Month
+              </Typography>
+            </Box>
           </Box>
         }
         action={
@@ -1392,9 +1399,6 @@ const AveragePriceCard = () => {
         <Grid container spacing={0.5}>
           {/* Chart on the left - increased to 11/12 columns */}
           <Grid item xs={11}>
-            <Typography variant="caption" fontWeight="medium" sx={{ mb: 0.5, display: 'block' }}>
-              Average Price Trend - Last Month
-            </Typography>
             <Box sx={{ height: 155 }}>
               <Line options={chartOptions} data={formatDataForPriceChart()} />
             </Box>
