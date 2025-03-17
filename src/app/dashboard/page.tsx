@@ -84,6 +84,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { useRouter } from 'next/navigation';
+import ClientOnly from '@/components/ClientOnly';
 
 // Register Chart.js components
 ChartJS.register(
@@ -96,25 +97,6 @@ ChartJS.register(
   Legend,
   Filler
 );
-
-// Client-only wrapper component
-const ClientOnly = ({ children }: { children: React.ReactNode }) => {
-  const [isClient, setIsClient] = useState(false);
-  
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-  
-  if (!isClient) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-  
-  return <>{children}</>;
-};
 
 // Region selector type
 type Region = 'Sweden' | 'Stockholm Urban Area' | 'Stockholm County';
@@ -312,11 +294,16 @@ const DashboardActivityItem = ({ activity }: { activity: Activity }): React.Reac
   return (
     <ListItem 
       alignItems="flex-start"
+      component={ButtonBase}
+      onClick={() => {/* No navigation, just clickable for show */}}
       sx={{ 
         py: 2, 
         px: 3,
-        transition: 'background-color 0.2s',
+        transition: 'all 0.2s ease',
         position: 'relative',
+        textAlign: 'left',
+        display: 'flex',
+        width: '100%',
         ...(isToday && {
           bgcolor: alpha('#1a56db', 0.04),
           borderLeft: '3px solid',
@@ -325,6 +312,9 @@ const DashboardActivityItem = ({ activity }: { activity: Activity }): React.Reac
         }),
         '&:hover': {
           bgcolor: isToday ? alpha('#1a56db', 0.08) : 'action.hover',
+          transform: 'translateY(-4px)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          cursor: 'pointer'
         }
       }}
     >
@@ -1497,46 +1487,6 @@ const DashboardContent = () => {
   
   return (
     <>
-      <Box 
-        sx={{ 
-          mb: 4, 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          pb: 2,
-          borderBottom: '1px solid',
-          borderColor: 'divider'
-        }}
-      >
-        <Box>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-            Dashboard
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Welcome back, Johan! Here&apos;s what&apos;s happening with your properties today.
-          </Typography>
-        </Box>
-        <Box>
-          <Tooltip title="Add new property">
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              sx={{ 
-                borderRadius: 8,
-                textTransform: 'none',
-                fontWeight: 500,
-                boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-                px: 3,
-                py: 1
-              }}
-            >
-              Add Property
-            </Button>
-          </Tooltip>
-        </Box>
-      </Box>
-
       {/* New Stats Grid with just two cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} md={6}>

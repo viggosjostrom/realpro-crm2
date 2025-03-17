@@ -14,30 +14,32 @@ const WelcomePopup: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // Use sessionStorage instead of localStorage to prevent issues across browser sessions
-    // This ensures the flag is cleared when the browser is closed
+    // Wrap in try-catch and only run once on mount
+    let isMounted = true;
+    
     try {
       const fromLandingPage = sessionStorage.getItem('fromLandingPage') === 'true';
       
-      if (fromLandingPage) {
+      if (fromLandingPage && isMounted) {
         setOpen(true);
         // Clear the flag immediately to prevent potential loops
         sessionStorage.removeItem('fromLandingPage');
       }
-    } catch {
+    } catch (error) {
       // Handle any storage access errors silently
-      console.error('Storage access error occurred');
+      console.error('Storage access error occurred:', error);
     }
 
-    // Cleanup function to ensure we remove the flag if component unmounts
+    // Cleanup function
     return () => {
+      isMounted = false;
       try {
         sessionStorage.removeItem('fromLandingPage');
       } catch {
         // Silent error handling
       }
     };
-  }, []);
+  }, []); // Empty dependency array ensures this only runs once on mount
 
   const handleClose = () => {
     setOpen(false);
