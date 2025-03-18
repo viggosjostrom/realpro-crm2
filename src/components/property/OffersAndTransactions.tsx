@@ -22,7 +22,6 @@ import {
   Tooltip,
   Tab,
   Tabs,
-  Link,
   Avatar,
   alpha
 } from '@mui/material';
@@ -435,9 +434,11 @@ const OffersAndTransactions: React.FC<OffersAndTransactionsProps> = ({ property 
                   <Button 
                     variant="outlined" 
                     startIcon={<DownloadIcon />}
-                    component={Link}
-                    href={propertyTransaction.contractUrl}
-                    target="_blank"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      // In a real app, this would trigger the file download
+                      console.log('Downloading contract:', propertyTransaction.contractUrl);
+                    }}
                     sx={{ textTransform: 'none' }}
                   >
                     Download Sale Contract

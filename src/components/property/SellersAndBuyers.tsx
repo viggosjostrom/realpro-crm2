@@ -42,6 +42,7 @@ import {
   Call as CallIcon,
   Sms as SmsIcon
 } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 import { Property, Client } from '@/lib/types';
 import { mockClients } from '@/lib/utils/mockData';
 
@@ -91,6 +92,7 @@ interface Note {
 }
 
 const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
+  const router = useRouter();
   const [tabValue, setTabValue] = useState(0);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openNoteDialog, setOpenNoteDialog] = useState(false);
@@ -178,6 +180,11 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
 
   const getClientNotes = (clientId: string) => {
     return mockNotes.filter(note => note.clientId === clientId);
+  };
+
+  // Handle view profile
+  const handleViewProfile = (clientId: string) => {
+    router.push(`/dashboard/clients/${clientId}`);
   };
 
   return (
@@ -295,7 +302,11 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
                               </Box>
                               <Box>
                                 <Tooltip title="View Profile">
-                                  <IconButton size="small" sx={{ mr: 1 }}>
+                                  <IconButton 
+                                    size="small" 
+                                    sx={{ mr: 1 }}
+                                    onClick={() => handleViewProfile(seller.id)}
+                                  >
                                     <LinkIcon />
                                   </IconButton>
                                 </Tooltip>
@@ -520,7 +531,11 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
                             </Box>
                             <Box>
                               <Tooltip title="View Profile">
-                                <IconButton size="small" sx={{ mr: 1 }}>
+                                <IconButton 
+                                  size="small" 
+                                  sx={{ mr: 1 }}
+                                  onClick={() => handleViewProfile(buyer.id)}
+                                >
                                   <LinkIcon />
                                 </IconButton>
                               </Tooltip>
@@ -802,6 +817,16 @@ const SellersAndBuyers: React.FC<SellersAndBuyersProps> = ({ property }) => {
                                 )}
                               </TableCell>
                               <TableCell align="right">
+                                <Tooltip title="View Profile">
+                                  <IconButton 
+                                    size="small" 
+                                    color="primary" 
+                                    sx={{ mr: 0.5 }}
+                                    onClick={() => handleViewProfile(buyer.id)}
+                                  >
+                                    <LinkIcon fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
                                 <Tooltip title="Call">
                                   <IconButton size="small" color="primary" sx={{ mr: 0.5 }}>
                                     <CallIcon fontSize="small" />

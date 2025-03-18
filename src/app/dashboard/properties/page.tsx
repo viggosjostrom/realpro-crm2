@@ -220,8 +220,8 @@ export default function PropertiesPage() {
     // Status filter
     const matchesStatus = statusFilter === 'all' || property.status === statusFilter;
     
-    // Tab filter (My Listings vs All Listings)
-    const matchesTab = tabValue === 1 || (tabValue === 0 && property.agentId === '1'); // Assuming current user ID is '1'
+    // Tab filter (All Listings vs My Listings)
+    const matchesTab = tabValue === 0 || (tabValue === 1 && property.agentId === '1'); // Assuming current user ID is '1'
     
     return matchesSearch && matchesStatus && matchesTab;
   });
@@ -280,8 +280,8 @@ export default function PropertiesPage() {
             }
           }}
         >
-          <Tab label="My Listings" />
           <Tab label="All Listings" />
+          <Tab label="My Listings" />
         </Tabs>
         
         <Box sx={{ p: 2 }}>
