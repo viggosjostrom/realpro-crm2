@@ -22,6 +22,16 @@ export const mockUsers: User[] = [
     createdAt: new Date('2023-01-15'),
     updatedAt: new Date('2023-01-15'),
   },
+  {
+    id: '3',
+    firstName: 'Ali',
+    lastName: 'Ahmadi',
+    email: 'ali.ahmadi@realpro.se',
+    role: 'agent',
+    avatar: '/avatars/ali.jpg',
+    createdAt: new Date('2023-01-15'),
+    updatedAt: new Date('2023-01-15'),
+  },
 ];
 
 // Mock Clients
