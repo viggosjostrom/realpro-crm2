@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Box,
   Typography,
-  Chip,
   Grid,
   Card,
   CardContent,
@@ -15,6 +14,7 @@ import {
 } from '@mui/icons-material';
 import { Activity, Property } from '@/lib/types';
 import { mockProperties } from '@/lib/utils/mockData';
+import { useRouter } from 'next/navigation';
 
 interface ClientViewingsProps {
   clientViewings: Activity[];
@@ -22,6 +22,8 @@ interface ClientViewingsProps {
 }
 
 const ClientViewings: React.FC<ClientViewingsProps> = ({ clientViewings, formatDate }) => {
+  const router = useRouter();
+  
   // Filter only viewing activities
   const viewings = clientViewings.filter(activity => activity.type === 'viewing');
 
@@ -37,6 +39,14 @@ const ClientViewings: React.FC<ClientViewingsProps> = ({ clientViewings, formatD
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+  
+  // Handle click on viewing card
+  const handleViewingCardClick = (propertyId: string | undefined) => {
+    if (propertyId) {
+      // Navigate to property page with tab index 3 (Viewings & Follow-ups)
+      router.push(`/dashboard/properties/${propertyId}?tab=3`);
+    }
   };
 
   if (viewings.length === 0) {
@@ -71,6 +81,7 @@ const ClientViewings: React.FC<ClientViewingsProps> = ({ clientViewings, formatD
                     cursor: 'pointer'
                   }
                 }}
+                onClick={() => handleViewingCardClick(viewing.propertyId)}
               >
                 {property && (
                   <CardMedia
@@ -80,7 +91,8 @@ const ClientViewings: React.FC<ClientViewingsProps> = ({ clientViewings, formatD
                     alt={property.address}
                   />
                 )}
-                <CardContent sx={{ flexGrow: 1 }}>
+                
+                <CardContent sx={{ flexGrow: 1, p: 2 }}>
                   <Typography variant="subtitle1" component="div" fontWeight="bold">
                     {viewing.title}
                   </Typography>
@@ -109,28 +121,6 @@ const ClientViewings: React.FC<ClientViewingsProps> = ({ clientViewings, formatD
                   <Typography variant="body2" color="text.secondary">
                     {viewing.description}
                   </Typography>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-                    <Chip 
-                      label={viewing.status} 
-                      size="small"
-                      color={
-                        viewing.status === 'completed' ? 'success' :
-                        viewing.status === 'scheduled' ? 'primary' :
-                        viewing.status === 'cancelled' ? 'error' : 'default'
-                      }
-                    />
-                    
-                    {property && (
-                      <Typography variant="body2" fontWeight="medium">
-                        {new Intl.NumberFormat('sv-SE', { 
-                          style: 'currency', 
-                          currency: 'SEK', 
-                          maximumFractionDigits: 0 
-                        }).format(property.price)}
-                      </Typography>
-                    )}
-                  </Box>
                 </CardContent>
               </Card>
             </Grid>

@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import { Offer, Property, OfferStatus } from '@/lib/types';
 import { mockProperties } from '@/lib/utils/mockData';
+import { useRouter } from 'next/navigation';
 
 interface ClientOffersProps {
   clientOffers: Offer[];
@@ -29,17 +30,17 @@ interface ClientOffersProps {
 const getOfferStatusColor = (status: OfferStatus): string => {
   switch (status) {
     case 'submitted':
-      return '#3f51b5'; // Indigo
+      return '#2196F3'; // Blue
     case 'negotiating':
-      return '#ff9800'; // Orange
+      return '#FF9800'; // Orange
     case 'accepted':
-      return '#4caf50'; // Green
+      return '#4CAF50'; // Green
     case 'rejected':
-      return '#f44336'; // Red
+      return '#F44336'; // Red
     case 'withdrawn':
-      return '#9e9e9e'; // Grey
+      return '#9E9E9E'; // Grey
     default:
-      return '#9e9e9e'; // Grey
+      return '#9E9E9E'; // Grey
   }
 };
 
@@ -62,6 +63,8 @@ const getOfferStatusLabel = (status: OfferStatus): string => {
 };
 
 const ClientOffers: React.FC<ClientOffersProps> = ({ clientOffers, formatDate }) => {
+  const router = useRouter();
+  
   // Get property details for an offer
   const getProperty = (propertyId: string): Property | undefined => {
     return mockProperties.find(property => property.id === propertyId);
@@ -79,6 +82,12 @@ const ClientOffers: React.FC<ClientOffersProps> = ({ clientOffers, formatDate })
   // Calculate percentage compared to asking price
   const calculatePricePercentage = (offerAmount: number, propertyPrice: number): number => {
     return (offerAmount / propertyPrice) * 100;
+  };
+  
+  // Handle click on offer card
+  const handleOfferCardClick = (propertyId: string) => {
+    // Navigate to property page with tab index 4 (Offers & Transactions)
+    router.push(`/dashboard/properties/${propertyId}?tab=4`);
   };
 
   if (clientOffers.length === 0) {
@@ -117,8 +126,9 @@ const ClientOffers: React.FC<ClientOffersProps> = ({ clientOffers, formatDate })
                     cursor: 'pointer'
                   }
                 }}
+                onClick={() => handleOfferCardClick(offer.propertyId)}
               >
-                <Box sx={{ display: 'flex' }}>
+                <Box sx={{ display: 'flex', padding: 2, pb: 0 }}>
                   <CardMedia
                     component="img"
                     sx={{ width: 120, height: 120, objectFit: 'cover' }}

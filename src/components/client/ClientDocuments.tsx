@@ -29,6 +29,7 @@ import {
   Close as CloseIcon,
   Article as ArticleIcon
 } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 import { Document } from '@/lib/types';
 import { mockDocuments, mockOffers, mockProperties, mockUsers } from '@/lib/utils/mockData';
 
@@ -38,6 +39,7 @@ interface ClientDocumentsProps {
 }
 
 const ClientDocuments: React.FC<ClientDocumentsProps> = ({ clientId, formatDate }) => {
+  const router = useRouter();
   // State for document viewer dialog
   const [openViewDialog, setOpenViewDialog] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
@@ -176,6 +178,16 @@ const ClientDocuments: React.FC<ClientDocumentsProps> = ({ clientId, formatDate 
     setSelectedDocument(null);
   };
 
+  // Handle document card click
+  const handleDocumentCardClick = (doc: Document, event: React.MouseEvent) => {
+    // If it's a property document, redirect to the property page with documents tab
+    if (doc.propertyId) {
+      event.preventDefault();
+      event.stopPropagation();
+      router.push(`/dashboard/properties/${doc.propertyId}?tab=5`); // 5 is the index for Documents & Contracts tab
+    }
+  };
+
   if (allClientDocuments.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 3 }}>
@@ -193,16 +205,19 @@ const ClientDocuments: React.FC<ClientDocumentsProps> = ({ clientId, formatDate 
       <Grid container spacing={3}>
         {allClientDocuments.map(doc => (
           <Grid item xs={12} sm={6} md={4} key={doc.id}>
-            <Card sx={{ 
-              height: '100%', 
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-              transition: 'all 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-6px)',
-                boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
-                cursor: 'pointer'
-              }
-            }}>
+            <Card 
+              sx={{ 
+                height: '100%', 
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-6px)',
+                  boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
+                  cursor: doc.propertyId ? 'pointer' : 'default'
+                }
+              }}
+              onClick={(e) => handleDocumentCardClick(doc, e)}
+            >
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -239,14 +254,30 @@ const ClientDocuments: React.FC<ClientDocumentsProps> = ({ clientId, formatDate 
                   </Typography>
                 </Box>
               </CardContent>
-              <CardActions sx={{ justifyContent: 'flex-end', borderTop: '1px solid #f0f0f0', p: 1 }}>
+              
+              <CardActions sx={{ justifyContent: 'flex-end', pt: 0 }}>
                 <Tooltip title="View document">
-                  <IconButton size="small" color="primary" onClick={() => handleViewDocument(doc)}>
+                  <IconButton 
+                    size="small" 
+                    color="primary" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleViewDocument(doc);
+                    }}
+                  >
                     <ViewIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Download document">
-                  <IconButton size="small" color="primary">
+                  <IconButton 
+                    size="small" 
+                    color="primary"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
                     <DownloadIcon />
                   </IconButton>
                 </Tooltip>

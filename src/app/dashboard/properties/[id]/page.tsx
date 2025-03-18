@@ -91,6 +91,19 @@ export default function PropertyDetailsPage() {
     fetchProperty();
   }, [propertyId]);
   
+  // Check for tab parameter in URL and set the tab value
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const tabParam = searchParams.get('tab');
+    
+    if (tabParam) {
+      const tabIndex = parseInt(tabParam, 10);
+      if (!isNaN(tabIndex) && tabIndex >= 0 && tabIndex <= 6) {
+        setTabValue(tabIndex);
+      }
+    }
+  }, []);
+  
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
