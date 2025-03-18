@@ -178,7 +178,7 @@ const ClientDocuments: React.FC<ClientDocumentsProps> = ({ clientId, formatDate 
 
   if (allClientDocuments.length === 0) {
     return (
-      <Box sx={{ textAlign: 'center', py: 5 }}>
+      <Box sx={{ textAlign: 'center', py: 3 }}>
         <Typography variant="body1">No documents found for this client.</Typography>
       </Box>
     );
@@ -186,14 +186,14 @@ const ClientDocuments: React.FC<ClientDocumentsProps> = ({ clientId, formatDate 
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
         Client Documents ({allClientDocuments.length})
       </Typography>
       
       <Grid container spacing={3}>
         {allClientDocuments.map(doc => (
           <Grid item xs={12} sm={6} md={4} key={doc.id}>
-            <Card>
+            <Card sx={{ height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -215,7 +215,7 @@ const ClientDocuments: React.FC<ClientDocumentsProps> = ({ clientId, formatDate 
                 
                 {getRelationInfo(doc)}
                 
-                <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: 'wrap', gap: 0.5 }}>
                   {doc.tags?.map(tag => (
                     <Chip key={tag} label={tag} size="small" variant="outlined" />
                   ))}
@@ -230,7 +230,7 @@ const ClientDocuments: React.FC<ClientDocumentsProps> = ({ clientId, formatDate 
                   </Typography>
                 </Box>
               </CardContent>
-              <CardActions sx={{ justifyContent: 'flex-end' }}>
+              <CardActions sx={{ justifyContent: 'flex-end', borderTop: '1px solid #f0f0f0', p: 1 }}>
                 <Tooltip title="View document">
                   <IconButton size="small" color="primary" onClick={() => handleViewDocument(doc)}>
                     <ViewIcon />

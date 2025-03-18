@@ -83,7 +83,7 @@ const ClientOffers: React.FC<ClientOffersProps> = ({ clientOffers, formatDate })
 
   if (clientOffers.length === 0) {
     return (
-      <Box sx={{ textAlign: 'center', py: 5 }}>
+      <Box sx={{ textAlign: 'center', py: 3 }}>
         <Typography variant="body1">No offers made by this client yet.</Typography>
       </Box>
     );
@@ -91,7 +91,7 @@ const ClientOffers: React.FC<ClientOffersProps> = ({ clientOffers, formatDate })
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
         Client Offers ({clientOffers.length})
       </Typography>
       
@@ -105,7 +105,7 @@ const ClientOffers: React.FC<ClientOffersProps> = ({ clientOffers, formatDate })
           
           return (
             <Grid item xs={12} md={6} key={offer.id}>
-              <Card sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Card sx={{ display: 'flex', flexDirection: 'column', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                 <Box sx={{ display: 'flex' }}>
                   <CardMedia
                     component="img"

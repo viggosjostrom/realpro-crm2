@@ -49,7 +49,7 @@ const TabPanel = (props: TabPanelProps) => {
       aria-labelledby={`client-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: 3, bgcolor: '#f5f5f5', borderRadius: '0 0 8px 8px' }}>{children}</Box>}
     </div>
   );
 };
@@ -82,7 +82,16 @@ const ClientTabs: React.FC<ClientTabsProps> = ({
       <Tabs 
         value={tabValue} 
         onChange={handleTabChange}
-        sx={{ borderBottom: 1, borderColor: 'divider' }}
+        sx={{ 
+          borderBottom: 1, 
+          borderColor: 'divider',
+          '& .MuiTab-root': {
+            textTransform: 'none',
+            fontWeight: 'medium',
+            fontSize: '0.95rem',
+            minWidth: 120
+          }
+        }}
         variant="scrollable"
         scrollButtons="auto"
       >
@@ -143,7 +152,7 @@ const ClientTabs: React.FC<ClientTabsProps> = ({
             ))}
           </Grid>
         ) : (
-          <Box sx={{ textAlign: 'center', py: 5 }}>
+          <Box sx={{ textAlign: 'center', py: 3 }}>
             <Typography variant="body1">No properties associated with this client yet.</Typography>
           </Box>
         )}
@@ -151,7 +160,7 @@ const ClientTabs: React.FC<ClientTabsProps> = ({
       
       <TabPanel value={tabValue} index={1}>
         {clientActivities.length > 0 ? (
-          <List>
+          <List sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
             {clientActivities.map(activity => (
               <React.Fragment key={activity.id}>
                 <ListItem>
@@ -188,7 +197,7 @@ const ClientTabs: React.FC<ClientTabsProps> = ({
             ))}
           </List>
         ) : (
-          <Box sx={{ textAlign: 'center', py: 5 }}>
+          <Box sx={{ textAlign: 'center', py: 3 }}>
             <Typography variant="body1">No activities recorded for this client yet.</Typography>
           </Box>
         )}

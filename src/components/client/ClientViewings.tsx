@@ -41,7 +41,7 @@ const ClientViewings: React.FC<ClientViewingsProps> = ({ clientViewings, formatD
 
   if (viewings.length === 0) {
     return (
-      <Box sx={{ textAlign: 'center', py: 5 }}>
+      <Box sx={{ textAlign: 'center', py: 3 }}>
         <Typography variant="body1">No viewings recorded for this client yet.</Typography>
       </Box>
     );
@@ -49,7 +49,7 @@ const ClientViewings: React.FC<ClientViewingsProps> = ({ clientViewings, formatD
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
         Viewing History ({viewings.length})
       </Typography>
       
@@ -59,7 +59,7 @@ const ClientViewings: React.FC<ClientViewingsProps> = ({ clientViewings, formatD
           
           return (
             <Grid item xs={12} md={6} key={viewing.id}>
-              <Card sx={{ display: 'flex', height: '100%' }}>
+              <Card sx={{ display: 'flex', height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                 {property && (
                   <CardMedia
                     component="img"
