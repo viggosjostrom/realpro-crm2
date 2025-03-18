@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Box, 
   Typography, 
@@ -8,7 +8,15 @@ import {
   List, 
   ListItem, 
   ListItemIcon, 
-  ListItemText 
+  ListItemText,
+  IconButton,
+  Tooltip,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField
 } from '@mui/material';
 import { 
   Email as EmailIcon, 
@@ -18,7 +26,8 @@ import {
   Task as TaskIcon,
   NoteAlt as NotesIcon,
   Today as TodayIcon,
-  Receipt as ReceiptIcon
+  Receipt as ReceiptIcon,
+  Add as AddIcon
 } from '@mui/icons-material';
 import { Client, Property, Activity } from '@/lib/types';
 import { getClientTypeColor } from './ClientCard';
@@ -37,11 +46,45 @@ const ClientInfo: React.FC<ClientInfoProps> = ({
   clientActivities, 
   formatDate 
 }) => {
+  // State for note dialog
+  const [noteDialogOpen, setNoteDialogOpen] = useState(false);
+  const [newNote, setNewNote] = useState('');
+  
   // Get viewing activities
   const clientViewings = clientActivities.filter(activity => activity.type === 'viewing');
   
   // Get client offers
   const clientOffers = mockOffers.filter(offer => offer.buyerId === client.id);
+  
+  // Handle email click
+  const handleEmailClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    console.log(`Email action for: ${client.email}`);
+  };
+  
+  // Handle phone click
+  const handlePhoneClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    console.log(`Call action for: ${client.phone}`);
+  };
+  
+  // Handle open note dialog
+  const handleOpenNoteDialog = () => {
+    setNewNote('');
+    setNoteDialogOpen(true);
+  };
+  
+  // Handle close note dialog
+  const handleCloseNoteDialog = () => {
+    setNoteDialogOpen(false);
+  };
+  
+  // Handle add note
+  const handleAddNote = () => {
+    // Just for showcase, we don't actually add the note
+    console.log('Note would be added:', newNote);
+    handleCloseNoteDialog();
+  };
   
   return (
     <Paper sx={{ mb: 3, p: 3 }}>
@@ -71,18 +114,26 @@ const ClientInfo: React.FC<ClientInfoProps> = ({
           
           <List>
             <ListItem>
-              <ListItemIcon>
-                <EmailIcon />
-              </ListItemIcon>
+              <Tooltip title={`Send email to ${client.email}`} placement="top">
+                <ListItemIcon sx={{ cursor: 'pointer' }}>
+                  <IconButton color="primary" size="small" onClick={handleEmailClick}>
+                    <EmailIcon />
+                  </IconButton>
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText 
                 primary="Email" 
                 secondary={client.email}
               />
             </ListItem>
             <ListItem>
-              <ListItemIcon>
-                <PhoneIcon />
-              </ListItemIcon>
+              <Tooltip title={`Call ${client.phone}`} placement="top">
+                <ListItemIcon sx={{ cursor: 'pointer' }}>
+                  <IconButton color="primary" size="small" onClick={handlePhoneClick}>
+                    <PhoneIcon />
+                  </IconButton>
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText 
                 primary="Phone" 
                 secondary={client.phone}
@@ -195,21 +246,66 @@ const ClientInfo: React.FC<ClientInfoProps> = ({
             </Grid>
           </Grid>
           
-          {client.notes && (
-            <Box sx={{ mt: 3 }}>
+          <Box sx={{ mt: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
                 <NotesIcon sx={{ mr: 1 }} />
                 Notes
               </Typography>
+              <Button 
+                variant="outlined" 
+                size="small" 
+                startIcon={<AddIcon />}
+                onClick={handleOpenNoteDialog}
+              >
+                Add Note
+              </Button>
+            </Box>
+            {client.notes ? (
               <Paper variant="outlined" sx={{ p: 2, mt: 1 }}>
                 <Typography variant="body2">
                   {client.notes}
                 </Typography>
               </Paper>
-            </Box>
-          )}
+            ) : (
+              <Paper variant="outlined" sx={{ p: 2, mt: 1, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
+                  No notes yet. Click &quot;Add Note&quot; to create one.
+                </Typography>
+              </Paper>
+            )}
+          </Box>
         </Grid>
       </Grid>
+      
+      {/* Add Note Dialog */}
+      <Dialog open={noteDialogOpen} onClose={handleCloseNoteDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Add Note for {client.firstName} {client.lastName}</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="note"
+            label="Note"
+            type="text"
+            fullWidth
+            multiline
+            rows={4}
+            variant="outlined"
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+            placeholder="Enter notes about this client..."
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNoteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleAddNote} color="primary" variant="contained">
+            Add Note
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };
