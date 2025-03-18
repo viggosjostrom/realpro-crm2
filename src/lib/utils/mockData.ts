@@ -8,6 +8,8 @@ export const mockUsers: User[] = [
     lastName: 'Andersson',
     email: 'johan.andersson@realpro.se',
     role: 'admin',
+    workrole: 'Real Estate Agent / Partner',
+    office: 'Vasastaden',
     avatar: '/avatars/johan.jpg',
     createdAt: new Date('2023-01-01'),
     updatedAt: new Date('2023-01-01'),
@@ -18,7 +20,21 @@ export const mockUsers: User[] = [
     lastName: 'Lindberg',
     email: 'emma.lindberg@realpro.se',
     role: 'agent',
+    workrole: 'Real Estate Agent',
+    office: 'Vasastaden',
     avatar: '/avatars/emma.jpg',
+    createdAt: new Date('2023-01-15'),
+    updatedAt: new Date('2023-01-15'),
+  },
+  {
+    id: '3',
+    firstName: 'Ali',
+    lastName: 'Ahmadi',
+    email: 'ali.ahmadi@realpro.se',
+    role: 'agent',
+    workrole: 'Real Estate Agent',
+    office: 'Norrmalm',
+    avatar: '/avatars/ali.jpg',
     createdAt: new Date('2023-01-15'),
     updatedAt: new Date('2023-01-15'),
   },
@@ -1596,4 +1612,35 @@ export const mockMarketStats = {
       }))
     }
   }
-}; 
+};
+
+// Mock Meeting Rooms
+export const mockMeetingRooms = [
+  {
+    id: '1',
+    name: 'Hamnen',
+    image: '/meetingRooms/room1.jpg',
+    capacity: 6,
+    isAvailable: true,
+    office: 'Vasastaden',
+    description: 'Small meeting room with modern AV equipment, ideal for client and team meetings.',
+  },
+  {
+    id: '2',
+    name: 'Utsiktstornet',
+    image: '/meetingRooms/room2.jpg',
+    capacity: 6,
+    isAvailable: false,
+    office: 'Vasastaden',
+    description: 'Cozy meeting room perfect for client consultations and small group discussions.',
+  },
+  {
+    id: '3',
+    name: 'Sviten',
+    image: '/meetingRooms/room3.jpg',
+    capacity: 8,
+    isAvailable: true,
+    office: 'Vasastaden',
+    description: 'Premium meeting space with elegant furnishings, designed for high-value client negotiations.',
+  },
+]; 
