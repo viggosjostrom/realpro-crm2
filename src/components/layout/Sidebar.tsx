@@ -173,19 +173,22 @@ const Sidebar: React.FC<SidebarProps> = ({
       </List>
       <Divider />
       <List>
-        <ListItem disablePadding>
-          <ListItemButton 
-            className="sidebar-menu-item"
-            sx={{ pl: minimized ? 2 : 3, py: 1.2 }}
-          >
-            <Tooltip title={minimized ? "Settings" : ""} placement="right">
-              <ListItemIcon sx={{ mr: minimized ? 0 : 2 }}>
-                <SettingsIcon />
-              </ListItemIcon>
-            </Tooltip>
-            {!minimized && <ListItemText primary="Settings" />}
-          </ListItemButton>
-        </ListItem>
+        <Link href="/dashboard/settings" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <ListItem disablePadding>
+            <ListItemButton 
+              className="sidebar-menu-item"
+              selected={pathname === '/dashboard/settings'}
+              sx={{ pl: minimized ? 2 : 3, py: 1.2 }}
+            >
+              <Tooltip title={minimized ? "Settings" : ""} placement="right">
+                <ListItemIcon sx={{ mr: minimized ? 0 : 2 }}>
+                  <SettingsIcon />
+                </ListItemIcon>
+              </Tooltip>
+              {!minimized && <ListItemText primary="Settings" />}
+            </ListItemButton>
+          </ListItem>
+        </Link>
       </List>
       <Box 
         className={`sidebar-user-info ${minimized ? 'sidebar-user-info-minimized' : ''}`}
