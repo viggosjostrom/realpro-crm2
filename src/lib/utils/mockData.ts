@@ -8,6 +8,8 @@ export const mockUsers: User[] = [
     lastName: 'Andersson',
     email: 'johan.andersson@realpro.se',
     role: 'admin',
+    workrole: 'Real Estate Agent / Partner',
+    office: 'Vasastaden',
     avatar: '/avatars/johan.jpg',
     createdAt: new Date('2023-01-01'),
     updatedAt: new Date('2023-01-01'),
@@ -18,6 +20,8 @@ export const mockUsers: User[] = [
     lastName: 'Lindberg',
     email: 'emma.lindberg@realpro.se',
     role: 'agent',
+    workrole: 'Real Estate Agent',
+    office: 'Vasastaden',
     avatar: '/avatars/emma.jpg',
     createdAt: new Date('2023-01-15'),
     updatedAt: new Date('2023-01-15'),
@@ -28,6 +32,8 @@ export const mockUsers: User[] = [
     lastName: 'Ahmadi',
     email: 'ali.ahmadi@realpro.se',
     role: 'agent',
+    workrole: 'Real Estate Agent',
+    office: 'Norrmalm',
     avatar: '/avatars/ali.jpg',
     createdAt: new Date('2023-01-15'),
     updatedAt: new Date('2023-01-15'),
@@ -1606,4 +1612,96 @@ export const mockMarketStats = {
       }))
     }
   }
-}; 
+};
+
+// Mock Colleagues (based on users and extended with additional information)
+export const mockColleagues = [
+  {
+    ...mockUsers[0],
+    position: 'Senior Real Estate Agent',
+    office: 'Stockholm Central',
+    propertyCount: 18,
+  },
+  {
+    ...mockUsers[1],
+    position: 'Real Estate Agent',
+    office: 'Stockholm Central',
+    propertyCount: 12,
+  },
+  {
+    ...mockUsers[2],
+    position: 'Junior Real Estate Agent',
+    office: 'Stockholm Central',
+    propertyCount: 8,
+  },
+  {
+    id: '4',
+    firstName: 'Lisa',
+    lastName: 'Hansson',
+    email: 'lisa.hansson@realpro.se',
+    role: 'agent' as const,
+    avatar: '/avatars/emma.jpg', // Reusing avatar as placeholder
+    createdAt: new Date('2023-02-01'),
+    updatedAt: new Date('2023-02-01'),
+    position: 'Real Estate Agent',
+    office: 'Stockholm Central',
+    propertyCount: 14,
+  },
+  {
+    id: '5',
+    firstName: 'Marcus',
+    lastName: 'Ekström',
+    email: 'marcus.ekstrom@realpro.se',
+    role: 'agent' as const,
+    avatar: '/avatars/johan.jpg', // Reusing avatar as placeholder
+    createdAt: new Date('2023-02-15'),
+    updatedAt: new Date('2023-02-15'),
+    position: 'Senior Real Estate Agent',
+    office: 'Stockholm South',
+    propertyCount: 22,
+  },
+  {
+    id: '6',
+    firstName: 'Aisha',
+    lastName: 'Hassan',
+    email: 'aisha.hassan@realpro.se',
+    role: 'agent' as const,
+    avatar: '/avatars/ali.jpg', // Reusing avatar as placeholder
+    createdAt: new Date('2023-03-01'),
+    updatedAt: new Date('2023-03-01'),
+    position: 'Real Estate Agent',
+    office: 'Stockholm South',
+    propertyCount: 10,
+  },
+];
+
+// Mock Meeting Rooms
+export const mockMeetingRooms = [
+  {
+    id: '1',
+    name: 'Boardroom',
+    image: '/meetingRooms/room1.jpg',
+    capacity: 12,
+    isAvailable: true,
+    office: 'Stockholm Central',
+    description: 'Large conference room with modern AV equipment, ideal for client presentations and team meetings.',
+  },
+  {
+    id: '2',
+    name: 'Huddle Space',
+    image: '/meetingRooms/room2.jpg',
+    capacity: 6,
+    isAvailable: false,
+    office: 'Stockholm Central',
+    description: 'Cozy meeting room perfect for client consultations and small group discussions.',
+  },
+  {
+    id: '3',
+    name: 'Executive Suite',
+    image: '/meetingRooms/room3.jpg',
+    capacity: 8,
+    isAvailable: true,
+    office: 'Stockholm South',
+    description: 'Premium meeting space with elegant furnishings, designed for high-value client negotiations.',
+  },
+]; 

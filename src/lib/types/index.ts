@@ -71,6 +71,8 @@ export type User = {
   lastName: string;
   email: string;
   role: 'admin' | 'agent';
+  workrole: 'Real Estate Agent' | 'Partner' | 'Other' | 'Real Estate Agent / Partner';
+  office: 'Vasastaden' | 'Norrmalm';
   avatar?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -138,4 +140,22 @@ export type Document = {
   description?: string;
   tags?: string[];
   isPublic?: boolean; // Whether the document can be shared with clients
+};
+
+// Colleague type (extends User with additional properties)
+export type Colleague = User & {
+  position: string;
+  office: string;
+  propertyCount: number;
+};
+
+// Meeting room type
+export type MeetingRoom = {
+  id: string;
+  name: string;
+  image: string;
+  capacity: number;
+  isAvailable: boolean;
+  office: string;
+  description?: string;
 }; 
