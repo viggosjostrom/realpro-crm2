@@ -105,7 +105,19 @@ const ClientOffers: React.FC<ClientOffersProps> = ({ clientOffers, formatDate })
           
           return (
             <Grid item xs={12} md={6} key={offer.id}>
-              <Card sx={{ display: 'flex', flexDirection: 'column', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+              <Card 
+                sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-6px)',
+                    boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
+                    cursor: 'pointer'
+                  }
+                }}
+              >
                 <Box sx={{ display: 'flex' }}>
                   <CardMedia
                     component="img"

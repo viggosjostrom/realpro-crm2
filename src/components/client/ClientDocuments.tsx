@@ -193,7 +193,16 @@ const ClientDocuments: React.FC<ClientDocumentsProps> = ({ clientId, formatDate 
       <Grid container spacing={3}>
         {allClientDocuments.map(doc => (
           <Grid item xs={12} sm={6} md={4} key={doc.id}>
-            <Card sx={{ height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+            <Card sx={{ 
+              height: '100%', 
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-6px)',
+                boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
+                cursor: 'pointer'
+              }
+            }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>

@@ -59,7 +59,19 @@ const ClientViewings: React.FC<ClientViewingsProps> = ({ clientViewings, formatD
           
           return (
             <Grid item xs={12} md={6} key={viewing.id}>
-              <Card sx={{ display: 'flex', height: '100%', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+              <Card 
+                sx={{ 
+                  display: 'flex', 
+                  height: '100%', 
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-6px)',
+                    boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
+                    cursor: 'pointer'
+                  }
+                }}
+              >
                 {property && (
                   <CardMedia
                     component="img"
