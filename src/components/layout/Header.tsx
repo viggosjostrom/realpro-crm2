@@ -10,7 +10,6 @@ import {
   InputBase,
   Menu,
   MenuItem,
-  Divider,
   useTheme,
   Tooltip,
   Dialog,
@@ -74,7 +73,6 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
   const theme = useTheme();
   const router = useRouter();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,7 +82,6 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
 
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   // Search functionality
@@ -159,17 +156,8 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
     }
   };
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
   };
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -188,30 +176,6 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
 
   // Get accessible avatar styles
   const avatarStyles = getAccessibleAvatarStyle(theme.palette.primary.main);
-
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <Divider />
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
-    </Menu>
-  );
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
@@ -245,20 +209,29 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
         <p>Messages</p>
       </MenuItem>
       <MenuItem>
-        <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
+        <IconButton 
+          size="large" 
+          aria-label="show 7 new notifications" 
+          color="inherit"
+          onClick={() => router.push('/dashboard/leads')}
+        >
+          <Badge badgeContent={7} color="error">
+            <NotificationsIcon className="bell-icon" />
           </Badge>
         </IconButton>
-        <p>Notifications</p>
+        <p>Leads</p>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
+      <MenuItem>
         <IconButton
           size="large"
           aria-label="account of current user"
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
           color="inherit"
+          onClick={() => {
+            router.push('/dashboard/settings');
+            handleMobileMenuClose();
+          }}
         >
           <Avatar 
             src={currentUser?.avatar}
@@ -326,6 +299,28 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
           
           <Box sx={{ flexGrow: 1 }} />
           
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, mr: 2 }}>
+            <Tooltip title="You have 4 unread emails (Outlook)">
+              <IconButton size="large" aria-label="show 4 new messages" color="inherit">
+                <Badge badgeContent={4} color="error">
+                  <MailIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="You have 7 new unopened leads!">
+              <IconButton 
+                size="large" 
+                aria-label="show 7 new notifications" 
+                color="inherit"
+                onClick={() => router.push('/dashboard/leads')}
+              >
+                <Badge badgeContent={7} color="error">
+                  <NotificationsIcon className="bell-icon" />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+          </Box>
+
           <ClickAwayListener onClickAway={handleClickAway}>
             <Box 
               className="header-search"
@@ -416,48 +411,30 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
             </Box>
           </ClickAwayListener>
           
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Tooltip title="Messages">
-              <IconButton size="large" aria-label="show 4 new messages" color="inherit">
-                <Badge badgeContent={4} color="error">
-                  <MailIcon />
-                </Badge>
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Notifications">
-              <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
-                <Badge badgeContent={17} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Profile">
-              <IconButton
-                className="header-profile-button"
-                size="large"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-                sx={{ ml: 1 }}
+          <Tooltip title="Profile">
+            <IconButton
+              className="header-profile-button"
+              size="large"
+              edge="end"
+              aria-label="account of current user"
+              aria-haspopup="true"
+              color="inherit"
+              onClick={() => router.push('/dashboard/settings')}
+            >
+              <Avatar 
+                src={currentUser?.avatar}
+                sx={{ 
+                  width: 32, 
+                  height: 32,
+                  bgcolor: 'white',
+                  color: theme.palette.primary.main
+                }} 
+                alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
               >
-                <Avatar 
-                  src={currentUser?.avatar}
-                  sx={{ 
-                    width: 32, 
-                    height: 32,
-                    bgcolor: 'white',
-                    color: theme.palette.primary.main
-                  }} 
-                  alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
-                >
-                  {!currentUser?.avatar && `${currentUser?.firstName?.charAt(0)}${currentUser?.lastName?.charAt(0)}`}
-                </Avatar>
-              </IconButton>
-            </Tooltip>
-          </Box>
+                {!currentUser?.avatar && `${currentUser?.firstName?.charAt(0)}${currentUser?.lastName?.charAt(0)}`}
+              </Avatar>
+            </IconButton>
+          </Tooltip>
           
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -483,7 +460,6 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
       
       {/* Mobile search dialog */}
       <Dialog
