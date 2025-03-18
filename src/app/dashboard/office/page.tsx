@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Box, 
   Typography, 
@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { mockUsers, mockProperties, mockMeetingRooms } from '@/lib/utils/mockData';
 import { User, MeetingRoom } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 import BusinessIcon from '@mui/icons-material/Business';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import PersonIcon from '@mui/icons-material/Person';
@@ -50,11 +51,31 @@ function TabPanel(props: TabPanelProps) {
 
 // Colleague Card Component
 const ColleagueCard = ({ user }: { user: User }) => {
+  const router = useRouter();
   // Calculate properties being handled by this agent
-  const propertyCount = mockProperties.filter(property => property.agentId === user.id).length;
+  const propertyCount = useMemo(() => {
+    return mockProperties.filter(property => property.agentId === user.id).length;
+  }, [user.id]);
+  
+  const handleClick = () => {
+    router.push(`/dashboard/office/colleague/${user.id}`);
+  };
   
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card 
+      sx={{ 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column',
+        cursor: 'pointer',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+        }
+      }}
+      onClick={handleClick}
+    >
       <CardMedia 
         component="img" 
         sx={{ 
@@ -95,8 +116,27 @@ const ColleagueCard = ({ user }: { user: User }) => {
 
 // Meeting Room Card Component
 const MeetingRoomCard = ({ room }: { room: MeetingRoom }) => {
+  const router = useRouter();
+  
+  const handleClick = () => {
+    router.push(`/dashboard/office/room/${room.id}`);
+  };
+  
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card 
+      sx={{ 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column',
+        cursor: 'pointer',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+        }
+      }}
+      onClick={handleClick}
+    >
       <CardMedia 
         component="img" 
         sx={{ height: 200 }}
