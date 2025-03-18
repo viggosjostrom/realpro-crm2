@@ -24,7 +24,8 @@ import {
   Settings as SettingsIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
-  Logout as LogoutIcon
+  Logout as LogoutIcon,
+  Business as OfficeIcon
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -92,6 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     { text: 'Clients', icon: <ClientsIcon />, path: '/dashboard/clients' },
     { text: 'Leads', icon: <LeadsIcon />, path: '/dashboard/leads' },
     { text: 'Activities', icon: <ActivitiesIcon />, path: '/dashboard/activities' },
+    { text: 'My Office', icon: <OfficeIcon />, path: '/dashboard/office' },
   ];
 
   const drawer = (
