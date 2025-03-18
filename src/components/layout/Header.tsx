@@ -16,7 +16,13 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Slide
+  Slide,
+  Paper,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  ClickAwayListener
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { 
@@ -26,11 +32,15 @@ import {
   Mail as MailIcon,
   MoreVert as MoreIcon,
   Business as BusinessIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  Home as HomeIcon,
+  Person as PersonIcon
 } from '@mui/icons-material';
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, useRef } from 'react';
 import { getAccessibleAvatarStyle } from '@/lib/utils/colorUtils';
-import { mockUsers } from '@/lib/utils/mockData';
+import { mockUsers, mockClients, mockProperties } from '@/lib/utils/mockData';
+import { useRouter } from 'next/navigation';
+import { formatCurrency } from '@/lib/utils/formatters';
 // Import both CSS files to ensure they're loaded
 import '@/styles/components/Header.css';
 import '@/styles/global-overrides.css';
@@ -46,18 +56,108 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
+// Search result types
+type SearchResultType = 'property' | 'client';
+
+interface SearchResult {
+  id: string;
+  type: SearchResultType;
+  title: string;
+  subtitle: string;
+  image?: string;
+}
+
 interface HeaderProps {
   handleDrawerToggle: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
   const theme = useTheme();
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const mobileSearchInputRef = useRef<HTMLInputElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  // Search functionality
+  const handleSearch = (query: string) => {
+    setSearchTerm(query);
+    
+    if (query.trim().length < 2) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    const normalizedQuery = query.toLowerCase().trim();
+
+    // Search in properties
+    const propertyResults = mockProperties
+      .filter(property => 
+        property.address.toLowerCase().includes(normalizedQuery) ||
+        property.city.toLowerCase().includes(normalizedQuery) ||
+        property.type.toLowerCase().includes(normalizedQuery)
+      )
+      .slice(0, 5) // Limit to 5 property results
+      .map(property => ({
+        id: property.id,
+        type: 'property' as SearchResultType,
+        title: property.address,
+        subtitle: `${property.city} - ${formatCurrency(property.price)}`,
+        image: property.images[0]
+      }));
+    
+    // Search in clients
+    const clientResults = mockClients
+      .filter(client => 
+        `${client.firstName} ${client.lastName}`.toLowerCase().includes(normalizedQuery) ||
+        client.email.toLowerCase().includes(normalizedQuery) ||
+        client.phone.toLowerCase().includes(normalizedQuery)
+      )
+      .slice(0, 5) // Limit to 5 client results
+      .map(client => ({
+        id: client.id,
+        type: 'client' as SearchResultType,
+        title: `${client.firstName} ${client.lastName}`,
+        subtitle: client.type.charAt(0).toUpperCase() + client.type.slice(1),
+        // No image for clients, use avatar initials
+      }));
+    
+    // Combine results
+    const combinedResults = [...propertyResults, ...clientResults].slice(0, 8);
+    setSearchResults(combinedResults);
+    setShowSearchResults(combinedResults.length > 0);
+  };
+
+  const handleSearchResultClick = (result: SearchResult) => {
+    setShowSearchResults(false);
+    setSearchTerm('');
+    
+    // Navigate to the appropriate page
+    if (result.type === 'property') {
+      router.push(`/dashboard/properties/${result.id}`);
+    } else if (result.type === 'client') {
+      router.push(`/dashboard/clients/${result.id}`);
+    }
+  };
+
+  const handleClickAway = () => {
+    setShowSearchResults(false);
+  };
+
+  const handleSearchInputFocus = () => {
+    if (searchTerm.trim().length >= 2 && searchResults.length > 0) {
+      setShowSearchResults(true);
+    }
+  };
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -78,6 +178,12 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
 
   const handleMobileSearchToggle = () => {
     setMobileSearchOpen(!mobileSearchOpen);
+    // Focus the search input when opening the dialog
+    if (!mobileSearchOpen) {
+      setTimeout(() => {
+        mobileSearchInputRef.current?.focus();
+      }, 300);
+    }
   };
 
   // Get accessible avatar styles
@@ -125,7 +231,7 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="search" color="inherit">
+        <IconButton size="large" aria-label="search" color="inherit" onClick={handleMobileSearchToggle}>
           <SearchIcon />
         </IconButton>
         <p>Search</p>
@@ -220,32 +326,95 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
           
           <Box sx={{ flexGrow: 1 }} />
           
-          <Box 
-            className="header-search"
-            role="search"
-            sx={{ 
-              mr: 2, 
-              display: { xs: 'none', sm: 'flex' },
-              width: { sm: '180px', md: '240px', lg: '300px' },
-              transition: 'width 0.3s ease',
-              '&:focus-within': {
-                width: { sm: '220px', md: '280px', lg: '350px' }
-              }
-            }}
-          >
+          <ClickAwayListener onClickAway={handleClickAway}>
             <Box 
-              className="header-search-icon"
-              aria-hidden="true"
+              className="header-search"
+              role="search"
+              sx={{ 
+                position: 'relative',
+                mr: 2, 
+                display: { xs: 'none', sm: 'flex' },
+                width: { sm: '180px', md: '240px', lg: '300px' },
+                transition: 'width 0.3s ease',
+                '&:focus-within': {
+                  width: { sm: '220px', md: '280px', lg: '350px' }
+                }
+              }}
             >
-              <SearchIcon />
+              <Box 
+                className="header-search-icon"
+                aria-hidden="true"
+              >
+                <SearchIcon />
+              </Box>
+              <InputBase
+                className="header-search-input"
+                placeholder="Search for properties or clients..."
+                inputProps={{ 'aria-label': 'search for properties or clients' }}
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                onFocus={handleSearchInputFocus}
+                inputRef={searchInputRef}
+              />
+              
+              {/* Search results dropdown */}
+              {showSearchResults && (
+                <Paper
+                  sx={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    mt: 1,
+                    zIndex: 1000,
+                    maxHeight: 400,
+                    overflow: 'auto',
+                    boxShadow: 3
+                  }}
+                >
+                  <List sx={{ p: 0 }}>
+                    {searchResults.length === 0 ? (
+                      <ListItem>
+                        <ListItemText primary="No results found" />
+                      </ListItem>
+                    ) : (
+                      <>
+                        {searchResults.map((result) => (
+                          <ListItem 
+                            key={`${result.type}-${result.id}`}
+                            onClick={() => handleSearchResultClick(result)}
+                            sx={{
+                              '&:hover': {
+                                bgcolor: 'rgba(0, 0, 0, 0.04)'
+                              },
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <ListItemAvatar>
+                              {result.type === 'property' ? (
+                                <Avatar src={result.image} variant="rounded">
+                                  <HomeIcon />
+                                </Avatar>
+                              ) : (
+                                <Avatar>
+                                  <PersonIcon />
+                                </Avatar>
+                              )}
+                            </ListItemAvatar>
+                            <ListItemText 
+                              primary={result.title} 
+                              secondary={result.subtitle} 
+                            />
+                          </ListItem>
+                        ))}
+                      </>
+                    )}
+                  </List>
+                </Paper>
+              )}
             </Box>
-            <InputBase
-              className="header-search-input"
-              placeholder="Search for properties or clients..."
-              inputProps={{ 'aria-label': 'search for properties or clients' }}
-              fullWidth
-            />
-          </Box>
+          </ClickAwayListener>
           
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Tooltip title="Messages">
@@ -348,7 +517,8 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
               bgcolor: 'background.paper',
               border: '1px solid',
               borderColor: 'divider',
-              p: 1
+              p: 1,
+              mb: 2
             }}
           >
             <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
@@ -357,8 +527,58 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
               placeholder="Search for properties or clients..."
               inputProps={{ 'aria-label': 'search for properties or clients' }}
               autoFocus
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              inputRef={mobileSearchInputRef}
             />
           </Box>
+          
+          {/* Mobile search results */}
+          {searchResults.length > 0 && (
+            <List sx={{ p: 0 }}>
+              {searchResults.map((result) => (
+                <ListItem 
+                  key={`mobile-${result.type}-${result.id}`}
+                  onClick={() => {
+                    handleSearchResultClick(result);
+                    handleMobileSearchToggle();
+                  }}
+                  sx={{
+                    mb: 1,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                    '&:hover': {
+                      bgcolor: 'rgba(0, 0, 0, 0.04)'
+                    },
+                    cursor: 'pointer'
+                  }}
+                >
+                  <ListItemAvatar>
+                    {result.type === 'property' ? (
+                      <Avatar src={result.image} variant="rounded">
+                        <HomeIcon />
+                      </Avatar>
+                    ) : (
+                      <Avatar>
+                        <PersonIcon />
+                      </Avatar>
+                    )}
+                  </ListItemAvatar>
+                  <ListItemText 
+                    primary={result.title} 
+                    secondary={result.subtitle} 
+                  />
+                </ListItem>
+              ))}
+            </List>
+          )}
+          
+          {searchTerm.trim().length >= 2 && searchResults.length === 0 && (
+            <Typography color="text.secondary" align="center" sx={{ mt: 2 }}>
+              No results found for &quot;{searchTerm}&quot;
+            </Typography>
+          )}
         </DialogContent>
       </Dialog>
     </Box>
