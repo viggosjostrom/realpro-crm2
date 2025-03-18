@@ -1614,94 +1614,33 @@ export const mockMarketStats = {
   }
 };
 
-// Mock Colleagues (based on users and extended with additional information)
-export const mockColleagues = [
-  {
-    ...mockUsers[0],
-    position: 'Senior Real Estate Agent',
-    office: 'Stockholm Central',
-    propertyCount: 18,
-  },
-  {
-    ...mockUsers[1],
-    position: 'Real Estate Agent',
-    office: 'Stockholm Central',
-    propertyCount: 12,
-  },
-  {
-    ...mockUsers[2],
-    position: 'Junior Real Estate Agent',
-    office: 'Stockholm Central',
-    propertyCount: 8,
-  },
-  {
-    id: '4',
-    firstName: 'Lisa',
-    lastName: 'Hansson',
-    email: 'lisa.hansson@realpro.se',
-    role: 'agent' as const,
-    avatar: '/avatars/emma.jpg', // Reusing avatar as placeholder
-    createdAt: new Date('2023-02-01'),
-    updatedAt: new Date('2023-02-01'),
-    position: 'Real Estate Agent',
-    office: 'Stockholm Central',
-    propertyCount: 14,
-  },
-  {
-    id: '5',
-    firstName: 'Marcus',
-    lastName: 'Ekström',
-    email: 'marcus.ekstrom@realpro.se',
-    role: 'agent' as const,
-    avatar: '/avatars/johan.jpg', // Reusing avatar as placeholder
-    createdAt: new Date('2023-02-15'),
-    updatedAt: new Date('2023-02-15'),
-    position: 'Senior Real Estate Agent',
-    office: 'Stockholm South',
-    propertyCount: 22,
-  },
-  {
-    id: '6',
-    firstName: 'Aisha',
-    lastName: 'Hassan',
-    email: 'aisha.hassan@realpro.se',
-    role: 'agent' as const,
-    avatar: '/avatars/ali.jpg', // Reusing avatar as placeholder
-    createdAt: new Date('2023-03-01'),
-    updatedAt: new Date('2023-03-01'),
-    position: 'Real Estate Agent',
-    office: 'Stockholm South',
-    propertyCount: 10,
-  },
-];
-
 // Mock Meeting Rooms
 export const mockMeetingRooms = [
   {
     id: '1',
-    name: 'Boardroom',
+    name: 'Hamnen',
     image: '/meetingRooms/room1.jpg',
-    capacity: 12,
+    capacity: 6,
     isAvailable: true,
-    office: 'Stockholm Central',
-    description: 'Large conference room with modern AV equipment, ideal for client presentations and team meetings.',
+    office: 'Vasastaden',
+    description: 'Small meeting room with modern AV equipment, ideal for client and team meetings.',
   },
   {
     id: '2',
-    name: 'Huddle Space',
+    name: 'Utsiktstornet',
     image: '/meetingRooms/room2.jpg',
     capacity: 6,
     isAvailable: false,
-    office: 'Stockholm Central',
+    office: 'Vasastaden',
     description: 'Cozy meeting room perfect for client consultations and small group discussions.',
   },
   {
     id: '3',
-    name: 'Executive Suite',
+    name: 'Sviten',
     image: '/meetingRooms/room3.jpg',
     capacity: 8,
     isAvailable: true,
-    office: 'Stockholm South',
+    office: 'Vasastaden',
     description: 'Premium meeting space with elegant furnishings, designed for high-value client negotiations.',
   },
 ]; 
