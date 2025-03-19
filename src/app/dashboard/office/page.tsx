@@ -69,6 +69,7 @@ const ColleagueCard = ({ user }: { user: User }) => {
         flexDirection: 'column',
         cursor: 'pointer',
         transition: 'transform 0.2s, box-shadow 0.2s',
+        maxWidth: 280,
         '&:hover': {
           transform: 'translateY(-4px)',
           boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
@@ -76,16 +77,22 @@ const ColleagueCard = ({ user }: { user: User }) => {
       }}
       onClick={handleClick}
     >
-      <CardMedia 
-        component="img" 
-        sx={{ 
-          height: 220,
-          objectFit: 'cover'
-        }}
-        image={user.avatar}
-        alt={`${user.firstName} ${user.lastName}`}
-      />
-      <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+      <Box sx={{ position: 'relative', paddingTop: '100%' }}>
+        <CardMedia 
+          component="img" 
+          sx={{ 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
+          image={user.avatar}
+          alt={`${user.firstName} ${user.lastName}`}
+        />
+      </Box>
+      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
           {user.firstName} {user.lastName}
         </Typography>
@@ -130,6 +137,7 @@ const MeetingRoomCard = ({ room }: { room: MeetingRoom }) => {
         flexDirection: 'column',
         cursor: 'pointer',
         transition: 'transform 0.2s, box-shadow 0.2s',
+        maxWidth: 280,
         '&:hover': {
           transform: 'translateY(-4px)',
           boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
@@ -137,12 +145,21 @@ const MeetingRoomCard = ({ room }: { room: MeetingRoom }) => {
       }}
       onClick={handleClick}
     >
-      <CardMedia 
-        component="img" 
-        sx={{ height: 200 }}
-        image={room.image}
-        alt={room.name}
-      />
+      <Box sx={{ position: 'relative', paddingTop: '100%' }}>
+        <CardMedia 
+          component="img" 
+          sx={{ 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
+          image={room.image}
+          alt={room.name}
+        />
+      </Box>
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
           {room.name}
@@ -190,19 +207,43 @@ export default function OfficePage() {
       </Typography>
       
       <Paper elevation={1} sx={{ mb: 4, bgcolor: 'grey.100' }}>
-        <Tabs 
-          value={tabValue} 
-          onChange={handleTabChange}
-          variant="fullWidth"
-          textColor="primary"
-          indicatorColor="primary"
-        >
-          <Tab icon={<PersonIcon />} label="My Colleagues" sx={{ py: 2 }} />
-          <Tab icon={<MeetingRoomIcon />} label="Meeting Rooms" sx={{ py: 2 }} />
-        </Tabs>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs 
+            value={tabValue} 
+            onChange={handleTabChange}
+            textColor="primary"
+            indicatorColor="primary"
+            sx={{ 
+              minHeight: 48,
+              '& .MuiTab-root': {
+                minHeight: 48,
+                py: 1,
+                px: 3
+              }
+            }}
+          >
+            <Tab 
+              icon={<PersonIcon sx={{ fontSize: '1.2rem', mr: 1 }} />} 
+              label="My Colleagues" 
+              iconPosition="start"
+            />
+            <Tab 
+              icon={<MeetingRoomIcon sx={{ fontSize: '1.2rem', mr: 1 }} />} 
+              label="Meeting Rooms" 
+              iconPosition="start"
+            />
+          </Tabs>
+        </Box>
         
         <TabPanel value={tabValue} index={0}>
-          <Grid container spacing={3}>
+          <Grid 
+            container 
+            spacing={2} 
+            sx={{ 
+              maxWidth: 1200,
+              width: '100%'
+            }}
+          >
             {mockUsers.map((user) => (
               <Grid item key={user.id} xs={12} sm={6} md={4} lg={3}>
                 <ColleagueCard user={user} />
@@ -212,9 +253,16 @@ export default function OfficePage() {
         </TabPanel>
         
         <TabPanel value={tabValue} index={1}>
-          <Grid container spacing={3}>
+          <Grid 
+            container 
+            spacing={2}
+            sx={{ 
+              maxWidth: 1200,
+              width: '100%'
+            }}
+          >
             {mockMeetingRooms.map((room) => (
-              <Grid item key={room.id} xs={12} sm={6} md={4}>
+              <Grid item key={room.id} xs={12} sm={6} md={4} lg={3}>
                 <MeetingRoomCard room={room} />
               </Grid>
             ))}
