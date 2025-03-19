@@ -345,7 +345,12 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
               <InputBase
                 className="header-search-input"
                 placeholder="Search for properties or clients..."
-                inputProps={{ 'aria-label': 'search for properties or clients' }}
+                inputProps={{ 
+                  'aria-label': 'search for properties or clients',
+                  'autoComplete': 'off',
+                  'name': 'search',
+                  'type': 'search'
+                }}
                 fullWidth
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
@@ -501,7 +506,12 @@ const Header: React.FC<HeaderProps> = ({ handleDrawerToggle }) => {
             <InputBase
               fullWidth
               placeholder="Search for properties or clients..."
-              inputProps={{ 'aria-label': 'search for properties or clients' }}
+              inputProps={{ 
+                'aria-label': 'search for properties or clients',
+                'autoComplete': 'off',
+                'name': 'mobile-search',
+                'type': 'search'
+              }}
               autoFocus
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
