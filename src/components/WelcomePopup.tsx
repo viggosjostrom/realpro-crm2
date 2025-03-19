@@ -86,18 +86,30 @@ const WelcomePopup: React.FC = () => {
     >
       <DialogContent sx={{ pt: 4, position: 'relative', zIndex: 1 }}>
         <Typography variant="h5" component="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'white' }}>
-          Welcome to the RealPro showcase Demo!
+          RealPro CRM - Showcase Demo v.0.3.3
         </Typography>
         
         <Typography variant="body1" paragraph align="center" sx={{ mt: 2, color: 'white' }}>
-          You&apos;re now logged in as Johan, the demo user, and ready to explore RealPro CRM! 
-          This showcase is designed to give you a hands-on feel for how real estate professionals 
-          can manage properties, clients, and transactions with ease.
+          Welcome! You are logged in as Johan, the demo user.
         </Typography>
+        
+        <Box sx={{ mt: 3, mb: 2 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'white', mb: 1.5 }} align="center">
+            Important info for this version:
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'center' }}>
+            <Typography variant="body1" sx={{ color: 'white' }}>
+              • This version is best viewed on desktop for the optimal experience.
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'white' }}>
+              • Leads and Activities pages are coming soon!
+            </Typography>
+          </Box>
+        </Box>
         
         <Box sx={{ display: 'flex', alignItems: 'center', my: 2, justifyContent: 'center' }}>
           <Typography variant="body1" align="center" sx={{ fontWeight: 'medium', color: 'white' }}>
-            Feel free to navigate around, check out the property board, explore listings, and test different features.
+            Navigate around, check out the dashboard, explore properties, and test different features.
           </Typography>
         </Box>
         

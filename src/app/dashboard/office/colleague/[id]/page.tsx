@@ -12,14 +12,17 @@ import {
   CardContent, 
   CardMedia, 
   Stack, 
-  Button 
+  Button,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import { mockUsers, mockProperties } from '@/lib/utils/mockData';
 import { useRouter, useParams } from 'next/navigation';
 import { 
   EmailOutlined as EmailIcon, 
   BusinessOutlined as BusinessIcon, 
-  ArrowBack as ArrowBackIcon
+  ArrowBack as ArrowBackIcon,
+  PhoneOutlined as PhoneIcon
 } from '@mui/icons-material';
 import { formatCurrency } from '@/lib/utils/formatters';
 
@@ -81,87 +84,239 @@ export default function ColleagueProfilePage() {
       </Button>
 
       {/* Colleague Profile Header */}
-      <Paper elevation={1} sx={{ p: 3, mb: 4, bgcolor: 'grey.100' }}>
-        <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={3} textAlign="center">
-            <Avatar 
-              src={colleague.avatar} 
-              alt={`${colleague.firstName} ${colleague.lastName}`}
-              sx={{ 
-                width: 200, 
-                height: 200, 
-                boxShadow: 3,
-                mx: 'auto',
-                border: '4px solid white'
-              }}
-            />
+      <Paper 
+        elevation={1} 
+        sx={{ 
+          p: 4, 
+          mb: 4, 
+          background: 'linear-gradient(135deg, #f7f9fc 0%, #ffffff 100%)',
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: theme => `0 0 20px ${theme.palette.grey[200]}`
+        }}
+      >
+        <Grid container spacing={4} alignItems="flex-start">
+          <Grid item xs={12} md={3}>
+            <Box sx={{ position: 'relative' }}>
+              <Avatar 
+                src={colleague.avatar} 
+                alt={`${colleague.firstName} ${colleague.lastName}`}
+                sx={{ 
+                  width: 220, 
+                  height: 220, 
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                  mx: 'auto',
+                  border: '6px solid rgba(255, 255, 255, 0.9)',
+                  bgcolor: 'grey.100'
+                }}
+              />
+              <Box sx={{ 
+                mt: 2, 
+                textAlign: 'center',
+                position: 'relative',
+                zIndex: 1
+              }}>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                  {colleague.firstName} {colleague.lastName}
+                </Typography>
+                <Typography 
+                  variant="subtitle1" 
+                  color="primary" 
+                  sx={{ 
+                    fontWeight: 500,
+                    mb: 2
+                  }}
+                >
+                  {colleague.workrole}
+                </Typography>
+                <Stack 
+                  direction="row" 
+                  spacing={1} 
+                  alignItems="center" 
+                  justifyContent="center"
+                  sx={{
+                    background: theme => `linear-gradient(45deg, ${theme.palette.primary.light}15, ${theme.palette.primary.main}10)`,
+                    py: 1,
+                    px: 2,
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'primary.light',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+                  }}
+                >
+                  <BusinessIcon color="primary" sx={{ fontSize: '1.1rem' }} />
+                  <Typography variant="body2" sx={{ fontWeight: 500, color: 'primary.main' }}>
+                    {colleague.office} Office
+                  </Typography>
+                </Stack>
+              </Box>
+            </Box>
           </Grid>
-          <Grid item xs={12} md={9}>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-              {colleague.firstName} {colleague.lastName}
-            </Typography>
-            <Typography variant="h6" color="primary" gutterBottom>
-              {colleague.workrole}
-            </Typography>
-            
-            <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid item xs={12} sm={6}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <BusinessIcon color="primary" />
-                  <Typography variant="body1">
-                    Office: {colleague.office}
-                  </Typography>
-                </Stack>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <EmailIcon color="primary" />
-                  <Typography variant="body1">
-                    {colleague.email}
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Grid>
 
-            {/* Stats section */}
-            <Box sx={{ mt: 3 }}>
+          <Grid item xs={12} md={9}>
+            <Box sx={{ mb: 4 }}>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  mb: 2,
+                  color: 'text.secondary',
+                  fontWeight: 500,
+                  textTransform: 'uppercase',
+                  fontSize: '0.875rem',
+                  letterSpacing: 0.5
+                }}
+              >
+                Contact Information
+              </Typography>
+              <Stack 
+                direction={{ xs: 'column', sm: 'row' }} 
+                spacing={3}
+                sx={{
+                  background: 'white',
+                  p: 2,
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                  border: '1px solid',
+                  borderColor: 'grey.100'
+                }}
+              >
+                <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1 }}>
+                  <IconButton
+                    sx={{ 
+                      background: theme => `linear-gradient(45deg, ${theme.palette.primary.light}20, ${theme.palette.primary.main}15)`,
+                      '&:hover': { 
+                        background: theme => `linear-gradient(45deg, ${theme.palette.primary.light}30, ${theme.palette.primary.main}25)`,
+                      }
+                    }}
+                    onClick={() => {}}
+                  >
+                    <Tooltip title={`Call ${colleague.phone}`} arrow>
+                      <PhoneIcon sx={{ color: 'primary.main' }} />
+                    </Tooltip>
+                  </IconButton>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Phone</Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{colleague.phone}</Typography>
+                  </Box>
+                </Stack>
+                <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1 }}>
+                  <IconButton
+                    sx={{ 
+                      background: theme => `linear-gradient(45deg, ${theme.palette.primary.light}20, ${theme.palette.primary.main}15)`,
+                      '&:hover': { 
+                        background: theme => `linear-gradient(45deg, ${theme.palette.primary.light}30, ${theme.palette.primary.main}25)`,
+                      }
+                    }}
+                    onClick={() => {}}
+                  >
+                    <Tooltip title={`Email ${colleague.email}`} arrow>
+                      <EmailIcon sx={{ color: 'primary.main' }} />
+                    </Tooltip>
+                  </IconButton>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Email</Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{colleague.email}</Typography>
+                  </Box>
+                </Stack>
+              </Stack>
+            </Box>
+
+            <Box>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  mb: 2,
+                  color: 'text.secondary',
+                  fontWeight: 500,
+                  textTransform: 'uppercase',
+                  fontSize: '0.875rem',
+                  letterSpacing: 0.5
+                }}
+              >
+                Portfolio Overview
+              </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={6} sm={3}>
-                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'white' }}>
-                    <Typography variant="h5" color="primary" sx={{ fontWeight: 'bold' }}>
+                  <Paper 
+                    sx={{ 
+                      p: 2, 
+                      textAlign: 'center', 
+                      background: 'white',
+                      height: '100%',
+                      borderRadius: 2,
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                      border: '1px solid',
+                      borderColor: 'grey.100'
+                    }}
+                  >
+                    <Typography variant="h4" color="primary.main" sx={{ fontWeight: 'bold', mb: 0.5 }}>
                       {stats.totalProperties}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                       Total Properties
                     </Typography>
                   </Paper>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'white' }}>
-                    <Typography variant="h5" color="success.main" sx={{ fontWeight: 'bold' }}>
+                  <Paper 
+                    sx={{ 
+                      p: 2, 
+                      textAlign: 'center', 
+                      background: 'white',
+                      height: '100%',
+                      borderRadius: 2,
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                      border: '1px solid',
+                      borderColor: 'grey.100'
+                    }}
+                  >
+                    <Typography variant="h4" color="success.main" sx={{ fontWeight: 'bold', mb: 0.5 }}>
                       {stats.availableProperties}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                       Available
                     </Typography>
                   </Paper>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'white' }}>
-                    <Typography variant="h5" color="warning.main" sx={{ fontWeight: 'bold' }}>
+                  <Paper 
+                    sx={{ 
+                      p: 2, 
+                      textAlign: 'center', 
+                      background: 'white',
+                      height: '100%',
+                      borderRadius: 2,
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                      border: '1px solid',
+                      borderColor: 'grey.100'
+                    }}
+                  >
+                    <Typography variant="h4" color="warning.main" sx={{ fontWeight: 'bold', mb: 0.5 }}>
                       {stats.pendingProperties}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                       Pending
                     </Typography>
                   </Paper>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'white' }}>
-                    <Typography variant="h5" color="error.main" sx={{ fontWeight: 'bold' }}>
+                  <Paper 
+                    sx={{ 
+                      p: 2, 
+                      textAlign: 'center', 
+                      background: 'white',
+                      height: '100%',
+                      borderRadius: 2,
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                      border: '1px solid',
+                      borderColor: 'grey.100'
+                    }}
+                  >
+                    <Typography variant="h4" color="error.main" sx={{ fontWeight: 'bold', mb: 0.5 }}>
                       {stats.soldProperties}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                       Sold
                     </Typography>
                   </Paper>
@@ -181,9 +336,9 @@ export default function ColleagueProfilePage() {
         {colleagueProperties.length === 0 ? (
           <Typography variant="body1">No properties currently assigned.</Typography>
         ) : (
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             {colleagueProperties.map(property => (
-              <Grid item xs={12} sm={6} md={4} key={property.id}>
+              <Grid item xs={12} sm={6} md={2.4} key={property.id}>
                 <Card 
                   sx={{ 
                     height: '100%',
@@ -196,15 +351,27 @@ export default function ColleagueProfilePage() {
                   }}
                   onClick={() => router.push(`/dashboard/properties/${property.id}`)}
                 >
-                  <CardMedia
-                    component="img"
-                    height={160}
-                    image={property.images[0]}
-                    alt={property.address}
-                  />
-                  <CardContent>
+                  <Box sx={{ position: 'relative', paddingTop: '75%' }}>
+                    <CardMedia
+                      component="img"
+                      sx={{ 
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                      image={property.images[0]}
+                      alt={property.address}
+                    />
+                  </Box>
+                  <CardContent sx={{ p: 1.5 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1 }}>
-                      <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+                      <Typography variant="h6" component="div" sx={{ 
+                        fontWeight: 'bold',
+                        fontSize: '1rem'
+                      }}>
                         {formatCurrency(property.price)}
                       </Typography>
                       <Chip 
@@ -216,7 +383,7 @@ export default function ColleagueProfilePage() {
                         size="small"
                       />
                     </Box>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography variant="body2" color="text.secondary" gutterBottom noWrap>
                       {property.address}, {property.city}
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>

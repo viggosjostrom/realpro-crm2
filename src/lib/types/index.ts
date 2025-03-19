@@ -70,6 +70,7 @@ export type User = {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   role: 'admin' | 'agent';
   workrole: 'Real Estate Agent' | 'Partner' | 'Other' | 'Real Estate Agent / Partner';
   office: 'Vasastaden' | 'Norrmalm';
