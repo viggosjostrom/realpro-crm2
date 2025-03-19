@@ -181,9 +181,9 @@ export default function ColleagueProfilePage() {
         {colleagueProperties.length === 0 ? (
           <Typography variant="body1">No properties currently assigned.</Typography>
         ) : (
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             {colleagueProperties.map(property => (
-              <Grid item xs={12} sm={6} md={4} key={property.id}>
+              <Grid item xs={12} sm={6} md={2.4} key={property.id}>
                 <Card 
                   sx={{ 
                     height: '100%',
@@ -196,15 +196,27 @@ export default function ColleagueProfilePage() {
                   }}
                   onClick={() => router.push(`/dashboard/properties/${property.id}`)}
                 >
-                  <CardMedia
-                    component="img"
-                    height={160}
-                    image={property.images[0]}
-                    alt={property.address}
-                  />
-                  <CardContent>
+                  <Box sx={{ position: 'relative', paddingTop: '75%' }}>
+                    <CardMedia
+                      component="img"
+                      sx={{ 
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                      image={property.images[0]}
+                      alt={property.address}
+                    />
+                  </Box>
+                  <CardContent sx={{ p: 1.5 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1 }}>
-                      <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+                      <Typography variant="h6" component="div" sx={{ 
+                        fontWeight: 'bold',
+                        fontSize: '1rem'
+                      }}>
                         {formatCurrency(property.price)}
                       </Typography>
                       <Chip 
@@ -216,7 +228,7 @@ export default function ColleagueProfilePage() {
                         size="small"
                       />
                     </Box>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography variant="body2" color="text.secondary" gutterBottom noWrap>
                       {property.address}, {property.city}
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
