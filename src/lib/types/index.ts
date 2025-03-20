@@ -42,6 +42,8 @@ export type Lead = {
   phone?: string;
   source: 'website' | 'referral' | 'social' | 'event' | 'other';
   status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'closed' | 'lost';
+  leadType: 'valuation_request' | 'viewing_attendee' | 'website_inquiry' | 'referral_lead' | 'manual_entry' | 'other';
+  propertyId?: string; // Reference to property (if connected to a specific property)
   notes?: string;
   assignedTo?: string; // Reference to agent
   createdAt: Date;
