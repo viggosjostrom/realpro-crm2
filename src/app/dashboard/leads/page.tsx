@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -47,7 +47,7 @@ import {
 import { mockLeads, mockProperties, mockUsers } from '@/lib/utils/mockData';
 import { Lead, Property } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -127,6 +127,7 @@ export default function LeadsPage() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [tabValue, setTabValue] = useState(0);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Sort leads by newest first
   const sortedLeads = useMemo(() => {
@@ -149,6 +150,17 @@ export default function LeadsPage() {
       return nameMatch && statusMatch && typeMatch;
     });
   }, [sortedLeads, searchQuery, statusFilter, typeFilter]);
+
+  // Effect to handle leadId from query params
+  useEffect(() => {
+    const leadId = searchParams.get('leadId');
+    if (leadId) {
+      const lead = mockLeads.find(lead => lead.id === leadId);
+      if (lead) {
+        setSelectedLead(lead);
+      }
+    }
+  }, [searchParams]);
 
   // Handle tab change
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
