@@ -799,28 +799,47 @@ export default function LeadsPage() {
                               
                               return (
                                 <>
-                                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                    <HomeIcon sx={{ mr: 1, color: 'primary.main' }} />
-                                    <Typography fontWeight="medium">
-                                      {property.address}, {property.city}
-                                    </Typography>
+                                  <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                                    <Box
+                                      component="img"
+                                      src={property.images && property.images.length > 0 ? property.images[0] : '/placeholder-property.jpg'}
+                                      alt={property.address}
+                                      sx={{
+                                        width: 80,
+                                        height: 80,
+                                        objectFit: 'cover',
+                                        borderRadius: 1,
+                                        mr: 2,
+                                        border: '1px solid',
+                                        borderColor: 'divider'
+                                      }}
+                                    />
+                                    <Box>
+                                      <Typography fontWeight="medium">
+                                        {property.address}, {property.city}
+                                      </Typography>
+                                      <Typography component="div" variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                        {property.type.charAt(0).toUpperCase() + property.type.slice(1)}, {property.size} m², {property.rooms} rooms
+                                      </Typography>
+                                      <Typography component="div" variant="body2" fontWeight="medium" sx={{ mt: 0.5, display: 'flex', alignItems: 'center' }}>
+                                        <MoneyIcon sx={{ fontSize: 16, color: 'primary.main', mr: 0.5 }} />
+                                        {new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' }).format(property.price)}
+                                      </Typography>
+                                    </Box>
                                   </Box>
-                                  <Box sx={{ pl: 4 }}>
+                                  <Box sx={{ pl: 0 }}>
                                     <Typography component="div" variant="body2" gutterBottom>
-                                      <strong>Type:</strong> {property.type.charAt(0).toUpperCase() + property.type.slice(1)}
-                                    </Typography>
-                                    <Typography component="div" variant="body2" gutterBottom>
-                                      <strong>Size:</strong> {property.size} m²
-                                    </Typography>
-                                    <Typography component="div" variant="body2" gutterBottom>
-                                      <strong>Rooms:</strong> {property.rooms}
-                                    </Typography>
-                                    <Typography component="div" variant="body2" gutterBottom>
-                                      <strong>Price:</strong> {new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' }).format(property.price)}
-                                    </Typography>
-                                    <Typography component="div" variant="body2">
                                       <strong>Status:</strong> {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
                                     </Typography>
+                                    <Box sx={{ mt: 1 }}>
+                                      <Button 
+                                        size="small" 
+                                        variant="outlined" 
+                                        startIcon={<HomeIcon />}
+                                      >
+                                        View Property
+                                      </Button>
+                                    </Box>
                                   </Box>
                                 </>
                               );
