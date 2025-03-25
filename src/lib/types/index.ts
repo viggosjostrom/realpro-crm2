@@ -44,11 +44,26 @@ export type Lead = {
   status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'closed' | 'lost';
   leadType: 'valuation_request' | 'viewing_attendee' | 'website_inquiry' | 'referral_lead' | 'manual_entry' | 'other';
   propertyId?: string; // Reference to property (if connected to a specific property)
+  priority: 'low' | 'medium' | 'high';
+  score?: number; // Lead score 0-100
+  budget?: number; // Budget in SEK
+  tags?: string[]; // Array of tags for categorization  
+  followUpDate?: Date; // Next follow-up date
   notes?: string;
   assignedTo?: string; // Reference to agent
   createdAt: Date;
   updatedAt: Date;
   lastContactedAt?: Date;
+  activities?: LeadActivity[]; // Activity history
+};
+
+export type LeadActivity = {
+  id: string;
+  leadId: string;
+  type: 'note' | 'email' | 'call' | 'meeting' | 'viewing' | 'offer' | 'status_change' | 'other';
+  description: string;
+  createdAt: Date;
+  createdBy: string; // User ID
 };
 
 export type Activity = {

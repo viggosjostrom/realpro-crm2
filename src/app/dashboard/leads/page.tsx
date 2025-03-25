@@ -39,7 +39,10 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   AccessTime as TimeIcon,
-  Article as ArticleIcon
+  Article as ArticleIcon,
+  LocalOffer as TagIcon,
+  TrendingUp as TrendingUpIcon,
+  AttachMoney as MoneyIcon
 } from '@mui/icons-material';
 import { mockLeads, mockProperties, mockUsers } from '@/lib/utils/mockData';
 import { Lead, Property } from '@/lib/types';
@@ -121,6 +124,7 @@ export default function LeadsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [tabValue, setTabValue] = useState(0);
 
   // Sort leads by newest first
@@ -140,10 +144,11 @@ export default function LeadsPage() {
       
       const statusMatch = statusFilter === 'all' || lead.status === statusFilter;
       const typeMatch = typeFilter === 'all' || lead.leadType === typeFilter;
+      const priorityMatch = priorityFilter === 'all' || lead.priority === priorityFilter;
       
-      return nameMatch && statusMatch && typeMatch;
+      return nameMatch && statusMatch && typeMatch && priorityMatch;
     });
-  }, [sortedLeads, searchQuery, statusFilter, typeFilter]);
+  }, [sortedLeads, searchQuery, statusFilter, typeFilter, priorityFilter]);
 
   // Handle tab change
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -257,16 +262,30 @@ export default function LeadsPage() {
     );
   };
 
+  // Get priority color
+  const getPriorityColor = (priority: string): { color: string, bgColor: string } => {
+    switch (priority) {
+      case 'high':
+        return { color: '#d32f2f', bgColor: '#ffebee' };
+      case 'medium':
+        return { color: '#f57c00', bgColor: '#fff3e0' };
+      case 'low':
+        return { color: '#1976d2', bgColor: '#e3f2fd' };
+      default:
+        return { color: '#757575', bgColor: '#f5f5f5' };
+    }
+  };
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-            Leads
-          </Typography>
+    <Box>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+        Leads
+      </Typography>
           <Typography variant="body1" color="text.secondary">
-            Manage your leads and track their progress through the sales pipeline.
-          </Typography>
+        Manage your leads and track their progress through the sales pipeline.
+      </Typography>
         </Box>
         <Button 
           variant="contained" 
@@ -299,7 +318,7 @@ export default function LeadsPage() {
               />
             </Box>
             
-            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
               <FormControl size="small" sx={{ minWidth: 120, flex: 1 }}>
                 <InputLabel id="status-filter-label">Status</InputLabel>
                 <Select
@@ -336,6 +355,21 @@ export default function LeadsPage() {
                   <MenuItem value="other">Other</MenuItem>
                 </Select>
               </FormControl>
+
+              <FormControl size="small" sx={{ minWidth: 120, flex: 1 }}>
+                <InputLabel id="priority-filter-label">Priority</InputLabel>
+                <Select
+                  labelId="priority-filter-label"
+                  value={priorityFilter}
+                  label="Priority"
+                  onChange={(e) => setPriorityFilter(e.target.value)}
+                >
+                  <MenuItem value="all">All Priorities</MenuItem>
+                  <MenuItem value="high">High</MenuItem>
+                  <MenuItem value="medium">Medium</MenuItem>
+                  <MenuItem value="low">Low</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
             
             <List sx={{ 
@@ -363,6 +397,7 @@ export default function LeadsPage() {
               ) : (
                 filteredLeads.map((lead) => {
                   const { color: statusColor, bgColor: statusBgColor } = getStatusColor(lead.status);
+                  const { color: priorityColor, bgColor: priorityBgColor } = getPriorityColor(lead.priority);
                   const isNew = lead.status === 'new';
                   const isSelected = selectedLead?.id === lead.id;
                   
@@ -402,44 +437,34 @@ export default function LeadsPage() {
                         </ListItemAvatar>
                         <ListItemText
                           primary={
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <Typography 
-                                variant="subtitle1" 
-                                fontWeight={isNew ? 'bold' : 'normal'}
-                                component="span"
-                              >
-                                {lead.firstName} {lead.lastName}
-                                {isNew && (
-                                  <Chip 
-                                    label="New" 
-                                    size="small" 
-                                    sx={{ 
-                                      ml: 1, 
-                                      height: 20,
-                                      backgroundColor: '#1976d2',
-                                      color: 'white',
-                                      fontWeight: 'bold',
-                                      fontSize: '0.7rem',
-                                    }} 
-                                  />
-                                )}
-                              </Typography>
-                              <Typography variant="caption" color="textSecondary">
-                                {formatTimeDistance(lead.createdAt)}
-                              </Typography>
-                            </Box>
-                          }
-                          secondary={
-                            <>
-                              <Typography
-                                component="span"
-                                variant="body2"
-                                color="textPrimary"
-                                sx={{ display: 'block' }}
-                              >
-                                {formatLeadType(lead.leadType)}
-                              </Typography>
-                              <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                              <Box>
+                                <Typography 
+                                  variant="subtitle1" 
+                                  fontWeight={isNew ? 'bold' : 'normal'}
+                                  component="span"
+                                >
+                                  {lead.firstName} {lead.lastName}
+                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                  <Typography
+                                    component="div"
+                                    variant="body2"
+                                    color="textPrimary"
+                                  >
+                                    {formatLeadType(lead.leadType)}
+                                  </Typography>
+                                  {lead.score && (
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 1 }}>
+                                      <TrendingUpIcon sx={{ fontSize: 16, color: lead.score >= 80 ? 'success.main' : lead.score >= 60 ? 'warning.main' : 'error.main' }} />
+                                      <Typography component="div" variant="caption" sx={{ color: lead.score >= 80 ? 'success.main' : lead.score >= 60 ? 'warning.main' : 'error.main' }}>
+                                        {lead.score}
+                                      </Typography>
+                                    </Box>
+                                  )}
+                                </Box>
+                              </Box>
+                              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                                 <Chip
                                   label={lead.status.charAt(0).toUpperCase() + lead.status.slice(1)}
                                   size="small"
@@ -449,8 +474,77 @@ export default function LeadsPage() {
                                     fontWeight: 500,
                                     fontSize: '0.7rem',
                                     height: 20,
+                                    mb: 0.5
                                   }}
                                 />
+                                <Chip
+                                  label={lead.priority.charAt(0).toUpperCase() + lead.priority.slice(1)}
+                                  size="small"
+                                  sx={{
+                                    backgroundColor: priorityBgColor,
+                                    color: priorityColor,
+                                    fontWeight: 500,
+                                    fontSize: '0.7rem',
+                                    height: 20,
+                                  }}
+                                />
+                              </Box>
+                            </Box>
+                          }
+                          secondaryTypographyProps={{ component: 'div' }}
+                          secondary={
+                            <>
+                              {lead.budget && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+                                  <MoneyIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+                                  <Typography component="div" variant="caption" color="primary">
+                                    {new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' }).format(lead.budget)}
+                                  </Typography>
+                                </Box>
+                              )}
+                              
+                              {lead.tags && lead.tags.length > 0 && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap', mb: 0.5 }}>
+                                  <TagIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                  {lead.tags.map((tag, index) => (
+                                    <Chip
+                                      key={index}
+                                      label={tag}
+                                      size="small"
+                                      sx={{
+                                        backgroundColor: alpha('#1976d2', 0.1),
+                                        color: 'primary.main',
+                                        fontWeight: 500,
+                                        fontSize: '0.7rem',
+                                        height: 20,
+                                      }}
+                                    />
+                                  ))}
+                                </Box>
+                              )}
+                              
+                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+                                {lead.followUpDate ? (
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                    <EventIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                    <Typography component="div" variant="caption" color="text.secondary">
+                                      Follow-up: {formatTimeDistance(lead.followUpDate)}
+                                    </Typography>
+                                  </Box>
+                                ) : (
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                    <TimeIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                    <Typography component="div" variant="caption" color="text.secondary">
+                                      Created: {formatTimeDistance(lead.createdAt)}
+                                    </Typography>
+                                  </Box>
+                                )}
+                                
+                                {lead.lastContactedAt && (
+                                  <Typography component="div" variant="caption" color="text.secondary">
+                                    Last contacted: {formatTimeDistance(lead.lastContactedAt)}
+                                  </Typography>
+                                )}
                               </Box>
                             </>
                           }
@@ -468,7 +562,7 @@ export default function LeadsPage() {
         {/* Right side - Lead details */}
         <Grid item xs={12} md={8} lg={8}>
           {selectedLead ? (
-            <Paper elevation={0} sx={{ p: 3 }}>
+      <Paper elevation={0} sx={{ p: 3 }}>
               <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <Box>
                   <Typography variant="h5" component="h2" fontWeight="bold">
@@ -478,14 +572,25 @@ export default function LeadsPage() {
                     {formatLeadType(selectedLead.leadType)}
                   </Typography>
                 </Box>
-                <Chip
-                  label={selectedLead.status.charAt(0).toUpperCase() + selectedLead.status.slice(1)}
-                  sx={{
-                    ...getStatusColor(selectedLead.status),
-                    fontWeight: 'bold',
-                    px: 1,
-                  }}
-                />
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  {selectedLead.priority && (
+                    <Chip
+                      label={selectedLead.priority.charAt(0).toUpperCase() + selectedLead.priority.slice(1)}
+                      sx={{
+                        ...getPriorityColor(selectedLead.priority),
+                        fontWeight: 'bold',
+                      }}
+                    />
+                  )}
+                  <Chip
+                    label={selectedLead.status.charAt(0).toUpperCase() + selectedLead.status.slice(1)}
+                    sx={{
+                      ...getStatusColor(selectedLead.status),
+                      fontWeight: 'bold',
+                      px: 1,
+                    }}
+                  />
+                </Box>
               </Box>
               
               <Box sx={{ width: '100%', mb: 3 }}>
@@ -508,12 +613,12 @@ export default function LeadsPage() {
                           </Typography>
                           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                             <EmailIcon sx={{ mr: 1, color: 'primary.main' }} />
-                            <Typography>{selectedLead.email}</Typography>
+                            <Typography component="div">{selectedLead.email}</Typography>
                           </Box>
                           {selectedLead.phone && (
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               <PhoneIcon sx={{ mr: 1, color: 'primary.main' }} />
-                              <Typography>{selectedLead.phone}</Typography>
+                              <Typography component="div">{selectedLead.phone}</Typography>
                             </Box>
                           )}
                         </CardContent>
@@ -532,14 +637,14 @@ export default function LeadsPage() {
                           </Box>
                           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                             <TimeIcon sx={{ mr: 1, color: 'primary.main' }} />
-                            <Typography>
+                            <Typography component="div" variant="caption">
                               Created: {new Date(selectedLead.createdAt).toLocaleDateString()} ({formatTimeDistance(selectedLead.createdAt)})
                             </Typography>
                           </Box>
                           {selectedLead.lastContactedAt && (
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               <TimeIcon sx={{ mr: 1, color: 'primary.main' }} />
-                              <Typography>
+                              <Typography component="div" variant="caption">
                                 Last contacted: {new Date(selectedLead.lastContactedAt).toLocaleDateString()} ({formatTimeDistance(selectedLead.lastContactedAt)})
                               </Typography>
                             </Box>
@@ -547,6 +652,139 @@ export default function LeadsPage() {
                         </CardContent>
                       </Card>
                     </Grid>
+                    
+                    {/* Lead Score and Budget */}
+                    <Grid item xs={12} md={6}>
+                      <Card variant="outlined">
+                        <CardContent>
+                          <Typography variant="h6" fontWeight="bold" gutterBottom>
+                            Lead Score & Budget
+                          </Typography>
+                          {selectedLead.score && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                              <TrendingUpIcon sx={{ mr: 1, color: selectedLead.score >= 80 ? 'success.main' : selectedLead.score >= 60 ? 'warning.main' : 'error.main' }} />
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
+                                <Typography>Lead Score:</Typography>
+                                <Box 
+                                  sx={{ 
+                                    width: '100%', 
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      flex: 1,
+                                      height: 10,
+                                      bgcolor: 'grey.200',
+                                      borderRadius: 5,
+                                      position: 'relative',
+                                      overflow: 'hidden'
+                                    }}
+                                  >
+                                    <Box
+                                      sx={{
+                                        position: 'absolute',
+                                        left: 0,
+                                        top: 0,
+                                        bottom: 0,
+                                        width: `${selectedLead.score}%`,
+                                        bgcolor: selectedLead.score >= 80 ? 'success.main' : selectedLead.score >= 60 ? 'warning.main' : 'error.main',
+                                        borderRadius: 5,
+                                      }}
+                                    />
+                                  </Box>
+                                  <Typography component="div" fontWeight="bold">{selectedLead.score}</Typography>
+                                </Box>
+                              </Box>
+                            </Box>
+                          )}
+                          {selectedLead.budget && (
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <MoneyIcon sx={{ mr: 1, color: 'primary.main' }} />
+                              <Box sx={{ display: 'flex', gap: 1 }}>
+                                <Typography component="div">Budget:</Typography>
+                                <Typography component="div" fontWeight="medium">
+                                  {new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' }).format(selectedLead.budget)}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                    
+                    {/* Follow-up Date */}
+                    <Grid item xs={12} md={6}>
+                      <Card variant="outlined">
+                        <CardContent>
+                          <Typography variant="h6" fontWeight="bold" gutterBottom>
+                            Follow-up Information
+                          </Typography>
+                          {selectedLead.followUpDate ? (
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <EventIcon sx={{ mr: 1, color: 'primary.main' }} />
+                              <Box>
+                                <Typography>Follow-up scheduled for:</Typography>
+                                <Typography fontWeight="medium">
+                                  {new Date(selectedLead.followUpDate).toLocaleString('sv-SE', {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </Typography>
+                                <Typography component="div" variant="caption" color="textSecondary">
+                                  {formatTimeDistance(selectedLead.followUpDate)}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          ) : (
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <EventIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                              <Typography color="text.secondary">No follow-up scheduled</Typography>
+                            </Box>
+                          )}
+                          <Box sx={{ mt: 2 }}>
+                            <Button 
+                              variant="outlined" 
+                              startIcon={<EventIcon />}
+                              size="small"
+                            >
+                              {selectedLead.followUpDate ? 'Update Follow-up' : 'Schedule Follow-up'}
+                            </Button>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                    
+                    {/* Tags */}
+                    {selectedLead.tags && selectedLead.tags.length > 0 && (
+                      <Grid item xs={12}>
+                        <Card variant="outlined">
+                          <CardContent>
+                            <Typography variant="h6" fontWeight="bold" gutterBottom>
+                              Tags
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                              {selectedLead.tags.map((tag, index) => (
+                                <Chip
+                                  key={index}
+                                  label={tag}
+                                  sx={{
+                                    bgcolor: alpha('#1976d2', 0.1),
+                                    color: 'primary.main',
+                                  }}
+                                />
+                              ))}
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    )}
                     
                     {selectedLead.propertyId && (
                       <Grid item xs={12}>
@@ -560,12 +798,31 @@ export default function LeadsPage() {
                               if (!property) return <Typography>Property not found</Typography>;
                               
                               return (
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                  <HomeIcon sx={{ mr: 1, color: 'primary.main' }} />
-                                  <Typography>
-                                    {property.address}, {property.city} - {property.type.charAt(0).toUpperCase() + property.type.slice(1)}, {property.rooms} rooms, {property.size} m²
-                                  </Typography>
-                                </Box>
+                                <>
+                                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                    <HomeIcon sx={{ mr: 1, color: 'primary.main' }} />
+                                    <Typography fontWeight="medium">
+                                      {property.address}, {property.city}
+                                    </Typography>
+                                  </Box>
+                                  <Box sx={{ pl: 4 }}>
+                                    <Typography component="div" variant="body2" gutterBottom>
+                                      <strong>Type:</strong> {property.type.charAt(0).toUpperCase() + property.type.slice(1)}
+                                    </Typography>
+                                    <Typography component="div" variant="body2" gutterBottom>
+                                      <strong>Size:</strong> {property.size} m²
+                                    </Typography>
+                                    <Typography component="div" variant="body2" gutterBottom>
+                                      <strong>Rooms:</strong> {property.rooms}
+                                    </Typography>
+                                    <Typography component="div" variant="body2" gutterBottom>
+                                      <strong>Price:</strong> {new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' }).format(property.price)}
+                                    </Typography>
+                                    <Typography component="div" variant="body2">
+                                      <strong>Status:</strong> {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
+                                    </Typography>
+                                  </Box>
+                                </>
                               );
                             })()}
                           </CardContent>
@@ -599,6 +856,14 @@ export default function LeadsPage() {
                                   <Typography variant="body2" color="textSecondary">
                                     {agent.workrole} - {agent.office}
                                   </Typography>
+                                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                                    <PhoneIcon sx={{ fontSize: 16, mr: 0.5, color: 'text.secondary' }} />
+                                    <Typography component="div" variant="body2" color="text.secondary">{agent.phone}</Typography>
+                                  </Box>
+                                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                    <EmailIcon sx={{ fontSize: 16, mr: 0.5, color: 'text.secondary' }} />
+                                    <Typography component="div" variant="body2" color="text.secondary">{agent.email}</Typography>
+                                  </Box>
                                 </Box>
                               </Box>
                             );
@@ -615,15 +880,39 @@ export default function LeadsPage() {
                       <Typography variant="h6" fontWeight="bold" gutterBottom>
                         Notes
                       </Typography>
-                      <Typography paragraph>
-                        {selectedLead.notes || 'No notes added yet.'}
+                      <Box 
+                        sx={{ 
+                          p: 2, 
+                          border: '1px solid #e0e0e0', 
+                          borderRadius: 1, 
+                          bgcolor: '#fafafa',
+                          mb: 3,
+                          minHeight: 120,
+                        }}
+                      >
+                        <Typography paragraph>
+                          {selectedLead.notes || 'No notes added yet.'}
+                        </Typography>
+                      </Box>
+                      
+                      <Typography variant="subtitle2" gutterBottom>
+                        Add or Edit Notes:
                       </Typography>
+                      <TextField
+                        multiline
+                        rows={4}
+                        fullWidth
+                        defaultValue={selectedLead.notes || ''}
+                        placeholder="Enter notes about this lead..."
+                        variant="outlined"
+                        sx={{ mb: 2 }}
+                      />
                       <Button 
-                        variant="outlined" 
+                        variant="contained" 
                         startIcon={<EditIcon />}
                         size="small"
                       >
-                        Edit Notes
+                        Save Notes
                       </Button>
                     </CardContent>
                   </Card>
@@ -687,68 +976,124 @@ export default function LeadsPage() {
                           ml: 1,
                         }} />
                         
-                        {/* In a real app, these would be dynamic based on actual activities */}
-                        <Box sx={{ position: 'relative', mb: 4, pl: 4 }}>
-                          <Box 
-                            sx={{ 
-                              position: 'absolute', 
-                              left: 0, 
-                              top: 0, 
-                              width: 10, 
-                              height: 10, 
-                              borderRadius: '50%', 
-                              bgcolor: 'primary.main',
-                              mt: 1.5,
-                              ml: -4,
-                              zIndex: 1,
-                            }} 
-                          />
-                          <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                            Lead Created
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {new Date(selectedLead.createdAt).toLocaleString()}
-                          </Typography>
-                          <Typography variant="body2" sx={{ mt: 1 }}>
-                            New {formatLeadType(selectedLead.leadType).toLowerCase()} lead created.
-                          </Typography>
-                        </Box>
-                        
-                        {selectedLead.lastContactedAt && (
-                          <Box sx={{ position: 'relative', mb: 4, pl: 4 }}>
-                            <Box 
-                              sx={{ 
-                                position: 'absolute', 
-                                left: 0, 
-                                top: 0, 
-                                width: 10, 
-                                height: 10, 
-                                borderRadius: '50%', 
-                                bgcolor: 'primary.main',
-                                mt: 1.5,
-                                ml: -4,
-                                zIndex: 1,
-                              }} 
-                            />
-                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                              Lead Contacted
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {new Date(selectedLead.lastContactedAt).toLocaleString()}
-                            </Typography>
-                            <Typography variant="body2" sx={{ mt: 1 }}>
-                              Initial contact made with lead.
-                            </Typography>
-                          </Box>
+                        {/* Display activities if they exist */}
+                        {selectedLead.activities && selectedLead.activities.length > 0 ? (
+                          selectedLead.activities.map((activity) => {
+                            const activityIcon = () => {
+                              switch (activity.type) {
+                                case 'call': return <PhoneIcon sx={{ fontSize: 16, color: '#1976d2' }} />;
+                                case 'email': return <EmailIcon sx={{ fontSize: 16, color: '#1976d2' }} />;
+                                case 'meeting': return <EventIcon sx={{ fontSize: 16, color: '#1976d2' }} />;
+                                case 'viewing': return <HomeIcon sx={{ fontSize: 16, color: '#1976d2' }} />;
+                                case 'status_change': return <AssessmentIcon sx={{ fontSize: 16, color: '#1976d2' }} />;
+                                default: return <ArticleIcon sx={{ fontSize: 16, color: '#1976d2' }} />;
+                              }
+                            };
+                            
+                            return (
+                              <Box key={activity.id} sx={{ position: 'relative', mb: 4, pl: 4 }}>
+                                <Box 
+                                  sx={{ 
+                                    position: 'absolute', 
+                                    left: 0, 
+                                    top: 0, 
+                                    width: 10, 
+                                    height: 10, 
+                                    borderRadius: '50%', 
+                                    bgcolor: 'primary.main',
+                                    mt: 1.5,
+                                    ml: -4,
+                                    zIndex: 1,
+                                  }} 
+                                />
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  {activityIcon()}
+                                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
+                                    {activity.type.replace('_', ' ')}
+                                  </Typography>
+                                </Box>
+                                <Typography component="div" variant="body2" color="textSecondary">
+                                  {new Date(activity.createdAt).toLocaleString()}
+                                </Typography>
+                                <Typography component="div" variant="body2" sx={{ mt: 1 }}>
+                                  {activity.description}
+                                </Typography>
+                              </Box>
+                            );
+                          })
+                        ) : (
+                          // Fallback activities if none exist in the lead data
+                          <>
+                            <Box sx={{ position: 'relative', mb: 4, pl: 4 }}>
+                              <Box 
+                                sx={{ 
+                                  position: 'absolute', 
+                                  left: 0, 
+                                  top: 0, 
+                                  width: 10, 
+                                  height: 10, 
+                                  borderRadius: '50%', 
+                                  bgcolor: 'primary.main',
+                                  mt: 1.5,
+                                  ml: -4,
+                                  zIndex: 1,
+                                }} 
+                              />
+                              <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                                Lead Created
+                              </Typography>
+                              <Typography component="div" variant="body2" color="textSecondary">
+                                {new Date(selectedLead.createdAt).toLocaleString()}
+                              </Typography>
+                              <Typography component="div" variant="body2" sx={{ mt: 1 }}>
+                                New {formatLeadType(selectedLead.leadType).toLowerCase()} lead created.
+                              </Typography>
+                            </Box>
+                            
+                            {selectedLead.lastContactedAt && (
+                              <Box sx={{ position: 'relative', mb: 4, pl: 4 }}>
+                                <Box 
+                                  sx={{ 
+                                    position: 'absolute', 
+                                    left: 0, 
+                                    top: 0, 
+                                    width: 10, 
+                                    height: 10, 
+                                    borderRadius: '50%', 
+                                    bgcolor: 'primary.main',
+                                    mt: 1.5,
+                                    ml: -4,
+                                    zIndex: 1,
+                                  }} 
+                                />
+                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                                  Lead Contacted
+                                </Typography>
+                                <Typography component="div" variant="body2" color="textSecondary">
+                                  {new Date(selectedLead.lastContactedAt).toLocaleString()}
+                                </Typography>
+                                <Typography component="div" variant="body2" sx={{ mt: 1 }}>
+                                  Initial contact made with lead.
+                                </Typography>
+                              </Box>
+                            )}
+                          </>
                         )}
                         
-                        <Box sx={{ mt: 3 }}>
+                        <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
                           <Button 
                             variant="outlined" 
                             startIcon={<AddIcon />} 
                             size="small"
                           >
                             Add Activity
+                          </Button>
+                          <Button 
+                            variant="outlined" 
+                            startIcon={<EventIcon />} 
+                            size="small"
+                          >
+                            Schedule Meeting
                           </Button>
                         </Box>
                       </Box>
@@ -791,8 +1136,8 @@ export default function LeadsPage() {
               </Typography>
               <Typography variant="body1" align="center" color="textSecondary">
                 Select a lead from the list to view its details
-              </Typography>
-            </Paper>
+        </Typography>
+      </Paper>
           )}
         </Grid>
       </Grid>
