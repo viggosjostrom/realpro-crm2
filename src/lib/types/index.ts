@@ -44,7 +44,7 @@ export type Lead = {
   status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'closed' | 'lost';
   leadType: 'valuation_request' | 'viewing_attendee' | 'website_inquiry' | 'referral_lead' | 'manual_entry' | 'other';
   propertyId?: string; // Reference to property (if connected to a specific property)
-  priority: 'low' | 'medium' | 'high';
+  priority?: 'low' | 'medium' | 'high'; // Making priority optional
   score?: number; // Lead score 0-100
   budget?: number; // Budget in SEK
   tags?: string[]; // Array of tags for categorization  

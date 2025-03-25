@@ -47,6 +47,7 @@ import {
 import { mockLeads, mockProperties, mockUsers } from '@/lib/utils/mockData';
 import { Lead, Property } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
+import { useRouter } from 'next/navigation';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -124,8 +125,8 @@ export default function LeadsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [tabValue, setTabValue] = useState(0);
+  const router = useRouter();
 
   // Sort leads by newest first
   const sortedLeads = useMemo(() => {
@@ -144,11 +145,10 @@ export default function LeadsPage() {
       
       const statusMatch = statusFilter === 'all' || lead.status === statusFilter;
       const typeMatch = typeFilter === 'all' || lead.leadType === typeFilter;
-      const priorityMatch = priorityFilter === 'all' || lead.priority === priorityFilter;
       
-      return nameMatch && statusMatch && typeMatch && priorityMatch;
+      return nameMatch && statusMatch && typeMatch;
     });
-  }, [sortedLeads, searchQuery, statusFilter, typeFilter, priorityFilter]);
+  }, [sortedLeads, searchQuery, statusFilter, typeFilter]);
 
   // Handle tab change
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -262,18 +262,9 @@ export default function LeadsPage() {
     );
   };
 
-  // Get priority color
-  const getPriorityColor = (priority: string): { color: string, bgColor: string } => {
-    switch (priority) {
-      case 'high':
-        return { color: '#d32f2f', bgColor: '#ffebee' };
-      case 'medium':
-        return { color: '#f57c00', bgColor: '#fff3e0' };
-      case 'low':
-        return { color: '#1976d2', bgColor: '#e3f2fd' };
-      default:
-        return { color: '#757575', bgColor: '#f5f5f5' };
-    }
+  // Handle property navigation
+  const handleViewProperty = (propertyId: string) => {
+    router.push(`/dashboard/properties/${propertyId}`);
   };
 
   return (
@@ -355,21 +346,6 @@ export default function LeadsPage() {
                   <MenuItem value="other">Other</MenuItem>
                 </Select>
               </FormControl>
-
-              <FormControl size="small" sx={{ minWidth: 120, flex: 1 }}>
-                <InputLabel id="priority-filter-label">Priority</InputLabel>
-                <Select
-                  labelId="priority-filter-label"
-                  value={priorityFilter}
-                  label="Priority"
-                  onChange={(e) => setPriorityFilter(e.target.value)}
-                >
-                  <MenuItem value="all">All Priorities</MenuItem>
-                  <MenuItem value="high">High</MenuItem>
-                  <MenuItem value="medium">Medium</MenuItem>
-                  <MenuItem value="low">Low</MenuItem>
-                </Select>
-              </FormControl>
             </Box>
             
             <List sx={{ 
@@ -397,7 +373,6 @@ export default function LeadsPage() {
               ) : (
                 filteredLeads.map((lead) => {
                   const { color: statusColor, bgColor: statusBgColor } = getStatusColor(lead.status);
-                  const { color: priorityColor, bgColor: priorityBgColor } = getPriorityColor(lead.priority);
                   const isNew = lead.status === 'new';
                   const isSelected = selectedLead?.id === lead.id;
                   
@@ -471,18 +446,6 @@ export default function LeadsPage() {
                                   sx={{
                                     backgroundColor: statusBgColor,
                                     color: statusColor,
-                                    fontWeight: 500,
-                                    fontSize: '0.7rem',
-                                    height: 20,
-                                    mb: 0.5
-                                  }}
-                                />
-                                <Chip
-                                  label={lead.priority.charAt(0).toUpperCase() + lead.priority.slice(1)}
-                                  size="small"
-                                  sx={{
-                                    backgroundColor: priorityBgColor,
-                                    color: priorityColor,
                                     fontWeight: 500,
                                     fontSize: '0.7rem',
                                     height: 20,
@@ -572,16 +535,7 @@ export default function LeadsPage() {
                     {formatLeadType(selectedLead.leadType)}
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                  {selectedLead.priority && (
-                    <Chip
-                      label={selectedLead.priority.charAt(0).toUpperCase() + selectedLead.priority.slice(1)}
-                      sx={{
-                        ...getPriorityColor(selectedLead.priority),
-                        fontWeight: 'bold',
-                      }}
-                    />
-                  )}
+                <Box>
                   <Chip
                     label={selectedLead.status.charAt(0).toUpperCase() + selectedLead.status.slice(1)}
                     sx={{
@@ -598,7 +552,6 @@ export default function LeadsPage() {
                   <Tabs value={tabValue} onChange={handleTabChange} aria-label="lead detail tabs">
                     <Tab label="Basic Info" />
                     <Tab label="Notes" />
-                    <Tab label="Progress" />
                     <Tab label="Activities" />
                   </Tabs>
                 </Box>
@@ -761,30 +714,87 @@ export default function LeadsPage() {
                       </Card>
                     </Grid>
                     
-                    {/* Tags */}
-                    {selectedLead.tags && selectedLead.tags.length > 0 && (
-                      <Grid item xs={12}>
-                        <Card variant="outlined">
-                          <CardContent>
-                            <Typography variant="h6" fontWeight="bold" gutterBottom>
-                              Tags
-                            </Typography>
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                              {selectedLead.tags.map((tag, index) => (
-                                <Chip
-                                  key={index}
-                                  label={tag}
-                                  sx={{
-                                    bgcolor: alpha('#1976d2', 0.1),
-                                    color: 'primary.main',
-                                  }}
-                                />
-                              ))}
-                            </Box>
-                          </CardContent>
-                        </Card>
+                    {/* Lead Progress and Tags Row */}
+                    <Grid item xs={12}>
+                      <Grid container spacing={3}>
+                        {/* Lead Progress */}
+                        <Grid item xs={12} md={6}>
+                          <Card variant="outlined" sx={{ height: '100%' }}>
+                            <CardContent>
+                              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                Lead Progress
+                              </Typography>
+                              <ProgressTracker status={selectedLead.status} />
+                              
+                              <Box sx={{ mt: 3 }}>
+                                <Typography variant="subtitle2" gutterBottom>
+                                  Update Status:
+                                </Typography>
+                                <FormControl fullWidth>
+                                  <Select
+                                    value={selectedLead.status}
+                                    size="small"
+                                    // In a real app, this would update the lead status
+                                  >
+                                    <MenuItem value="new">New</MenuItem>
+                                    <MenuItem value="contacted">Contacted</MenuItem>
+                                    <MenuItem value="qualified">Qualified</MenuItem>
+                                    <MenuItem value="proposal">Proposal</MenuItem>
+                                    <MenuItem value="negotiation">Negotiation</MenuItem>
+                                    <MenuItem value="closed">Closed</MenuItem>
+                                    <MenuItem value="lost">Lost</MenuItem>
+                                  </Select>
+                                </FormControl>
+                                <Box sx={{ mt: 2 }}>
+                                  <Button 
+                                    variant="contained"
+                                    size="small"
+                                  >
+                                    Update Status
+                                  </Button>
+                                </Box>
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                        
+                        {/* Tags */}
+                        <Grid item xs={12} md={6}>
+                          <Card variant="outlined" sx={{ height: '100%' }}>
+                            <CardContent>
+                              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                Tags
+                              </Typography>
+                              {selectedLead.tags && selectedLead.tags.length > 0 ? (
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                  {selectedLead.tags.map((tag, index) => (
+                                    <Chip
+                                      key={index}
+                                      label={tag}
+                                      sx={{
+                                        bgcolor: alpha('#1976d2', 0.1),
+                                        color: 'primary.main',
+                                      }}
+                                    />
+                                  ))}
+                                </Box>
+                              ) : (
+                                <Typography color="text.secondary">No tags added yet</Typography>
+                              )}
+                              <Box sx={{ mt: 3 }}>
+                                <Button 
+                                  variant="outlined"
+                                  size="small"
+                                  startIcon={<TagIcon />}
+                                >
+                                  Manage Tags
+                                </Button>
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </Grid>
                       </Grid>
-                    )}
+                    </Grid>
                     
                     {selectedLead.propertyId && (
                       <Grid item xs={12}>
@@ -836,6 +846,7 @@ export default function LeadsPage() {
                                         size="small" 
                                         variant="outlined" 
                                         startIcon={<HomeIcon />}
+                                        onClick={() => handleViewProperty(property.id)}
                                       >
                                         View Property
                                       </Button>
@@ -938,46 +949,6 @@ export default function LeadsPage() {
                 </TabPanel>
                 
                 <TabPanel value={tabValue} index={2}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="h6" fontWeight="bold" gutterBottom>
-                        Lead Progress
-                      </Typography>
-                      <ProgressTracker status={selectedLead.status} />
-                      
-                      <Box sx={{ mt: 3 }}>
-                        <Typography variant="subtitle2" gutterBottom>
-                          Update Status:
-                        </Typography>
-                        <FormControl fullWidth>
-                          <Select
-                            value={selectedLead.status}
-                            size="small"
-                            // In a real app, this would update the lead status
-                          >
-                            <MenuItem value="new">New</MenuItem>
-                            <MenuItem value="contacted">Contacted</MenuItem>
-                            <MenuItem value="qualified">Qualified</MenuItem>
-                            <MenuItem value="proposal">Proposal</MenuItem>
-                            <MenuItem value="negotiation">Negotiation</MenuItem>
-                            <MenuItem value="closed">Closed</MenuItem>
-                            <MenuItem value="lost">Lost</MenuItem>
-                          </Select>
-                        </FormControl>
-                        <Box sx={{ mt: 2 }}>
-                          <Button 
-                            variant="contained"
-                            size="small"
-                          >
-                            Update Status
-                          </Button>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </TabPanel>
-                
-                <TabPanel value={tabValue} index={3}>
                   <Card variant="outlined">
                     <CardContent>
                       <Typography variant="h6" fontWeight="bold" gutterBottom>
