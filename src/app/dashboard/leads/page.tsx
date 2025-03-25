@@ -42,7 +42,8 @@ import {
   Article as ArticleIcon,
   LocalOffer as TagIcon,
   TrendingUp as TrendingUpIcon,
-  AttachMoney as MoneyIcon
+  AttachMoney as MoneyIcon,
+  Sms as MessageIcon
 } from '@mui/icons-material';
 import { mockLeads, mockProperties, mockUsers } from '@/lib/utils/mockData';
 import { Lead, Property } from '@/lib/types';
@@ -571,7 +572,7 @@ export default function LeadsPage() {
                 <TabPanel value={tabValue} index={0}>
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
-                      <Card variant="outlined">
+                      <Card variant="outlined" sx={{ height: '100%' }}>
                         <CardContent>
                           <Typography variant="h6" fontWeight="bold" gutterBottom>
                             Contact Information
@@ -581,17 +582,51 @@ export default function LeadsPage() {
                             <Typography component="div">{selectedLead.email}</Typography>
                           </Box>
                           {selectedLead.phone && (
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                               <PhoneIcon sx={{ mr: 1, color: 'primary.main' }} />
                               <Typography component="div">{selectedLead.phone}</Typography>
                             </Box>
                           )}
+                          
+                          <Box sx={{ mt: 3, display: 'flex', gap: 1 }}>
+                            {selectedLead.phone && (
+                              <>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  startIcon={<PhoneIcon />}
+                                  sx={{ borderRadius: 1 }}
+                                  href={`tel:${selectedLead.phone}`}
+                                >
+                                  Call
+                                </Button>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  startIcon={<MessageIcon />}
+                                  sx={{ borderRadius: 1 }}
+                                  href={`sms:${selectedLead.phone}`}
+                                >
+                                  Text
+                                </Button>
+                              </>
+                            )}
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              startIcon={<EmailIcon />}
+                              sx={{ borderRadius: 1 }}
+                              href={`mailto:${selectedLead.email}`}
+                            >
+                              Email
+                            </Button>
+                          </Box>
                         </CardContent>
                       </Card>
                     </Grid>
                     
                     <Grid item xs={12} md={6}>
-                      <Card variant="outlined">
+                      <Card variant="outlined" sx={{ height: '100%' }}>
                         <CardContent>
                           <Typography variant="h6" fontWeight="bold" gutterBottom>
                             Lead Details
@@ -620,7 +655,7 @@ export default function LeadsPage() {
                     
                     {/* Lead Score and Budget */}
                     <Grid item xs={12} md={6}>
-                      <Card variant="outlined">
+                      <Card variant="outlined" sx={{ height: '100%' }}>
                         <CardContent>
                           <Typography variant="h6" fontWeight="bold" gutterBottom>
                             Lead Score & Budget
@@ -682,7 +717,7 @@ export default function LeadsPage() {
                     
                     {/* Follow-up Date */}
                     <Grid item xs={12} md={6}>
-                      <Card variant="outlined">
+                      <Card variant="outlined" sx={{ height: '100%' }}>
                         <CardContent>
                           <Typography variant="h6" fontWeight="bold" gutterBottom>
                             Follow-up Information
