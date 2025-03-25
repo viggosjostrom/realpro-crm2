@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { 
   Box, 
   Typography, 
@@ -35,7 +35,8 @@ import {
   IconButton,
   Stepper,
   Step,
-  StepLabel
+  StepLabel,
+  CircularProgress
 } from '@mui/material';
 import { 
   Search as SearchIcon, 
@@ -131,7 +132,8 @@ const getStatusColor = (status: string): { color: string, bgColor: string } => {
   }
 };
 
-export default function LeadsPage() {
+// The main leads component wrapped with Suspense
+function LeadsContent() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -349,6 +351,7 @@ export default function LeadsPage() {
     router.push(`/dashboard/properties/${propertyId}`);
   };
 
+  // Return the component JSX
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
@@ -1472,5 +1475,23 @@ export default function LeadsPage() {
         </Grid>
       </Grid>
     </Box>
+  );
+}
+
+// Loading fallback component
+function LeadsLoading() {
+  return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <CircularProgress />
+    </Box>
+  );
+}
+
+// Wrapper component with Suspense
+export default function LeadsPage() {
+  return (
+    <Suspense fallback={<LeadsLoading />}>
+      <LeadsContent />
+    </Suspense>
   );
 } 
