@@ -86,7 +86,7 @@ const WelcomePopup: React.FC = () => {
     >
       <DialogContent sx={{ pt: 4, position: 'relative', zIndex: 1 }}>
         <Typography variant="h5" component="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'white' }}>
-          RealPro CRM - Showcase Demo v.0.3.3
+          RealPro CRM - Showcase Demo v.0.4.0
         </Typography>
         
         <Typography variant="body1" paragraph align="center" sx={{ mt: 2, color: 'white' }}>
@@ -102,7 +102,7 @@ const WelcomePopup: React.FC = () => {
               • This version is best viewed on desktop for the optimal experience.
             </Typography>
             <Typography variant="body1" sx={{ color: 'white' }}>
-              • Leads and Activities pages are coming soon!
+              • Activities page is coming soon!
             </Typography>
           </Box>
         </Box>

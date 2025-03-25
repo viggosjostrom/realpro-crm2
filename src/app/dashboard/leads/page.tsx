@@ -20,13 +20,22 @@ import {
   Tabs,
   MenuItem,
   Select,
+  SelectChangeEvent,
   FormControl,
   InputLabel,
   Badge,
   Stack,
   Card,
   CardContent,
-  alpha
+  alpha,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Stepper,
+  Step,
+  StepLabel
 } from '@mui/material';
 import { 
   Search as SearchIcon, 
@@ -43,7 +52,8 @@ import {
   LocalOffer as TagIcon,
   TrendingUp as TrendingUpIcon,
   AttachMoney as MoneyIcon,
-  Sms as MessageIcon
+  Sms as MessageIcon,
+  Close as CloseIcon
 } from '@mui/icons-material';
 import { mockLeads, mockProperties, mockUsers } from '@/lib/utils/mockData';
 import { Lead, Property } from '@/lib/types';
@@ -129,6 +139,22 @@ export default function LeadsPage() {
   const [tabValue, setTabValue] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
+  
+  // Add New Lead Modal state
+  const [openAddLeadModal, setOpenAddLeadModal] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  
+  // Form state (for demonstration only)
+  const [newLeadForm, setNewLeadForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    source: 'website',
+    leadType: 'website_inquiry',
+    budget: '',
+    notes: '',
+  });
 
   // Sort leads by newest first
   const sortedLeads = useMemo(() => {
@@ -187,8 +213,51 @@ export default function LeadsPage() {
 
   // Add new lead action
   const handleAddNewLead = () => {
-    // This would open a modal in a real application
-    alert('This would open a new lead form in a real application. For showcase purposes, this is just a placeholder.');
+    setOpenAddLeadModal(true);
+  };
+  
+  // Close modal
+  const handleCloseModal = () => {
+    setOpenAddLeadModal(false);
+    setActiveStep(0);
+    // Reset form (in real app)
+    setNewLeadForm({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      source: 'website',
+      leadType: 'website_inquiry',
+      budget: '',
+      notes: '',
+    });
+  };
+  
+  // Handle next step in stepper
+  const handleNext = () => {
+    setActiveStep((prevStep) => prevStep + 1);
+  };
+  
+  // Handle back step in stepper
+  const handleBack = () => {
+    setActiveStep((prevStep) => prevStep - 1);
+  };
+  
+  // Handle form submission
+  const handleSubmit = () => {
+    // In a real app, this would save the lead
+    alert('In a real app, this would save the new lead to the database. For this showcase, we\'ll just close the modal.');
+    handleCloseModal();
+  };
+  
+  // Handle form field changes
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }> | SelectChangeEvent<string>) => {
+    const name = e.target.name as string;
+    const value = e.target.value;
+    setNewLeadForm({
+      ...newLeadForm,
+      [name]: value,
+    });
   };
 
   // Progress steps for the progress tracker
@@ -283,13 +352,13 @@ export default function LeadsPage() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-    <Box>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-        Leads
-      </Typography>
+        <Box>
+          <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+            Leads
+          </Typography>
           <Typography variant="body1" color="text.secondary">
-        Manage your leads and track their progress through the sales pipeline.
-      </Typography>
+            Manage your leads and track their progress through the sales pipeline.
+          </Typography>
         </Box>
         <Button 
           variant="contained" 
@@ -299,6 +368,230 @@ export default function LeadsPage() {
           Add New Lead
         </Button>
       </Box>
+      
+      {/* Add New Lead Modal */}
+      <Dialog 
+        open={openAddLeadModal} 
+        onClose={handleCloseModal}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>
+          Add New Lead
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseModal}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+            <Step>
+              <StepLabel>Basic Information</StepLabel>
+            </Step>
+            <Step>
+              <StepLabel>Lead Details</StepLabel>
+            </Step>
+            <Step>
+              <StepLabel>Additional Information</StepLabel>
+            </Step>
+          </Stepper>
+          
+          {activeStep === 0 && (
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  name="firstName"
+                  label="First Name"
+                  value={newLeadForm.firstName}
+                  onChange={handleFormChange}
+                  fullWidth
+                  required
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  name="lastName"
+                  label="Last Name"
+                  value={newLeadForm.lastName}
+                  onChange={handleFormChange}
+                  fullWidth
+                  required
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  name="email"
+                  label="Email Address"
+                  type="email"
+                  value={newLeadForm.email}
+                  onChange={handleFormChange}
+                  fullWidth
+                  required
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  name="phone"
+                  label="Phone Number"
+                  value={newLeadForm.phone}
+                  onChange={handleFormChange}
+                  fullWidth
+                  margin="normal"
+                />
+              </Grid>
+            </Grid>
+          )}
+          
+          {activeStep === 1 && (
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth margin="normal" required>
+                  <InputLabel id="source-label">Lead Source</InputLabel>
+                  <Select
+                    labelId="source-label"
+                    name="source"
+                    value={newLeadForm.source}
+                    label="Lead Source"
+                    onChange={handleFormChange}
+                  >
+                    <MenuItem value="website">Website</MenuItem>
+                    <MenuItem value="referral">Referral</MenuItem>
+                    <MenuItem value="social">Social Media</MenuItem>
+                    <MenuItem value="event">Event</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth margin="normal" required>
+                  <InputLabel id="leadType-label">Lead Type</InputLabel>
+                  <Select
+                    labelId="leadType-label"
+                    name="leadType"
+                    value={newLeadForm.leadType}
+                    label="Lead Type"
+                    onChange={handleFormChange}
+                  >
+                    <MenuItem value="valuation_request">Valuation Request</MenuItem>
+                    <MenuItem value="viewing_attendee">Viewing Attendee</MenuItem>
+                    <MenuItem value="website_inquiry">Website Inquiry</MenuItem>
+                    <MenuItem value="referral_lead">Referral</MenuItem>
+                    <MenuItem value="manual_entry">Manual Entry</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="budget"
+                  label="Budget (SEK)"
+                  type="number"
+                  value={newLeadForm.budget}
+                  onChange={handleFormChange}
+                  fullWidth
+                  margin="normal"
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">kr</InputAdornment>,
+                  }}
+                  helperText="Approximate budget range"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Box sx={{ p: 2, bgcolor: '#f9fafb', borderRadius: 1, border: '1px dashed #bdbdbd' }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <strong>Tip:</strong> Adding an accurate budget helps match leads with suitable properties.
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          )}
+          
+          {activeStep === 2 && (
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  name="notes"
+                  label="Notes"
+                  value={newLeadForm.notes}
+                  onChange={handleFormChange}
+                  fullWidth
+                  multiline
+                  rows={4}
+                  margin="normal"
+                  placeholder="Enter any additional information about this lead..."
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel id="status-label">Initial Status</InputLabel>
+                  <Select
+                    labelId="status-label"
+                    label="Initial Status"
+                    defaultValue="new"
+                    disabled
+                  >
+                    <MenuItem value="new">New</MenuItem>
+                  </Select>
+                </FormControl>
+                <Typography variant="caption" color="text.secondary">
+                  All new leads start with &quot;New&quot; status. You can update this later.
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel id="assign-agent-label">Assign Agent</InputLabel>
+                  <Select
+                    labelId="assign-agent-label"
+                    label="Assign Agent"
+                    defaultValue=""
+                  >
+                    <MenuItem value="">
+                      <em>Select an agent (optional)</em>
+                    </MenuItem>
+                    {mockUsers.map((user) => (
+                      <MenuItem key={user.id} value={user.id}>
+                        {user.firstName} {user.lastName} - {user.workrole}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2, justifyContent: 'space-between' }}>
+          {activeStep > 0 && (
+            <Button onClick={handleBack}>
+              Back
+            </Button>
+          )}
+          <Box>
+            <Button onClick={handleCloseModal} sx={{ mr: 1 }}>
+              Cancel
+            </Button>
+            {activeStep < 2 ? (
+              <Button variant="contained" onClick={handleNext}>
+                Next
+              </Button>
+            ) : (
+              <Button variant="contained" onClick={handleSubmit} startIcon={<AddIcon />}>
+                Create Lead
+              </Button>
+            )}
+          </Box>
+        </DialogActions>
+      </Dialog>
       
       <Grid container spacing={3}>
         {/* Left side - Leads list */}
@@ -538,7 +831,7 @@ export default function LeadsPage() {
         {/* Right side - Lead details */}
         <Grid item xs={12} md={8} lg={8}>
           {selectedLead ? (
-      <Paper elevation={0} sx={{ p: 3 }}>
+            <Paper elevation={0} sx={{ p: 3 }}>
               <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <Box>
                   <Typography variant="h5" component="h2" fontWeight="bold">
@@ -1173,8 +1466,8 @@ export default function LeadsPage() {
               </Typography>
               <Typography variant="body1" align="center" color="textSecondary">
                 Select a lead from the list to view its details
-        </Typography>
-      </Paper>
+              </Typography>
+            </Paper>
           )}
         </Grid>
       </Grid>
