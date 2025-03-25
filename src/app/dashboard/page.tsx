@@ -1459,15 +1459,15 @@ const AveragePriceCard = () => {
 // Main Dashboard Content
 const DashboardContent = () => {
   const theme = useTheme();
-  const [activitiesTab, setActivitiesTab] = React.useState(0);
+  const [activitiesTabValue, setActivitiesTabValue] = useState(0);
   const router = useRouter();
   
   const handleActivitiesTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActivitiesTab(newValue);
+    setActivitiesTabValue(newValue);
   };
   
   // Get filtered and sorted activities
-  const filteredActivities = filterActivitiesByTab(mockActivities, activitiesTab);
+  const filteredActivities = filterActivitiesByTab(mockActivities, activitiesTabValue);
   // Filter out completed activities to only show upcoming ones
   const upcomingActivities = filteredActivities.filter(activity => !activity.completed);
   const sortedActivities = sortActivitiesByDate(upcomingActivities);
@@ -1539,7 +1539,7 @@ const DashboardContent = () => {
             
             {/* Activity filter tabs */}
             <Tabs
-              value={activitiesTab}
+              value={activitiesTabValue}
               onChange={handleActivitiesTabChange}
               variant="fullWidth"
               aria-label="Activity filter tabs"
@@ -1761,7 +1761,7 @@ const DashboardContent = () => {
                           cursor: 'pointer'
                         }
                       }}
-                      onClick={() => {/* No navigation */}}
+                      onClick={() => router.push(`/dashboard/leads?leadId=${lead.id}`)}
                     >
                       <CardContent sx={{ p: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
