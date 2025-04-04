@@ -27,6 +27,7 @@
     "lodash": "^4.17.21",
     "next": "15.2.2",
     "react": "^19.0.0",
+    "react-big-calendar": "^1.18.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0"
   },
@@ -36,6 +37,7 @@
     "@types/lodash": "^4.17.16",
     "@types/node": "^20",
     "@types/react": "^19",
+    "@types/react-big-calendar": "^1.16.1",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
