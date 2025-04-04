@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import Calendar from '@/components/Calendar';
 
 export default function ActivitiesPage() {
   return (
@@ -13,11 +14,7 @@ export default function ActivitiesPage() {
         Track and manage all your client interactions and scheduled activities.
       </Typography>
       
-      <Paper elevation={0} sx={{ p: 3 }}>
-        <Typography variant="body1">
-          Activity management functionality will be implemented here.
-        </Typography>
-      </Paper>
+      <Calendar />
     </Box>
   );
 } 
